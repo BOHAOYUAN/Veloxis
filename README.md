@@ -1,71 +1,144 @@
-# 💎 Veloxis AI — Conversational Wealth & Dynamic Visual Engine
+# Veloxis — Conversational Financial Planning & Monte Carlo Engine
 
-> **The World's First Groq-Powered Conversational Wealth & Dynamic Visual Monte Carlo Engine for Modern RIAs & High-Net-Worth Individuals.**
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Vercel](https://img.shields.io/badge/Vercel-Serverless-black?logo=vercel)](https://vercel.com)
+[![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green?logo=node.js)](https://nodejs.org)
 
-[![Build Status](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)](https://github.com/haoyuanbo626-oss/Veloxis-AI)
-[![AI Engine](https://img.shields.io/badge/Groq-0.08s_LPU_Speed-emerald?style=for-the-badge&logo=openai)](https://groq.com)
-[![Fallback AI](https://img.shields.io/badge/DeepSeek-V3_Gateway-purple?style=for-the-badge)](https://deepseek.com)
-[![FinTech Stack](https://img.shields.io/badge/RightCapital-Benchmark-amber?style=for-the-badge)](https://rightcapital.com)
-[![Payments](https://img.shields.io/badge/Dodo_Payments-7--Day_Trial-blue?style=for-the-badge)](https://dodopayments.com)
+Veloxis is an open-source financial planning prototype designed as an architectural benchmark for modern RIA (Registered Investment Advisor) platforms such as RightCapital and eMoney.
 
----
-
-## 🌟 Overview
-
-**Veloxis AI** (`/vɛˈlɒksɪs/`) is an industrial-grade, AI-native FinTech platform engineered to eliminate the two biggest friction points in modern financial planning (e.g., RightCapital, eMoney, MoneyGuidePro): **slow data entry** and **static, uninspiring client reports**.
-
-Combining **Groq LPU 0.08s sub-second natural language inference** with a high-performance **2D Canvas vector rendering engine**, Veloxis AI transforms one-sentence natural language prompts into **4K dynamic Monte Carlo retirement guardrails, estate flowcharts, and client-ready visual snapshots** in under a second.
+It replaces multi-step form wizards with sub-second natural language entity extraction (Groq LPU) and client-side 2D vector rendering for real-time Monte Carlo simulations and estate planning visualizations.
 
 ---
 
-## 🚀 4 Core Product Modules
+## Technical Motivation
 
-### 1. 💬 `Veloxis Voice` — 0.08s Natural Language Wealth Parser
-* **Zero-Friction Intake**: Replaces 50-field forms with a single prompt or voice note:
-  > *"I'm 32, holding $500k in liquid assets, earning $200k/yr. I plan to retire at 52 spending $100k/yr and execute a Roth conversion strategy."*
-* **Groq LPU Engine**: Groq Llama-3.3 70B parses age, assets, cash flows, inflation rates, and tax intent into structured JSON in **0.08 seconds**.
-
-### 2. 📊 `Veloxis Canvas` — 2D Vector Monte Carlo & Estate Flow Engine
-* **Dynamic Retirement Guardrails**: Runs 10,000 Monte Carlo market scenario simulations to display client asset probability corridors in real time.
-* **Visual Estate & Trust Flowchart**: Renders complex trusts, insurance policies, and asset transfer models into Apple-Studio-grade visual cards.
-
-### 3. 📄 `Veloxis Snapshot` — 4K Client Reports & Social Assets
-* **1-Click 4K PDF Export**: Generates multi-page high-resolution wealth reports for B2B financial advisors.
-* **60fps Motion Reel Exporter**: Renders 1080x1350 vertical carousel cards and MP4/WebM video reels for high-converting social sharing.
-
-### 4. 💳 `Veloxis Commercial` — Global Merchant Gateway
-* Built-in **Dodo Payments 7-Day $0 Trial** auto-renewal billing, multi-currency support, and enterprise API key authentication.
+1. **Intake Friction**: Standard wealth planning software requires 40+ manual inputs across 8 tabs (assets, liabilities, tax rates, inflation assumptions, withdrawal ordering). Client onboarding drop-off rates often correlate directly with form length.
+2. **Compute Latency**: Server-side Monte Carlo simulations (10,000 iterations across a 30-year retirement horizon) frequently introduce 2-5 second network and rendering delays.
+3. **Architecture Solution**: Veloxis delegates unstructured entity extraction to Groq's LPU infrastructure (Llama-3.3 70B, ~85ms inference), returning a validated JSON schema. Dynamic probability distributions and visual cards are rendered on the client via `requestAnimationFrame` on an HTML5 2D Canvas.
 
 ---
 
-## 🛠️ Architecture & Tech Stack
+## System Architecture
 
-| Component | Technology Stack |
-| :--- | :--- |
-| **Frontend UI** | HTML5 Canvas, Tailwind CSS, Lucide Icons, Swiper.js (Zero-Framework Bloat) |
-| **Primary LLM Engine** | **Groq LPU Llama-3.3 70B** (*0.08s Sub-Second Latency*) |
-| **Failover LLM Engine**| **DeepSeek V3** (*High-Density Financial Logic*) |
-| **Payment Gateway** | **Dodo Payments** (*Merchant of Record / 7-Day Free Trial*) |
-| **Hosting & Edge** | Vercel Edge Serverless Functions |
-
----
-
-## ⚡ Quick Start
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/haoyuanbo626-oss/Veloxis-AI.git
-cd Veloxis-AI
-
-# 2. Open locally
-open index.html
+```
+[ User Input (Text / Voice) ]
+           │
+           ▼
+[ Vercel Edge Gateway (/api/generate) ]
+           │
+     ┌─────┴──────────────────────────────┐
+     ▼                                    ▼
+[ Groq LPU (Primary) ]           [ DeepSeek V3 (Failover) ]
+(Llama-3.3 70B JSON Schema)     (Deterministic Backup)
+     │                                    │
+     └─────┬──────────────────────────────┘
+           ▼
+[ Strict JSON Validation Payload ]
+           │
+           ▼
+[ Client-Side Engine (HTML5 2D Canvas) ]
+           ├── Monte Carlo Probability Corridor (10k runs)
+           ├── Estate & Tax Flowchart Render
+           └── Export Engine (4K PDF / 60fps WebM)
 ```
 
 ---
 
-## 👑 About the Author
+## Performance & Latency Budget
 
-Crafted with high conviction by **Haoyuan Bo** for the **RightCapital Engineering & Product Challenge**.
+| Component | Target Latency (p50) | Target Latency (p99) | Execution Target |
+| :--- | :--- | :--- | :--- |
+| **API Gateway Routing** | 12ms | 45ms | Vercel Serverless Edge |
+| **Entity Extraction (Groq LPU)** | **85ms** | **180ms** | Llama-3.3 70B (JSON Mode) |
+| **Failover (DeepSeek V3)** | 1100ms | 1800ms | HTTP Failover Circuit |
+| **Canvas Vector Render** | **16.6ms (60fps)** | 33ms | HTML5 2D Context |
 
-* **Website**: [Veloxis AI Live](https://github.com/haoyuanbo626-oss/Veloxis-AI)
-* **GitHub**: [@haoyuanbo626-oss](https://github.com/haoyuanbo626-oss)
+---
+
+## API Specification
+
+### `POST /api/generate`
+
+#### Request Payload
+```typescript
+interface FinancialIntakeRequest {
+  prompt: string;         // Raw prompt e.g., "35 yo, $500k liquid, $200k income..."
+  customApiKey?: string;  // Optional client-provided Groq/Gemini API key
+  language?: 'en' | 'zh'; // Response localization target
+}
+```
+
+#### Response Payload (Strict JSON Schema)
+```typescript
+interface FinancialPlanResponse {
+  success: boolean;
+  engine: string;
+  data: {
+    client_summary: string;
+    current_age: number;
+    retire_age: number;
+    liquid_assets: number;
+    annual_income: number;
+    annual_spending: number;
+    monte_carlo_success_rate: number;
+    roth_conversion_recommended: boolean;
+    tax_savings_estimate: number;
+    slides: Array<{
+      slide_index: number;
+      chapter_label: string;
+      title: string;
+      subtitle: string;
+      metric_box: { value: string; label: string };
+      versus?: { old_way: string; new_way: string };
+      bullet_points: Array<{ point_title: string; point_desc: string }>;
+      takeaway_quote?: string;
+    }>;
+  };
+}
+```
+
+#### Example Usage
+```bash
+curl -X POST https://veloxis.vercel.app/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Age 35, $500k savings, retire at 55 spending $80k/yr",
+    "language": "en"
+  }'
+```
+
+---
+
+## Environment Variables & Configuration
+
+Create a `.env.local` file in the root directory:
+
+```env
+# Primary Sub-Second Inference Engine
+GROQ_API_KEY=gsk_your_groq_api_key_here
+
+# Backup LLM Engine
+DEEPSEEK_API_KEY=sk_your_deepseek_api_key_here
+
+# Merchant Gateway (Optional for monetization layer)
+DODO_PAYMENTS_API_KEY=dodo_your_key_here
+```
+
+---
+
+## Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/BOHAOYUAN/Veloxis.git
+cd Veloxis
+
+# Serve static files locally (e.g. using static server or Vercel CLI)
+npx vercel dev
+```
+
+---
+
+## License
+
+MIT License. Distributed for educational and benchmarking purposes.
