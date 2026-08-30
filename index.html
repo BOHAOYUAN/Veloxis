@@ -48,6 +48,8 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- jsPDF for 4K PDF Export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Supabase Cloud Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     body {
@@ -379,7 +381,21 @@
   <script>
     lucide.createIcons();
 
-    // Client CRM Profiles Database (With LocalStorage Persistence)
+    // Supabase Cloud Database Configuration
+    const SUPABASE_PROJECT_URL = 'https://mlvyjrevobzaecganmgp.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_rtB-t4wWt2N6P8e_EbHHng_Wopex2g1';
+    let supabaseClient = null;
+
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_PUBLISHABLE_KEY);
+        console.log('⚡ Connected to Supabase Cloud PostgreSQL Database: VeloxisVeloxis');
+      }
+    } catch (err) {
+      console.warn('Supabase initialization fallback to LocalStorage:', err);
+    }
+
+    // Client CRM Profiles Database (With LocalStorage + Supabase Cloud Persistence)
     const clientDatabase = {
       client_sarah: {
         name: "Sarah Lin",
