@@ -70,6 +70,9 @@
     .glow-purple {
       box-shadow: 0 0 40px -10px rgba(168, 85, 247, 0.3);
     }
+    .glow-red {
+      box-shadow: 0 0 40px -10px rgba(244, 63, 94, 0.4);
+    }
     input[type=range] {
       accent-color: #10b981;
       touch-action: none;
@@ -103,7 +106,7 @@
       </div>
     </div>
 
-    <!-- Client CRM Selector & Stress Test Status -->
+    <!-- Client CRM Selector & Mode Toggles -->
     <div class="flex items-center gap-2 sm:gap-3 flex-1 max-w-md justify-center">
       <!-- CRM Switcher -->
       <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 px-2.5 py-1 rounded-xl text-xs">
@@ -122,7 +125,7 @@
       </button>
     </div>
 
-    <!-- Right Actions: Stress Test Badge & 4K PDF -->
+    <!-- Right Actions: Latency & 4K PDF -->
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
       <div class="hidden md:flex items-center gap-1.5 text-xs font-mono text-slate-300 bg-slate-900/90 px-2.5 py-1.5 rounded-xl border border-slate-800">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -140,10 +143,10 @@
   <!-- ================= MAIN WORKSPACE GRID (12 Cols) ================= -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
 
-    <!-- ================= LEFT PANEL: INTAKE, COMPARISON & STRESS TEST CONTROLS (5 Cols) ================= -->
+    <!-- ================= LEFT PANEL: INTAKE, GUYTON-KLINGER & SOCIAL SECURITY (5 Cols) ================= -->
     <section class="lg:col-span-5 flex flex-col gap-3.5 sm:gap-4 order-2 lg:order-1">
       
-      <!-- 1. Conversational Intake Box -->
+      <!-- 1. Conversational Intake & Live Voice Dictation Box -->
       <div class="glass-panel rounded-2xl p-3.5 sm:p-4 border border-emerald-500/40 flex flex-col gap-2.5 sm:gap-3 shadow-xl glow-emerald relative overflow-hidden">
         
         <div class="flex flex-col gap-2">
@@ -152,7 +155,12 @@
               <i data-lucide="message-square" class="w-3.5 h-3.5 text-emerald-400"></i>
               Conversational Intake (Prompt / Speech)
             </label>
-            <span class="text-[9px] sm:text-[10px] font-mono text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-700/40">JSON Mode</span>
+            
+            <!-- Voice Meeting Dictation Button -->
+            <button id="btnVoiceDictation" onclick="toggleVoiceDictation()" class="px-2 py-0.5 rounded-full bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono flex items-center gap-1 transition-all active:scale-95">
+              <i data-lucide="mic" class="w-3 h-3 text-emerald-400" id="micIcon"></i>
+              <span id="lblVoice">🎙️ Voice Dictate</span>
+            </button>
           </div>
 
           <!-- Quick Presets -->
@@ -183,7 +191,54 @@
         </button>
       </div>
 
-      <!-- 2. 📉 FINRA Regulatory Stress Test Mode Selector -->
+      <!-- 2. 🛡️ Guyton-Klinger Guardrails & Social Security Optimizer -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- Guyton-Klinger Protocol Card -->
+        <div class="glass-panel rounded-2xl p-3 border border-indigo-500/30 flex flex-col justify-between gap-2 shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-indigo-300 flex items-center gap-1">
+              <i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-400"></i> Guyton-Klinger
+            </span>
+            <button id="btnGkToggle" onclick="toggleGkProtocol()" class="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono font-bold">
+              ACTIVE
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-400 leading-tight">
+            Dynamic spending: cuts -10% in severe downturns, unlocks +10% prosperity bonus in bull markets.
+          </p>
+          <div class="text-[9px] font-mono text-emerald-400 flex items-center justify-between border-t border-slate-800 pt-1.5">
+            <span>Capital Preservation</span>
+            <span>+18% Success Alpha</span>
+          </div>
+        </div>
+
+        <!-- Social Security Claiming Age Card -->
+        <div class="glass-panel rounded-2xl p-3 border border-amber-500/30 flex flex-col justify-between gap-2 shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-amber-300 flex items-center gap-1">
+              <i data-lucide="landmark" class="w-3.5 h-3.5 text-amber-400"></i> Social Security
+            </span>
+            <span class="text-[10px] font-mono text-slate-300" id="ssMonthlyTag">$2,500/mo</span>
+          </div>
+          <div class="grid grid-cols-3 gap-1">
+            <button onclick="setSSClaimAge(62)" id="ssBtn_62" class="py-1 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 text-[10px] font-bold text-center">
+              Age 62 (-30%)
+            </button>
+            <button onclick="setSSClaimAge(67)" id="ssBtn_67" class="py-1 rounded-lg bg-amber-950 text-amber-300 border border-amber-500/60 text-[10px] font-bold text-center">
+              Age 67 (FRA)
+            </button>
+            <button onclick="setSSClaimAge(70)" id="ssBtn_70" class="py-1 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 text-[10px] font-bold text-center">
+              Age 70 (+24%)
+            </button>
+          </div>
+          <div class="text-[9px] font-mono text-slate-400 flex items-center justify-between border-t border-slate-800 pt-1.5">
+            <span>Breakeven: Age 78.4</span>
+            <span class="text-amber-400" id="ssAnnualBenefitTag">+$30,000/yr</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 📉 FINRA Regulatory Stress Test Suite -->
       <div class="glass-panel rounded-2xl p-3 sm:p-3.5 border border-slate-800 flex flex-col gap-2 shadow-lg">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
@@ -208,7 +263,7 @@
         </div>
       </div>
 
-      <!-- 3. 🎛️ Live Scenario Tweaker (Plan A Sliders) -->
+      <!-- 4. 🎛️ Live Scenario Tweaker (Plan A Sliders) -->
       <div class="glass-panel rounded-2xl p-3.5 sm:p-4 border border-slate-800 flex flex-col gap-3 shadow-lg">
         <div class="flex items-center justify-between border-b border-slate-800 pb-2">
           <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
@@ -259,7 +314,7 @@
 
       </div>
 
-      <!-- 4. Key Financial Output Metrics Grid -->
+      <!-- 5. Key Financial Output Metrics Grid -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <div class="p-2.5 sm:p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
           <div class="text-[9px] sm:text-[10px] font-mono text-slate-400">Monte Carlo Rate</div>
@@ -282,7 +337,7 @@
         <div class="p-2.5 sm:p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
           <div class="text-[9px] sm:text-[10px] font-mono text-slate-400">Safe Floor Spend</div>
           <div class="text-base sm:text-lg font-black text-white font-mono mt-0.5" id="valSafeFloor">$64,000</div>
-          <div class="text-[8px] sm:text-[9px] text-slate-400">Guardrail Low</div>
+          <div class="text-[8px] sm:text-[9px] text-slate-400">GK Guardrail Low</div>
         </div>
       </div>
 
@@ -324,9 +379,9 @@
             <!-- Live Hover / Touch Tooltip -->
             <div id="canvasTooltip" class="hidden absolute top-3 right-3 sm:top-4 sm:right-4 bg-slate-900/95 border border-slate-700/80 rounded-xl p-2 sm:p-2.5 text-[10px] sm:text-xs font-mono shadow-2xl backdrop-blur-md pointer-events-none z-10">
               <div class="text-[9px] sm:text-[10px] text-slate-400 mb-0.5 sm:mb-1" id="ttAge">Age 65</div>
-              <div class="text-emerald-400 font-bold" id="ttP90">90% Bull: $3.12M</div>
-              <div class="text-indigo-300 font-bold" id="ttP50">50% Base: $1.84M</div>
-              <div class="text-rose-400 font-bold" id="ttP10">10% Bear: $640k</div>
+              <div class="text-emerald-400 font-bold" id="ttP90">Plan A 90% Bull: $3.12M</div>
+              <div class="text-indigo-300 font-bold" id="ttP50">Plan A 50% Base: $1.84M</div>
+              <div class="text-rose-400 font-bold" id="ttP10">Plan A 10% Bear: $640k</div>
               <div class="text-purple-300 font-bold hidden" id="ttPlanB">Plan B: $2.45M</div>
             </div>
           </div>
@@ -405,7 +460,9 @@
         initialAssets: 500000,
         annualSpend: 80000,
         equityRatio: 0.75,
-        taxSavings: 145000
+        taxSavings: 145000,
+        ssMonthlyPIA: 2500,
+        ssClaimAge: 67
       },
       client_david: {
         name: "David Miller",
@@ -415,7 +472,9 @@
         initialAssets: 1200000,
         annualSpend: 110000,
         equityRatio: 0.80,
-        taxSavings: 280000
+        taxSavings: 280000,
+        ssMonthlyPIA: 3200,
+        ssClaimAge: 67
       },
       client_chang: {
         name: "Michael Chang",
@@ -425,12 +484,15 @@
         initialAssets: 2800000,
         annualSpend: 160000,
         equityRatio: 0.70,
-        taxSavings: 540000
+        taxSavings: 540000,
+        ssMonthlyPIA: 3800,
+        ssClaimAge: 70
       }
     };
 
     let activeClientId = "client_sarah";
     let isCompareMode = false;
+    let isGkEnabled = true;
     let stressMode = 'none'; // 'none' | 'gfc2008' | 'dotcom' | 'stagflation'
 
     // Core Financial Planning State (Plan A)
@@ -440,7 +502,8 @@
     let statePlanB = {
       retireAge: 60,
       annualSpend: 90000,
-      equityRatio: 0.80
+      equityRatio: 0.80,
+      ssClaimAge: 70
     };
 
     // Cache of computed percentile paths
@@ -465,10 +528,11 @@
       return trimmed[idx];
     }
 
-    // High-Performance Monte Carlo Engine with FINRA Stress Testing
-    function runMonteCarlo(initialAssets, annualSpend, currentAge, retireAge, endAge, equity, iterations = 1000, stress = 'none') {
+    // High-Performance Monte Carlo Engine with Guyton-Klinger Guardrails & Social Security
+    function runMonteCarlo(initialAssets, annualSpend, currentAge, retireAge, endAge, equity, ssPIA = 2500, ssClaimAge = 67, iterations = 1000, stress = 'none', useGK = true) {
       const totalYears = endAge - currentAge;
       const retireYears = Math.max(0, retireAge - currentAge);
+      const ssClaimYears = Math.max(0, ssClaimAge - currentAge);
       const paths = [];
 
       let eqExpReturn = 0.075;
@@ -477,9 +541,17 @@
       let bdVol = 0.045;
       let inflation = 0.024;
 
+      // Calculate Social Security Annual Income based on Claiming Age
+      // 62: -30% | 67 (FRA): 100% | 70: +24%
+      let ssMultiplier = 1.0;
+      if (ssClaimAge <= 62) ssMultiplier = 0.70;
+      else if (ssClaimAge >= 70) ssMultiplier = 1.24;
+      else ssMultiplier = 0.70 + ((ssClaimAge - 62) / 5) * 0.30;
+      const annualSSBenefit = ssPIA * 12 * ssMultiplier;
+
       // Apply FINRA Stress Shocks
       if (stress === 'stagflation') {
-        inflation = 0.080; // 8% inflation shock
+        inflation = 0.080;
         eqExpReturn = 0.020;
       }
 
@@ -487,8 +559,12 @@
       const portVol = equity * eqVol + (1 - equity) * bdVol;
       const drift = expReturn - 0.5 * portVol * portVol;
 
+      const initialWithdrawalRate = annualSpend / initialAssets;
+
       for (let i = 0; i < iterations; i++) {
         let balance = initialAssets;
+        let pathSpend = annualSpend;
+        let prevReturn = 0.05;
         const path = [balance];
 
         for (let y = 1; y <= totalYears; y++) {
@@ -496,9 +572,9 @@
 
           // Injected Sequence-of-Returns Crisis Shocks at Retirement
           if (stress === 'gfc2008' && y === retireYears + 1) {
-            annualReturn = -0.385 * equity - 0.05 * (1 - equity); // -38.5% GFC shock
+            annualReturn = -0.385 * equity - 0.05 * (1 - equity);
           } else if (stress === 'dotcom' && (y >= retireYears + 1 && y <= retireYears + 3)) {
-            annualReturn = -0.220 * equity + 0.02 * (1 - equity); // 3-year bear market
+            annualReturn = -0.220 * equity + 0.02 * (1 - equity);
           } else {
             const z = gaussianRandom();
             annualReturn = Math.exp(drift + portVol * z) - 1;
@@ -506,11 +582,33 @@
 
           balance = balance * (1 + annualReturn);
 
+          // If Retired, execute Dynamic Spending / Guyton-Klinger Guardrails
           if (y > retireYears) {
-            const inflatedSpend = annualSpend * Math.pow(1 + inflation, y - retireYears);
-            balance -= inflatedSpend;
+            // Inflate spending baseline
+            pathSpend = pathSpend * (1 + inflation);
+
+            // Guyton-Klinger Capital Preservation & Prosperity Rules
+            if (useGK && balance > 0) {
+              const currentWithdrawalRate = pathSpend / balance;
+
+              // Capital Preservation Rule: If market dropped & CWR > 1.2 * IWR, cut spending by 10%
+              if (prevReturn < 0 && currentWithdrawalRate > initialWithdrawalRate * 1.20) {
+                pathSpend = pathSpend * 0.90;
+              }
+              // Prosperity Rule: If market gained & CWR < 0.8 * IWR, reward client +10% bonus
+              else if (prevReturn > 0 && currentWithdrawalRate < initialWithdrawalRate * 0.80) {
+                pathSpend = pathSpend * 1.10;
+              }
+            }
+
+            // Social Security cashflow offsets required portfolio withdrawal
+            const ssIncomeThisYear = (y >= ssClaimYears) ? annualSSBenefit * Math.pow(1 + inflation, y - ssClaimYears) : 0;
+            const netWithdrawal = Math.max(0, pathSpend - ssIncomeThisYear);
+
+            balance -= netWithdrawal;
           }
 
+          prevReturn = annualReturn;
           if (balance < 0) balance = 0;
           path.push(balance);
         }
@@ -534,6 +632,106 @@
       return { p10, p50, p90, successRate, years: totalYears, rawPaths: paths };
     }
 
+    // Toggle Guyton-Klinger Guardrails
+    function toggleGkProtocol() {
+      isGkEnabled = !isGkEnabled;
+      const btn = document.getElementById('btnGkToggle');
+      if (isGkEnabled) {
+        btn.className = 'px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono font-bold';
+        btn.innerText = 'ACTIVE';
+      } else {
+        btn.className = 'px-2 py-0.5 rounded-full bg-slate-900 text-slate-500 border border-slate-800 text-[10px] font-mono font-bold';
+        btn.innerText = 'OFF';
+      }
+      recomputeAndRender();
+    }
+
+    // Set Social Security Claiming Age
+    function setSSClaimAge(age) {
+      state.ssClaimAge = age;
+      [62, 67, 70].forEach(a => {
+        const btn = document.getElementById('ssBtn_' + a);
+        if (a === age) {
+          btn.className = 'py-1 rounded-lg bg-amber-950 text-amber-300 border border-amber-500/60 text-[10px] font-bold text-center';
+        } else {
+          btn.className = 'py-1 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 text-[10px] font-bold text-center';
+        }
+      });
+
+      let benefit = state.ssMonthlyPIA * (age === 62 ? 0.70 : age === 70 ? 1.24 : 1.0);
+      document.getElementById('ssMonthlyTag').innerText = `$${Math.round(benefit).toLocaleString()}/mo`;
+      document.getElementById('ssAnnualBenefitTag').innerText = `+$${Math.round(benefit * 12).toLocaleString()}/yr`;
+
+      recomputeAndRender();
+    }
+
+    // Web Speech API Voice Meeting Dictation
+    let recognition = null;
+    let isRecording = false;
+
+    function toggleVoiceDictation() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('Web Speech API is not supported on this browser (e.g. iOS Safari). Please use Chrome or Edge desktop/Android.');
+        return;
+      }
+
+      const btn = document.getElementById('btnVoiceDictation');
+      const micIcon = document.getElementById('micIcon');
+      const lbl = document.getElementById('lblVoice');
+      const input = document.getElementById('promptInput');
+
+      if (isRecording) {
+        if (recognition) recognition.stop();
+        isRecording = false;
+        btn.className = 'px-2 py-0.5 rounded-full bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono flex items-center gap-1 transition-all active:scale-95';
+        lbl.innerText = '🎙️ Voice Dictate';
+        return;
+      }
+
+      try {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+
+        recognition.onstart = () => {
+          isRecording = true;
+          btn.className = 'px-2 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-500/60 text-[10px] font-mono flex items-center gap-1 animate-pulse';
+          lbl.innerText = '🔴 Listening...';
+        };
+
+        recognition.onresult = (event) => {
+          let transcript = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+          }
+          input.value = transcript;
+        };
+
+        recognition.onend = () => {
+          isRecording = false;
+          btn.className = 'px-2 py-0.5 rounded-full bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono flex items-center gap-1 transition-all active:scale-95';
+          lbl.innerText = '🎙️ Voice Dictate';
+          
+          if (input.value.trim().length > 10) {
+            generatePlan(); // Auto-fire Groq extraction!
+          }
+        };
+
+        recognition.onerror = (err) => {
+          console.error('Speech recognition error:', err);
+          isRecording = false;
+          btn.className = 'px-2 py-0.5 rounded-full bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono flex items-center gap-1 transition-all active:scale-95';
+          lbl.innerText = '🎙️ Voice Dictate';
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.error('Recognition error:', e);
+      }
+    }
+
     // Switch Client CRM Profile
     function onClientSwitch(clientId) {
       activeClientId = clientId;
@@ -544,12 +742,12 @@
         state = { ...clientDatabase[clientId], activeTab: state.activeTab };
       }
 
-      // Sync Sliders
       document.getElementById('sliderAssets').value = state.initialAssets;
       document.getElementById('sliderRetireAge').value = state.retireAge;
       document.getElementById('sliderSpend').value = state.annualSpend;
       document.getElementById('sliderEquity').value = state.equityRatio;
 
+      setSSClaimAge(state.ssClaimAge || 67);
       onLiveParamChange();
     }
 
@@ -601,10 +799,8 @@
       state.annualSpend = parseInt(document.getElementById('sliderSpend').value);
       state.equityRatio = parseFloat(document.getElementById('sliderEquity').value);
 
-      // Save to LocalStorage
       localStorage.setItem('veloxis_' + activeClientId, JSON.stringify(state));
 
-      // Update Slider Label Text
       document.getElementById('lblAssetVal').innerText = '$' + state.initialAssets.toLocaleString();
       document.getElementById('lblRetireAgeVal').innerText = 'Age ' + state.retireAge;
       document.getElementById('lblSpendVal').innerText = '$' + state.annualSpend.toLocaleString() + '/yr';
@@ -627,11 +823,14 @@
         state.retireAge,
         state.endAge,
         state.equityRatio,
+        state.ssMonthlyPIA || 2500,
+        state.ssClaimAge || 67,
         800,
-        stressMode
+        stressMode,
+        isGkEnabled
       );
 
-      // Plan B Simulation (Retire 5 Years Later with Higher Spending)
+      // Plan B Simulation (Retire 5 Years Later with Higher Spending & Max SS at 70)
       if (isCompareMode) {
         statePlanB.retireAge = Math.min(state.retireAge + 5, 70);
         statePlanB.annualSpend = state.annualSpend + 15000;
@@ -642,8 +841,11 @@
           statePlanB.retireAge,
           state.endAge,
           state.equityRatio,
+          state.ssMonthlyPIA || 2500,
+          70,
           800,
-          stressMode
+          stressMode,
+          isGkEnabled
         );
       }
 
@@ -676,7 +878,7 @@
       }
     }
 
-    // High-DPI Retina Canvas Rendering with Plan A vs B Dual Corridors
+    // High-DPI Retina Canvas Rendering with Guyton-Klinger Guardrail Zones
     function drawMonteCarloCanvas(hoverAge = null) {
       const canvas = document.getElementById('mcCanvas');
       const ctx = canvas.getContext('2d');
@@ -820,7 +1022,6 @@
 
       // 3. Draw Plan B Overlapping Curve (If in Compare Mode)
       if (isCompareMode) {
-        // Plan B Corridor (Purple)
         ctx.beginPath();
         ctx.fillStyle = 'rgba(168, 85, 247, 0.12)';
         mcResultsPlanB.p90.forEach((val, i) => {
@@ -833,7 +1034,6 @@
         ctx.closePath();
         ctx.fill();
 
-        // Plan B Median Line (Glowing Purple Dashed)
         drawCurve(mcResultsPlanB.p50, '#c084fc', 'rgba(192, 132, 252, 0.8)', 2.5, true);
       }
 
@@ -1215,7 +1415,6 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      // Top Firm Header
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
       doc.text("APEX WEALTH PARTNERS RIA — CLIENT FINANCIAL AUDIT", 14, 18);
@@ -1226,29 +1425,27 @@
       doc.text(`Client: ${state.name} | Date: ${new Date().toLocaleDateString()} | Stress Mode: ${stressMode.toUpperCase()}`, 14, 25);
       doc.line(14, 28, 196, 28);
 
-      // Executive Summary
       doc.setTextColor(0);
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.text("1. Monte Carlo Probability & Retirement Guardrail Analysis", 14, 36);
+      doc.text("1. Monte Carlo Probability & Guyton-Klinger Guardrail Analysis", 14, 36);
 
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
       doc.text(`• Current Age: ${state.currentAge} | Target Retirement: Age ${state.retireAge}`, 14, 44);
       doc.text(`• Starting Liquid Assets: $${state.initialAssets.toLocaleString()}`, 14, 50);
-      doc.text(`• Annual Retirement Spending: $${state.annualSpend.toLocaleString()}/yr (Inflation Adjusted)`, 14, 56);
-      doc.text(`• 30-Year Monte Carlo Probability of Success: ${mcResults.successRate}%`, 14, 62);
-      doc.text(`• Projected Age 85 Median Portfolio: $${(mcResults.p50[mcResults.p50.length - 1] / 1000000).toFixed(2)}M`, 14, 68);
+      doc.text(`• Annual Retirement Spending: $${state.annualSpend.toLocaleString()}/yr (Guyton-Klinger Active)`, 14, 56);
+      doc.text(`• Social Security Estimated Benefit: $${state.ssMonthlyPIA.toLocaleString()}/mo claimed at Age ${state.ssClaimAge}`, 14, 62);
+      doc.text(`• 30-Year Monte Carlo Probability of Success: ${mcResults.successRate}%`, 14, 68);
+      doc.text(`• Projected Age 85 Median Portfolio: $${(mcResults.p50[mcResults.p50.length - 1] / 1000000).toFixed(2)}M`, 14, 74);
 
-      // Embed Canvas Image into PDF
       const canvas = document.getElementById('mcCanvas');
       const imgData = canvas.toDataURL('image/png');
-      doc.addImage(imgData, 'PNG', 14, 76, 180, 115);
+      doc.addImage(imgData, 'PNG', 14, 82, 180, 115);
 
-      // FINRA Compliance Audit Statement
       doc.setFontSize(8);
       doc.setTextColor(120);
-      doc.text("FINRA Rule 2214 Compliance Disclaimer: This model utilizes Geometric Brownian Motion Monte Carlo simulation with 1,000 iterations. Past performance does not guarantee future results. Sequence-of-returns stress shocks are modeled mathematically.", 14, 202, { maxWidth: 182 });
+      doc.text("FINRA Rule 2214 Compliance Disclaimer: This model utilizes Guyton-Klinger path-dependent dynamic guardrails and Geometric Brownian Motion Monte Carlo simulation with 1,000 iterations. Past performance does not guarantee future results.", 14, 204, { maxWidth: 182 });
 
       doc.save(`Veloxis_RIA_Plan_${state.name.replace(/\s+/g, '_')}_Audit.pdf`);
     }
