@@ -522,12 +522,30 @@
       }
     }
 
-    // Living Canvas Rendering: Monte Carlo Probability Corridor
-    function drawMonteCarloCanvas(hoverAge = null) {
+    // 4K Retina Display Crisp Canvas Initializer
+    function prepareCrispCanvas() {
       const canvas = document.getElementById('livingCanvas');
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.max(window.devicePixelRatio || 1, 2); // 2x+ Super-Sampling Retina Resolution
+
+      const targetW = rect.width > 0 ? rect.width : 960;
+      const targetH = rect.height > 0 ? rect.height : 400;
+
+      canvas.width = Math.round(targetW * dpr);
+      canvas.height = Math.round(targetH * dpr);
+
       const ctx = canvas.getContext('2d');
-      const w = canvas.width;
-      const h = canvas.height;
+      ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      return { canvas, ctx, w: targetW, h: targetH, dpr };
+    }
+
+    // Living Canvas Rendering: Monte Carlo Probability Corridor (4K Retina Sharp)
+    function drawMonteCarloCanvas(hoverAge = null) {
+      const { canvas, ctx, w, h } = prepareCrispCanvas();
 
       ctx.clearRect(0, 0, w, h);
 
@@ -725,12 +743,9 @@
       }
     }
 
-    // Estate & Trust Tree Topology View
+    // Estate & Trust Tree Topology View (4K Retina Sharp)
     function drawEstateCanvas() {
-      const canvas = document.getElementById('livingCanvas');
-      const ctx = canvas.getContext('2d');
-      const w = canvas.width;
-      const h = canvas.height;
+      const { canvas, ctx, w, h } = prepareCrispCanvas();
 
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = '#070b14';
@@ -815,12 +830,9 @@
       ctx.fillText('Veloxis Visual Topology • Generation-Skipping & Asset Protection Architecture', 35, h - 20);
     }
 
-    // Roth Tax Alpha Waterfall View
+    // Roth Tax Alpha Waterfall View (4K Retina Sharp)
     function drawRothCanvas() {
-      const canvas = document.getElementById('livingCanvas');
-      const ctx = canvas.getContext('2d');
-      const w = canvas.width;
-      const h = canvas.height;
+      const { canvas, ctx, w, h } = prepareCrispCanvas();
 
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = '#070b14';
@@ -857,7 +869,7 @@
         ctx.fillText(b.desc, 35, yPos + 15);
 
         const barX = 260;
-        const maxBarW = 320;
+        const maxBarW = Math.min(360, w - 300);
         const tradW = (b.tradTax / 40) * maxBarW;
         ctx.fillStyle = 'rgba(244, 63, 94, 0.85)';
         ctx.fillRect(barX, yPos - 10, tradW, 14);
@@ -895,11 +907,11 @@
 
       ctx.fillStyle = '#10b981';
       ctx.font = '700 11px Inter, sans-serif';
-      ctx.fillText('🟢 Veloxis Roth Lifetime Tax: $130,000', 290, h - 22);
+      ctx.fillText('🟢 Veloxis Roth Lifetime Tax: $130,000', Math.min(290, w / 2 - 20), h - 22);
 
       ctx.fillStyle = '#f59e0b';
       ctx.font = '700 11px Fira Code, monospace';
-      ctx.fillText('🏆 Net Savings: $352,000', 560, h - 22);
+      ctx.fillText('🏆 Net Savings: $352,000', Math.min(560, w - 200), h - 22);
     }
 
     // Switch Visual View
@@ -922,14 +934,13 @@
     function handleInspection(clientX, clientY) {
       if (state.activeTab !== 'monte') return;
       const rect = canvasElem.getBoundingClientRect();
-      const scaleX = canvasElem.width / rect.width;
-      const x = (clientX - rect.left) * scaleX;
+      const x = clientX - rect.left;
 
       const paddingLeft = 70;
       const paddingRight = 75;
-      const chartW = canvasElem.width - paddingLeft - paddingRight;
+      const chartW = rect.width - paddingLeft - paddingRight;
 
-      if (x >= paddingLeft && x <= canvasElem.width - paddingRight) {
+      if (x >= paddingLeft && x <= rect.width - paddingRight) {
         const yearRatio = (x - paddingLeft) / chartW;
         const yearIndex = Math.round(yearRatio * mcResults.years);
         const age = state.currentAge + yearIndex;
@@ -1188,6 +1199,10 @@
     window.onload = function() {
       onClientSwitch("client_sarah");
     };
+
+    window.addEventListener('resize', () => {
+      recomputeAndRender();
+    });
   </script>
 </body>
 </html>
