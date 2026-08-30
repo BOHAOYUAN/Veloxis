@@ -46,6 +46,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- D3.js & D3-Sankey for Mathematical Topological & Flow Curves -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
   <!-- jsPDF for 4K PDF Export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <!-- Supabase Cloud Client SDK -->
@@ -142,8 +145,12 @@
         <!-- Visual View Switchers -->
         <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
           <button id="tabBtnMonte" onclick="switchVisualTab('monte')" class="px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-sm transition-all flex items-center gap-1.5 text-xs">
-            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-            <span>Monte Carlo Corridor</span>
+            <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+            <span>Quantum Fan</span>
+          </button>
+          <button id="tabBtnSankey" onclick="switchVisualTab('sankey')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1.5 text-xs">
+            <i data-lucide="git-merge" class="w-3.5 h-3.5"></i>
+            <span>Sankey River</span>
           </button>
           <button id="tabBtnEstate" onclick="switchVisualTab('estate')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1.5 text-xs">
             <i data-lucide="git-branch" class="w-3.5 h-3.5"></i>
@@ -432,21 +439,27 @@
         paths.push(path);
       }
 
-      const p10 = [];
-      const p50 = [];
-      const p90 = [];
+      // Extract 20 Fine-Grained Quantiles (p5, p10, p15... p95) for Continuous Quantum Ridge Wave
+      const quantiles = [];
+      const quantileSteps = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95];
+      
+      quantileSteps.forEach(q => {
+        const qArr = [];
+        for (let y = 0; y <= totalYears; y++) {
+          const yearBalances = paths.map(p => p[y]);
+          qArr.push(trimmedPercentile(yearBalances, q));
+        }
+        quantiles.push(qArr);
+      });
 
-      for (let y = 0; y <= totalYears; y++) {
-        const yearBalances = paths.map(p => p[y]);
-        p10.push(trimmedPercentile(yearBalances, 0.10));
-        p50.push(trimmedPercentile(yearBalances, 0.50));
-        p90.push(trimmedPercentile(yearBalances, 0.90));
-      }
+      const p10 = quantiles[1]; // index 1 is 0.10
+      const p50 = quantiles[9]; // index 9 is 0.50
+      const p90 = quantiles[17]; // index 17 is 0.90
 
       const surviving = paths.filter(p => p[totalYears] > 0).length;
       const successRate = Math.round((surviving / iterations) * 100);
 
-      return { p10, p50, p90, successRate, years: totalYears, rawPaths: paths };
+      return { p10, p50, p90, quantiles, successRate, years: totalYears, rawPaths: paths };
     }
 
     // Switch Client CRM Profile
@@ -515,6 +528,8 @@
       // Render Active View
       if (state.activeTab === 'monte') {
         drawMonteCarloCanvas();
+      } else if (state.activeTab === 'sankey') {
+        drawSankeyCanvas();
       } else if (state.activeTab === 'estate') {
         drawEstateCanvas();
       } else if (state.activeTab === 'roth') {
@@ -646,22 +661,49 @@
       ctx.font = '700 10px Inter, sans-serif';
       ctx.fillText(`⚡ Retire Age ${state.retireAge}`, Math.min(retireX - 35, w - 150), paddingTop - 12);
 
-      // Shaded Corridor (p10 to p90)
-      ctx.beginPath();
-      const corridorGrad = ctx.createLinearGradient(0, paddingTop, 0, h - paddingBottom);
-      corridorGrad.addColorStop(0, 'rgba(16, 185, 129, 0.22)');
-      corridorGrad.addColorStop(1, 'rgba(16, 185, 129, 0.04)');
-      ctx.fillStyle = corridorGrad;
-      
-      p90.forEach((val, i) => {
-        if (i === 0) ctx.moveTo(getX(i), getY(val));
-        else ctx.lineTo(getX(i), getY(val));
-      });
-      for (let i = years; i >= 0; i--) {
-        ctx.lineTo(getX(i), getY(p10[i]));
+      // 1. 20-Layer Continuous Quantum Probability Fan (山脊连续概率光晕)
+      const quantiles = mcResults.quantiles || [];
+      if (quantiles.length >= 10) {
+        // Draw 10 symmetric density ribbon pairs (p45-p55, p40-p60, ... p5-p95)
+        const totalBands = Math.floor(quantiles.length / 2);
+        for (let b = 0; b < totalBands; b++) {
+          const lowerQ = quantiles[b]; // e.g. p5, p10...
+          const upperQ = quantiles[quantiles.length - 1 - b]; // e.g. p95, p90...
+          
+          // Density alpha: center is glowing emerald/cyan, outer edges fade to deep space
+          const densityFactor = (b + 1) / totalBands; // 0.1 to 1.0 (1.0 is core median)
+          const alpha = 0.03 + (densityFactor * densityFactor) * 0.16;
+
+          ctx.beginPath();
+          upperQ.forEach((val, i) => {
+            if (i === 0) ctx.moveTo(getX(i), getY(val));
+            else ctx.lineTo(getX(i), getY(val));
+          });
+          for (let i = years; i >= 0; i--) {
+            ctx.lineTo(getX(i), getY(lowerQ[i]));
+          }
+          ctx.closePath();
+
+          // Dynamic gradient for each probability ridge
+          const ridgeGrad = ctx.createLinearGradient(0, paddingTop, 0, h - paddingBottom);
+          ridgeGrad.addColorStop(0, `rgba(52, 211, 153, ${alpha * 1.2})`); // Emerald cyan
+          ridgeGrad.addColorStop(0.5, `rgba(99, 102, 241, ${alpha})`);     // Quantum Indigo
+          ridgeGrad.addColorStop(1, `rgba(16, 185, 129, ${alpha * 0.4})`);
+          ctx.fillStyle = ridgeGrad;
+          ctx.fill();
+        }
+      } else {
+        // Fallback smooth shaded corridor
+        ctx.beginPath();
+        const corridorGrad = ctx.createLinearGradient(0, paddingTop, 0, h - paddingBottom);
+        corridorGrad.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+        corridorGrad.addColorStop(1, 'rgba(16, 185, 129, 0.04)');
+        ctx.fillStyle = corridorGrad;
+        p90.forEach((val, i) => i === 0 ? ctx.moveTo(getX(i), getY(val)) : ctx.lineTo(getX(i), getY(val)));
+        for (let i = years; i >= 0; i--) ctx.lineTo(getX(i), getY(p10[i]));
+        ctx.closePath();
+        ctx.fill();
       }
-      ctx.closePath();
-      ctx.fill();
 
       // Helper for neon curves
       function drawCurve(data, color, glowColor, width, isDashed = false) {
@@ -670,24 +712,24 @@
         if (isDashed) ctx.setLineDash([5, 5]);
         ctx.strokeStyle = color;
         ctx.shadowColor = glowColor;
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 12;
         ctx.lineWidth = width;
         data.forEach((val, i) => i === 0 ? ctx.moveTo(getX(i), getY(val)) : ctx.lineTo(getX(i), getY(val)));
         ctx.stroke();
         ctx.restore();
       }
 
-      // Draw Curves
-      drawCurve(p90, '#10b981', 'rgba(16, 185, 129, 0.6)', 2.5);
-      drawCurve(p50, '#818cf8', 'rgba(129, 140, 248, 0.5)', 2.5);
-      drawCurve(p10, '#f43f5e', 'rgba(244, 63, 94, 0.4)', 2);
+      // 2. Quantum Centerline & Guardrail Trajectories
+      drawCurve(p90, '#34d399', 'rgba(52, 211, 153, 0.8)', 2.5);
+      drawCurve(p50, '#818cf8', 'rgba(129, 140, 248, 0.7)', 3.0);
+      drawCurve(p10, '#f43f5e', 'rgba(244, 63, 94, 0.6)', 2.0);
 
       if (isCompareMode) {
-        drawCurve(mcResultsPlanB.p50, '#c084fc', 'rgba(192, 132, 252, 0.8)', 2.5, true);
+        drawCurve(mcResultsPlanB.p50, '#c084fc', 'rgba(192, 132, 252, 0.9)', 2.5, true);
       }
 
-      // EndPoint Callout Badges
-      function drawEndPointBadge(val, color, bgAlpha = 0.9, yOffset = 0) {
+      // 3. EndPoint Callout Badges
+      function drawEndPointBadge(val, color, bgAlpha = 0.95, yOffset = 0) {
         const lastIdx = years;
         const lastX = getX(lastIdx);
         const lastY = getY(val) + yOffset;
@@ -695,14 +737,14 @@
 
         ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(lastX, lastY, 3.5, 0, Math.PI * 2);
+        ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = `rgba(15, 23, 42, ${bgAlpha})`;
+        ctx.fillStyle = `rgba(11, 17, 30, ${bgAlpha})`;
         ctx.strokeStyle = color;
         ctx.lineWidth = 1;
-        ctx.fillRect(lastX + 6, lastY - 9, 56, 18);
-        ctx.strokeRect(lastX + 6, lastY - 9, 56, 18);
+        ctx.fillRect(lastX + 6, lastY - 9, 58, 18);
+        ctx.strokeRect(lastX + 6, lastY - 9, 58, 18);
 
         ctx.fillStyle = color;
         ctx.font = '700 9px Fira Code, monospace';
@@ -914,11 +956,132 @@
       ctx.fillText('🏆 Net Savings: $352,000', Math.min(560, w - 200), h - 22);
     }
 
+    // Full Lifecycle Sankey Cashflow River View (4K Dynamic Stream)
+    function drawSankeyCanvas() {
+      const { canvas, ctx, w, h } = prepareCrispCanvas();
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#070b14';
+      ctx.fillRect(0, 0, w, h);
+
+      // Title & Stream Info
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 14px Inter, sans-serif';
+      ctx.fillText('Dynamic Cashflow Sankey River — Lifetime Capital Routing', 35, 34);
+
+      ctx.fillStyle = 'rgba(52, 211, 153, 0.15)';
+      ctx.fillRect(w - 240, 16, 205, 28);
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(w - 240, 16, 205, 28);
+      ctx.fillStyle = '#34d399';
+      ctx.font = '800 11px Fira Code, monospace';
+      ctx.fillText('🌊 Fluid Cash Velocity: 60fps', w - 225, 34);
+
+      // Income Sources (Left Column)
+      const annualIncome = 220000;
+      const ssIncome = (state.ssMonthlyPIA || 2500) * 12;
+      const portGrowth = Math.round(state.initialAssets * 0.075);
+      const totalIn = annualIncome + ssIncome + portGrowth;
+
+      // Expense & Asset Destinations (Right Column)
+      const spending = state.annualSpend || 80000;
+      const estTax = Math.round(annualIncome * 0.24);
+      const rothShield = state.taxSavings || 145000;
+      const trustCompound = totalIn - spending - estTax;
+
+      const sources = [
+        { label: `Salary Income ($${Math.round(annualIncome/1000)}k/yr)`, val: annualIncome, color: '#38bdf8' },
+        { label: `Social Security ($${Math.round(ssIncome/1000)}k/yr)`, val: ssIncome, color: '#fbbf24' },
+        { label: `Portfolio Yield 7.5% ($${Math.round(portGrowth/1000)}k/yr)`, val: portGrowth, color: '#34d399' }
+      ];
+
+      const destinations = [
+        { label: `Living Expenses ($${Math.round(spending/1000)}k/yr)`, val: spending, color: '#fb7185' },
+        { label: `IRS Federal Tax ($${Math.round(estTax/1000)}k/yr)`, val: estTax, color: '#f43f5e' },
+        { label: `Roth / Reinvested ($${Math.round(trustCompound/1000)}k/yr)`, val: Math.max(20000, trustCompound), color: '#818cf8' }
+      ];
+
+      const leftX = 40;
+      const midX = w / 2;
+      const rightX = w - 40;
+      const topY = 75;
+      const availableH = h - topY - 50;
+
+      // Draw Left Source Nodes
+      let currLeftY = topY;
+      sources.forEach(src => {
+        const nodeH = Math.max(22, (src.val / totalIn) * availableH);
+        src.y = currLeftY;
+        src.h = nodeH;
+
+        ctx.fillStyle = src.color;
+        ctx.fillRect(leftX, currLeftY, 12, nodeH);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 11px Inter, sans-serif';
+        ctx.fillText(src.label, leftX + 20, currLeftY + nodeH / 2 + 4);
+
+        currLeftY += nodeH + 18;
+      });
+
+      // Draw Right Destination Nodes
+      let currRightY = topY;
+      const totalDest = destinations.reduce((a, b) => a + b.val, 0);
+      destinations.forEach(dst => {
+        const nodeH = Math.max(22, (dst.val / totalDest) * availableH);
+        dst.y = currRightY;
+        dst.h = nodeH;
+
+        ctx.fillStyle = dst.color;
+        ctx.fillRect(rightX - 12, currRightY, 12, nodeH);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 11px Inter, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(dst.label, rightX - 20, currRightY + nodeH / 2 + 4);
+        ctx.textAlign = 'left';
+
+        currRightY += nodeH + 18;
+      });
+
+      // Draw Dynamic Fluid Curved Streams between Sources & Destinations
+      sources.forEach((src, sIdx) => {
+        destinations.forEach((dst, dIdx) => {
+          const streamWeight = (src.val * dst.val) / (totalIn * totalDest);
+          const ribbonH = Math.max(4, streamWeight * availableH * 0.9);
+
+          const sY = src.y + src.h * 0.5;
+          const dY = dst.y + dst.h * 0.5;
+
+          const grad = ctx.createLinearGradient(leftX, 0, rightX, 0);
+          grad.addColorStop(0, src.color.replace('rgb', 'rgba').replace(')', ', 0.35)'));
+          grad.addColorStop(1, dst.color.replace('rgb', 'rgba').replace(')', ', 0.35)'));
+
+          ctx.beginPath();
+          ctx.moveTo(leftX + 12, sY - ribbonH / 2);
+          ctx.bezierCurveTo(midX - 60, sY, midX + 60, dY, rightX - 12, dY - ribbonH / 2);
+          ctx.lineTo(rightX - 12, dY + ribbonH / 2);
+          ctx.bezierCurveTo(midX + 60, dY + ribbonH / 2, midX - 60, sY + ribbonH / 2, leftX + 12, sY + ribbonH / 2);
+          ctx.closePath();
+
+          ctx.fillStyle = grad;
+          ctx.fill();
+        });
+      });
+
+      // Bottom Legend Tag
+      ctx.fillStyle = '#64748b';
+      ctx.font = '500 10px Fira Code, monospace';
+      ctx.fillText('Veloxis Fluid Sankey Engine • Continuous Income-to-Destination Cashflow Stream', 35, h - 18);
+    }
+
     // Switch Visual View
     function switchVisualTab(tabKey) {
       state.activeTab = tabKey;
-      ['Monte', 'Estate', 'Roth'].forEach(t => {
+      ['Monte', 'Sankey', 'Estate', 'Roth'].forEach(t => {
         const btn = document.getElementById('tabBtn' + t);
+        if (!btn) return;
         if (t.toLowerCase() === tabKey) {
           btn.className = 'px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-sm transition-all flex items-center gap-1.5 text-xs';
         } else {
