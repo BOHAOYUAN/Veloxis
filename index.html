@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Veloxis AI — Professional RIA Wealth & Monte Carlo Platform</title>
+  <title>Veloxis AI — Living Financial Canvas & Conversational Wealth Protocol</title>
   
   <!-- PWA & Mobile Web App Meta Tags -->
   <link rel="manifest" href="/manifest.json">
@@ -53,29 +53,19 @@
 
   <style>
     body {
-      background: #070a12;
+      background: #060911;
       color: #f3f4f6;
       font-family: 'Inter', sans-serif;
       touch-action: manipulation;
     }
     .glass-panel {
-      background: rgba(13, 19, 33, 0.85);
+      background: rgba(11, 17, 30, 0.85);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.07);
     }
     .glow-emerald {
-      box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.3);
-    }
-    .glow-purple {
-      box-shadow: 0 0 40px -10px rgba(168, 85, 247, 0.3);
-    }
-    .glow-red {
-      box-shadow: 0 0 40px -10px rgba(244, 63, 94, 0.4);
-    }
-    input[type=range] {
-      accent-color: #10b981;
-      touch-action: none;
+      box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.25);
     }
     .custom-scroll::-webkit-scrollbar {
       width: 4px;
@@ -87,29 +77,29 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white pb-6">
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
 
-  <!-- ================= TOP HEADER / NAVIGATION ================= -->
-  <header class="w-full border-b border-slate-800/80 glass-panel sticky top-0 z-50 py-2.5 px-3 sm:px-4 lg:px-8 flex items-center justify-between gap-3">
+  <!-- ================= TOP RIA FIRM & CLIENT STATUS HEADER ================= -->
+  <header class="w-full border-b border-slate-800/80 glass-panel sticky top-0 z-50 py-2.5 px-3 sm:px-6 flex items-center justify-between gap-3">
+    <!-- Brand & Protocol Label -->
     <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
-      <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-indigo-500 p-0.5 shadow-lg flex items-center justify-center">
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-indigo-500 p-0.5 shadow-lg flex items-center justify-center">
         <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-          <i data-lucide="shield-check" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400"></i>
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
         </div>
       </div>
       <div>
         <h1 class="text-sm sm:text-base font-black tracking-tight font-outfit text-white flex items-center gap-1.5 sm:gap-2">
           <span>VELOXIS</span>
-          <span class="text-[9px] sm:text-[10px] font-mono px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40">RIA Suite</span>
-          <span class="text-[9px] sm:text-[10px] font-mono px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-500/40 hidden sm:inline-block">Groq 0.08s</span>
+          <span class="text-[9px] sm:text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40">Protocol 3.0</span>
+          <span class="text-[9px] sm:text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-500/40 hidden sm:inline-block">Groq 0.08s</span>
         </h1>
       </div>
     </div>
 
-    <!-- Client CRM Selector & Mode Toggles -->
-    <div class="flex items-center gap-2 sm:gap-3 flex-1 max-w-md justify-center">
-      <!-- CRM Switcher -->
-      <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 px-2.5 py-1 rounded-xl text-xs">
+    <!-- Active Client Profile Selector -->
+    <div class="flex items-center gap-2 max-w-sm justify-center">
+      <div class="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-800 text-xs">
         <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
         <select id="clientSelector" onchange="onClientSwitch(this.value)" class="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px] sm:text-xs">
           <option value="client_sarah" class="bg-slate-900 text-white">Sarah Lin (Age 35, $500k)</option>
@@ -117,322 +107,163 @@
           <option value="client_chang" class="bg-slate-900 text-white">Michael Chang (Age 58, $2.8M HNW)</option>
         </select>
       </div>
-
-      <!-- Comparison Toggle -->
-      <button id="btnCompareToggle" onclick="toggleComparisonMode()" class="px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] text-slate-300 font-bold transition-all flex items-center gap-1 shrink-0">
-        <i data-lucide="git-compare" class="w-3 h-3 text-indigo-400"></i>
-        <span id="lblCompareToggle">Plan A vs B</span>
-      </button>
     </div>
 
-    <!-- Right Actions: Latency & 4K PDF -->
+    <!-- Right Actions: KPIs, PDF & Widget Embed -->
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-      <div class="hidden md:flex items-center gap-1.5 text-xs font-mono text-slate-300 bg-slate-900/90 px-2.5 py-1.5 rounded-xl border border-slate-800">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="text-slate-400">p50:</span>
-        <strong class="text-emerald-400" id="latencyBadge">84ms</strong>
+      <div class="hidden lg:flex items-center gap-3 text-xs font-mono text-slate-300 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Success:</span>
+          <strong class="text-emerald-400" id="valMcSuccess">96%</strong>
+        </span>
+        <span class="text-slate-600">|</span>
+        <span>Median: <strong class="text-indigo-300" id="valMedianP50">$1.84M</strong></span>
+        <span class="text-slate-600">|</span>
+        <span class="text-slate-400">p50: <strong class="text-emerald-400" id="latencyBadge">84ms</strong></span>
       </div>
 
-      <button onclick="exportPdfReport()" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-[11px] sm:text-xs shadow-md transition-all active:scale-95 flex items-center gap-1">
+      <button onclick="exportPdfReport()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center gap-1.5">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
-        <span>Export 4K PDF</span>
+        <span class="hidden sm:inline">Export Audit PDF</span>
+        <span class="sm:hidden">PDF</span>
       </button>
     </div>
   </header>
 
-  <!-- ================= MAIN WORKSPACE GRID (12 Cols) ================= -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
+  <!-- ================= MAIN TWO-STORY WORKSPACE ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 flex flex-col gap-4">
 
-    <!-- ================= LEFT PANEL: INTAKE, GUYTON-KLINGER & SOCIAL SECURITY (5 Cols) ================= -->
-    <section class="lg:col-span-5 flex flex-col gap-3.5 sm:gap-4 order-2 lg:order-1">
+    <!-- ================= UPPER DECK: THE LIVING ADAPTIVE QUANT CANVAS (55% Height) ================= -->
+    <section class="glass-panel rounded-2xl border border-slate-800/90 relative overflow-hidden shadow-2xl flex flex-col">
       
-      <!-- 1. Conversational Intake & Live Voice Dictation Box -->
-      <div class="glass-panel rounded-2xl p-3.5 sm:p-4 border border-emerald-500/40 flex flex-col gap-2.5 sm:gap-3 shadow-xl glow-emerald relative overflow-hidden">
-        
-        <div class="flex flex-col gap-2">
-          <div class="flex items-center justify-between">
-            <label class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-              <i data-lucide="message-square" class="w-3.5 h-3.5 text-emerald-400"></i>
-              Conversational Intake (Prompt / Speech)
-            </label>
-            
-            <!-- Voice Meeting Dictation Button -->
-            <button id="btnVoiceDictation" onclick="toggleVoiceDictation()" class="px-2 py-0.5 rounded-full bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono flex items-center gap-1 transition-all active:scale-95">
-              <i data-lucide="mic" class="w-3 h-3 text-emerald-400" id="micIcon"></i>
-              <span id="lblVoice">🎙️ Voice Dictate</span>
-            </button>
-          </div>
-
-          <!-- Quick Presets -->
-          <div class="flex flex-wrap gap-1.5">
-            <button onclick="loadPresetPrompt('retire')" class="px-2 py-1 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 text-[10px] sm:text-[11px] font-mono text-emerald-300 border border-emerald-500/40 transition-all flex items-center gap-1 active:scale-95">
-              <span>📈 35yo $500k Guardrail</span>
-            </button>
-            <button onclick="loadPresetPrompt('roth')" class="px-2 py-1 rounded-lg bg-purple-950/80 hover:bg-purple-900 text-[10px] sm:text-[11px] font-mono text-purple-300 border border-purple-500/40 transition-all flex items-center gap-1 active:scale-95">
-              <span>🧠 Roth Optimization</span>
-            </button>
-            <button onclick="loadPresetPrompt('estate')" class="px-2 py-1 rounded-lg bg-amber-950/80 hover:bg-amber-900 text-[10px] sm:text-[11px] font-mono text-amber-300 border border-amber-500/40 transition-all flex items-center gap-1 active:scale-95">
-              <span>🛡️ Trust & Estate Tree</span>
-            </button>
-          </div>
+      <!-- Living Canvas Top Control Strip -->
+      <div class="p-3 sm:px-5 sm:py-3 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-2 bg-slate-950/60">
+        <!-- Visual View Switchers -->
+        <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
+          <button id="tabBtnMonte" onclick="switchVisualTab('monte')" class="px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-sm transition-all flex items-center gap-1.5 text-xs">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+            <span>Monte Carlo Corridor</span>
+          </button>
+          <button id="tabBtnEstate" onclick="switchVisualTab('estate')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1.5 text-xs">
+            <i data-lucide="git-branch" class="w-3.5 h-3.5"></i>
+            <span>Estate Tree</span>
+          </button>
+          <button id="tabBtnRoth" onclick="switchVisualTab('roth')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1.5 text-xs">
+            <i data-lucide="percent" class="w-3.5 h-3.5"></i>
+            <span>Roth Tax Alpha</span>
+          </button>
         </div>
 
-        <!-- Prompt Textarea -->
-        <div class="relative">
-          <textarea id="promptInput" rows="3"
-            placeholder="e.g. 'Age 35, $500k savings, retire at 55 spending $80k/yr with 80% stock allocation and $145k Roth conversion...'"
-            class="w-full bg-slate-950/90 border border-emerald-500/30 rounded-xl p-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-500/40 transition-all resize-none shadow-inner font-sans leading-relaxed"></textarea>
-        </div>
-
-        <!-- Execute Button -->
-        <button id="btnGenerate" onclick="generatePlan()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-white font-black text-xs flex items-center justify-center gap-2 transition-all active:scale-[0.99] shadow-lg">
-          <i data-lucide="zap" class="w-4 h-4 text-amber-300"></i>
-          <span id="lblGenerateBtn">⚡ Extract & Recompute Model (0.08s)</span>
-        </button>
-      </div>
-
-      <!-- 2. 🛡️ Guyton-Klinger Guardrails & Social Security Optimizer -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <!-- Guyton-Klinger Protocol Card -->
-        <div class="glass-panel rounded-2xl p-3 border border-indigo-500/30 flex flex-col justify-between gap-2 shadow-lg">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-indigo-300 flex items-center gap-1">
-              <i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-400"></i> Guyton-Klinger
-            </span>
-            <button id="btnGkToggle" onclick="toggleGkProtocol()" class="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono font-bold">
-              ACTIVE
-            </button>
-          </div>
-          <p class="text-[10px] text-slate-400 leading-tight">
-            Dynamic spending: cuts -10% in severe downturns, unlocks +10% prosperity bonus in bull markets.
-          </p>
-          <div class="text-[9px] font-mono text-emerald-400 flex items-center justify-between border-t border-slate-800 pt-1.5">
-            <span>Capital Preservation</span>
-            <span>+18% Success Alpha</span>
-          </div>
-        </div>
-
-        <!-- Social Security Claiming Age Card -->
-        <div class="glass-panel rounded-2xl p-3 border border-amber-500/30 flex flex-col justify-between gap-2 shadow-lg">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-amber-300 flex items-center gap-1">
-              <i data-lucide="landmark" class="w-3.5 h-3.5 text-amber-400"></i> Social Security
-            </span>
-            <span class="text-[10px] font-mono text-slate-300" id="ssMonthlyTag">$2,500/mo</span>
-          </div>
-          <div class="grid grid-cols-3 gap-1">
-            <button onclick="setSSClaimAge(62)" id="ssBtn_62" class="py-1 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 text-[10px] font-bold text-center">
-              Age 62 (-30%)
-            </button>
-            <button onclick="setSSClaimAge(67)" id="ssBtn_67" class="py-1 rounded-lg bg-amber-950 text-amber-300 border border-amber-500/60 text-[10px] font-bold text-center">
-              Age 67 (FRA)
-            </button>
-            <button onclick="setSSClaimAge(70)" id="ssBtn_70" class="py-1 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 text-[10px] font-bold text-center">
-              Age 70 (+24%)
-            </button>
-          </div>
-          <div class="text-[9px] font-mono text-slate-400 flex items-center justify-between border-t border-slate-800 pt-1.5">
-            <span>Breakeven: Age 78.4</span>
-            <span class="text-amber-400" id="ssAnnualBenefitTag">+$30,000/yr</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. 📉 FINRA Regulatory Stress Test Suite -->
-      <div class="glass-panel rounded-2xl p-3 sm:p-3.5 border border-slate-800 flex flex-col gap-2 shadow-lg">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-400"></i> FINRA Stress Test Suite
+        <!-- Dynamic Quantitative Status Badges -->
+        <div class="flex items-center gap-2 text-[11px] font-mono flex-wrap">
+          <span id="badgeGK" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+            <i data-lucide="shield" class="w-3 h-3 text-emerald-400"></i>
+            <span>Guyton-Klinger: ACTIVE</span>
           </span>
-          <span class="text-[9px] font-mono text-slate-400" id="stressTestStatusTag">Baseline Normal</span>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-          <button onclick="setStressMode('none')" id="stressBtn_none" class="px-2 py-1.5 rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-500/50 text-[10px] font-bold text-center transition-all">
-            Normal Market
-          </button>
-          <button onclick="setStressMode('gfc2008')" id="stressBtn_gfc2008" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-[10px] font-bold text-center transition-all">
-            🔴 2008 GFC (-38%)
-          </button>
-          <button onclick="setStressMode('dotcom')" id="stressBtn_dotcom" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-[10px] font-bold text-center transition-all">
-            🟠 2000 DotCom
-          </button>
-          <button onclick="setStressMode('stagflation')" id="stressBtn_stagflation" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-[10px] font-bold text-center transition-all">
-            🟣 Stagflation (8%)
-          </button>
-        </div>
-      </div>
-
-      <!-- 4. 🎛️ Live Scenario Tweaker (Plan A Sliders) -->
-      <div class="glass-panel rounded-2xl p-3.5 sm:p-4 border border-slate-800 flex flex-col gap-3 shadow-lg">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-          <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-            <i data-lucide="sliders" class="w-3.5 h-3.5 text-indigo-400"></i> Plan Parameters (60fps Re-Sim)
+          <span id="badgeSS" class="px-2.5 py-1 rounded-lg bg-amber-950 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+            <i data-lucide="landmark" class="w-3 h-3 text-amber-400"></i>
+            <span>SS: Age 67 ($2.5k/mo)</span>
           </span>
-          <span class="text-[9px] sm:text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">1,000 Paths</span>
+          <span id="badgeStress" class="px-2.5 py-1 rounded-lg bg-slate-900 text-slate-300 border border-slate-700 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span>Stress: Baseline Normal</span>
+          </span>
         </div>
-
-        <!-- Slider 1: Starting Liquid Assets -->
-        <div class="flex flex-col gap-1">
-          <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Starting Portfolio</span>
-            <span class="font-mono font-bold text-white" id="lblAssetVal">$500,000</span>
-          </div>
-          <input type="range" id="sliderAssets" min="100000" max="3000000" step="50000" value="500000"
-            class="w-full h-2.5 sm:h-1.5 py-1 bg-slate-800 rounded-lg cursor-pointer" oninput="onLiveParamChange()">
-        </div>
-
-        <!-- Slider 2: Retirement Age -->
-        <div class="flex flex-col gap-1">
-          <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Target Retirement Age</span>
-            <span class="font-mono font-bold text-indigo-300" id="lblRetireAgeVal">Age 55</span>
-          </div>
-          <input type="range" id="sliderRetireAge" min="40" max="70" step="1" value="55"
-            class="w-full h-2.5 sm:h-1.5 py-1 bg-slate-800 rounded-lg cursor-pointer" oninput="onLiveParamChange()">
-        </div>
-
-        <!-- Slider 3: Annual Retirement Spending -->
-        <div class="flex flex-col gap-1">
-          <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Annual Retirement Spend</span>
-            <span class="font-mono font-bold text-amber-300" id="lblSpendVal">$80,000/yr</span>
-          </div>
-          <input type="range" id="sliderSpend" min="30000" max="250000" step="5000" value="80000"
-            class="w-full h-2.5 sm:h-1.5 py-1 bg-slate-800 rounded-lg cursor-pointer" oninput="onLiveParamChange()">
-        </div>
-
-        <!-- Slider 4: Asset Allocation (Equity vs Fixed Income) -->
-        <div class="flex flex-col gap-1">
-          <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Asset Allocation</span>
-            <span class="font-mono font-bold text-emerald-400" id="lblEquityVal">75% Equity / 25% Bond</span>
-          </div>
-          <input type="range" id="sliderEquity" min="0.2" max="1.0" step="0.05" value="0.75"
-            class="w-full h-2.5 sm:h-1.5 py-1 bg-slate-800 rounded-lg cursor-pointer" oninput="onLiveParamChange()">
-        </div>
-
       </div>
 
-      <!-- 5. Key Financial Output Metrics Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div class="p-2.5 sm:p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
-          <div class="text-[9px] sm:text-[10px] font-mono text-slate-400">Monte Carlo Rate</div>
-          <div class="text-base sm:text-lg font-black text-emerald-400 font-mono mt-0.5" id="valMcSuccess">96%</div>
-          <div class="text-[8px] sm:text-[9px] text-emerald-400/80" id="valMcLabel">High Confidence</div>
-        </div>
+      <!-- Canvas Render Stage -->
+      <div class="relative w-full h-[360px] sm:h-[400px] bg-[#070b14] flex justify-center items-center overflow-hidden">
+        <canvas id="livingCanvas" width="960" height="400" class="w-full h-full cursor-crosshair touch-none"></canvas>
 
-        <div class="p-2.5 sm:p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
-          <div class="text-[9px] sm:text-[10px] font-mono text-slate-400">Age 85 Median</div>
-          <div class="text-base sm:text-lg font-black text-indigo-300 font-mono mt-0.5" id="valMedianP50">$1.84M</div>
-          <div class="text-[8px] sm:text-[9px] text-slate-400">50th Percentile</div>
+        <!-- Live Hover / Touch Tooltip -->
+        <div id="canvasTooltip" class="hidden absolute top-4 right-4 bg-slate-900/95 border border-slate-700/80 rounded-xl p-3 text-xs font-mono shadow-2xl backdrop-blur-md pointer-events-none z-20">
+          <div class="text-[10px] text-slate-400 mb-1" id="ttAge">Simulation Point: Age 65</div>
+          <div class="text-emerald-400 font-bold" id="ttP90">90% Bull: $3.12M</div>
+          <div class="text-indigo-300 font-bold" id="ttP50">50% Base: $1.84M</div>
+          <div class="text-rose-400 font-bold" id="ttP10">10% Bear: $640k</div>
         </div>
+      </div>
 
-        <div class="p-2.5 sm:p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
-          <div class="text-[9px] sm:text-[10px] font-mono text-slate-400">Roth Tax Saved</div>
-          <div class="text-base sm:text-lg font-black text-amber-400 font-mono mt-0.5" id="valRothSaved">$145,000</div>
-          <div class="text-[8px] sm:text-[9px] text-slate-400">Legacy Alpha</div>
+      <!-- Canvas Bottom Quick Metrics Strip -->
+      <div class="p-2.5 px-4 bg-slate-950/80 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] font-mono text-slate-400">
+        <div class="flex items-center gap-4 flex-wrap">
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-emerald-500 rounded-full inline-block shadow-[0_0_8px_#10b981]"></span> 90% Bull Corridor</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-indigo-500 rounded-full inline-block shadow-[0_0_8px_#818cf8]"></span> 50% Median Trajectory</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-rose-500 rounded-full inline-block"></span> 10% Bear Floor Guardrail</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 border-t border-dashed border-amber-400 inline-block"></span> 4% SWR Safe Harbor</span>
         </div>
-
-        <div class="p-2.5 sm:p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
-          <div class="text-[9px] sm:text-[10px] font-mono text-slate-400">Safe Floor Spend</div>
-          <div class="text-base sm:text-lg font-black text-white font-mono mt-0.5" id="valSafeFloor">$64,000</div>
-          <div class="text-[8px] sm:text-[9px] text-slate-400">GK Guardrail Low</div>
-        </div>
+        <span class="text-slate-500 hidden md:inline">Drag cursor/touch over canvas for year-by-year inspection</span>
       </div>
 
     </section>
 
-    <!-- ================= RIGHT PANEL: MULTI-TAB VISUAL SIMULATION STUDIO (7 Cols) ================= -->
-    <section class="lg:col-span-7 flex flex-col gap-4 order-1 lg:order-2">
+    <!-- ================= LOWER DECK: CONVERSATIONAL EXECUTION PROTOCOL STREAM (40% Height) ================= -->
+    <section class="glass-panel rounded-2xl p-4 border border-emerald-500/30 flex flex-col gap-3 shadow-xl glow-emerald relative">
       
-      <div class="glass-panel rounded-2xl p-3 sm:p-5 border border-slate-800 flex flex-col gap-3 sm:gap-4 relative overflow-hidden shadow-2xl">
-        
-        <!-- Tab Navigation Bar -->
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5 sm:pb-3">
-          <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800/80 text-xs font-bold overflow-x-auto max-w-full">
-            <button id="tabBtnMonte" onclick="switchVisualTab('monte')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-sm transition-all flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs shrink-0">
-              <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-              <span>Monte Carlo</span>
-            </button>
-            <button id="tabBtnEstate" onclick="switchVisualTab('estate')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs shrink-0">
-              <i data-lucide="git-branch" class="w-3.5 h-3.5"></i>
-              <span>Estate Tree</span>
-            </button>
-            <button id="tabBtnRoth" onclick="switchVisualTab('roth')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs shrink-0">
-              <i data-lucide="percent" class="w-3.5 h-3.5"></i>
-              <span>Roth Optimizer</span>
-            </button>
+      <!-- Conversational Living Timeline / Audit Stream -->
+      <div id="protocolStream" class="flex flex-col gap-2.5 max-h-[160px] overflow-y-auto custom-scroll pr-1">
+        <!-- Initial Welcoming Bubble -->
+        <div class="flex gap-2.5 items-start">
+          <div class="w-6 h-6 rounded-lg bg-emerald-950 border border-emerald-500/50 flex items-center justify-center shrink-0 mt-0.5">
+            <i data-lucide="bot" class="w-3.5 h-3.5 text-emerald-400"></i>
           </div>
-
-          <!-- Comparison Mode Active Pill -->
-          <div id="comparisonActiveBadge" class="hidden flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-500/40 animate-pulse">
-            <span>🔀 Plan A (Green) vs Plan B (Purple)</span>
-          </div>
-        </div>
-
-        <!-- VIEW 1: MONTE CARLO CANVAS CONTAINER -->
-        <div id="viewMonteCarlo" class="flex flex-col gap-2.5 sm:gap-3">
-          <div class="w-full bg-slate-950 rounded-xl p-1.5 sm:p-2 border border-slate-800/90 relative flex justify-center overflow-hidden">
-            <canvas id="mcCanvas" width="640" height="420" class="w-full h-auto rounded-lg cursor-crosshair touch-none"></canvas>
+          <div class="flex flex-col gap-1.5 flex-1 bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl text-xs">
+            <div class="flex items-center justify-between text-[10px] text-slate-400">
+              <span class="font-bold text-emerald-400">VELOXIS CORE PROTOCOL</span>
+              <span class="font-mono">Ready • 0.08s LPU</span>
+            </div>
+            <p class="text-slate-200 leading-relaxed">
+              已载入客户 <strong>Sarah Lin ($500,000 Portfolio)</strong> 财务模型。当前 35 岁，目标 55 岁退休，年支出 $80,000。蒙特卡洛基准成功率 <strong>96%</strong>，已启用 Guyton-Klinger 动态提款防线。
+            </p>
             
-            <!-- Live Hover / Touch Tooltip -->
-            <div id="canvasTooltip" class="hidden absolute top-3 right-3 sm:top-4 sm:right-4 bg-slate-900/95 border border-slate-700/80 rounded-xl p-2 sm:p-2.5 text-[10px] sm:text-xs font-mono shadow-2xl backdrop-blur-md pointer-events-none z-10">
-              <div class="text-[9px] sm:text-[10px] text-slate-400 mb-0.5 sm:mb-1" id="ttAge">Age 65</div>
-              <div class="text-emerald-400 font-bold" id="ttP90">Plan A 90% Bull: $3.12M</div>
-              <div class="text-indigo-300 font-bold" id="ttP50">Plan A 50% Base: $1.84M</div>
-              <div class="text-rose-400 font-bold" id="ttP10">Plan A 10% Bear: $640k</div>
-              <div class="text-purple-300 font-bold hidden" id="ttPlanB">Plan B: $2.45M</div>
-            </div>
-          </div>
-
-          <!-- Chart Legend & Color Identifiers -->
-          <div class="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 px-1 text-[10px] sm:text-[11px] font-mono text-slate-400">
-            <div class="flex items-center gap-3 sm:gap-4 flex-wrap">
-              <span class="flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-emerald-500 rounded-full inline-block shadow-[0_0_8px_#10b981]"></span> Plan A 90% Bull</span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-indigo-500 rounded-full inline-block shadow-[0_0_8px_#818cf8]"></span> Plan A 50% Median</span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-rose-500 rounded-full inline-block"></span> Plan A 10% Bear</span>
-              <span id="legendPlanB" class="hidden flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-purple-500 rounded-full inline-block shadow-[0_0_8px_#a855f7]"></span> Plan B Median (Retire 60)</span>
-            </div>
-            <span class="text-slate-500 hidden md:inline">Drag finger / cursor to inspect simulation points</span>
-          </div>
-        </div>
-
-        <!-- VIEW 2: ESTATE & TRUST FLOWCHART (Canvas Tree) -->
-        <div id="viewEstateTree" class="hidden flex flex-col gap-3">
-          <div class="w-full bg-slate-950 rounded-xl p-2 sm:p-4 border border-slate-800/90 relative flex justify-center">
-            <canvas id="estateCanvas" width="640" height="420" class="w-full h-auto rounded-lg"></canvas>
-          </div>
-          <div class="p-2.5 sm:p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] sm:text-xs text-slate-300 flex justify-between items-center">
-            <span>🛡️ Generation-Skipping Trust Active</span>
-            <span class="font-mono text-amber-400">$2,500,000 Shielded</span>
-          </div>
-        </div>
-
-        <!-- VIEW 3: ROTH TAX OPTIMIZER -->
-        <div id="viewRothOptimizer" class="hidden flex flex-col gap-3">
-          <div class="w-full bg-slate-950 rounded-xl p-2 sm:p-4 border border-slate-800/90 relative flex justify-center">
-            <canvas id="rothCanvas" width="640" height="420" class="w-full h-auto rounded-lg"></canvas>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs">
-            <div class="p-2.5 sm:p-3 rounded-xl bg-rose-950/40 border border-rose-800/40 text-rose-200">
-              <div class="font-bold mb-0.5 text-xs">❌ Traditional Pre-Tax IRA Trap</div>
-              <div class="text-[10px] sm:text-[11px] text-slate-400">RMDs at age 73 trigger 37% federal tax bracket spikes.</div>
-            </div>
-            <div class="p-2.5 sm:p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/40 text-emerald-200">
-              <div class="font-bold mb-0.5 text-xs">⚡ Veloxis Roth Conversion Window</div>
-              <div class="text-[10px] sm:text-[11px] text-slate-400">Converts assets in the 12-22% bracket between ages 55-65.</div>
+            <!-- Dynamic Action Capsules (交互动作胶囊) -->
+            <div class="flex flex-wrap gap-1.5 pt-1" id="initialActionPills">
+              <button onclick="dispatchProtocolCommand('注入 2008 年金融危机压力测试')" class="px-2.5 py-1 rounded-lg bg-rose-950/70 hover:bg-rose-900 border border-rose-500/40 text-rose-300 text-[10px] font-mono transition-all flex items-center gap-1 active:scale-95">
+                <span>🔴 注入 2008 GFC 压力测试</span>
+              </button>
+              <button onclick="dispatchProtocolCommand('对比 58 岁退休方案 B')" class="px-2.5 py-1 rounded-lg bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-500/40 text-indigo-300 text-[10px] font-mono transition-all flex items-center gap-1 active:scale-95">
+                <span>🔀 对比 58 岁退休 (Plan B)</span>
+              </button>
+              <button onclick="dispatchProtocolCommand('查看 Roth 避税和信托规划')" class="px-2.5 py-1 rounded-lg bg-purple-950/70 hover:bg-purple-900 border border-purple-500/40 text-purple-300 text-[10px] font-mono transition-all flex items-center gap-1 active:scale-95">
+                <span>🧠 查看 Roth 终身避税 (+$145k)</span>
+              </button>
+              <button onclick="dispatchProtocolCommand('叠加上 70 岁顶格 Social Security')" class="px-2.5 py-1 rounded-lg bg-amber-950/70 hover:bg-amber-900 border border-amber-500/40 text-amber-300 text-[10px] font-mono transition-all flex items-center gap-1 active:scale-95">
+                <span>🏛️ 叠加 70 岁顶格社保 (+24%)</span>
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
+      <!-- Command Input & Voice Bar -->
+      <div class="flex items-center gap-2 pt-1 border-t border-slate-800/80">
+        <!-- Voice Dictation Button -->
+        <button id="btnVoiceDictation" onclick="toggleVoiceDictation()" class="px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-900 text-emerald-300 border border-emerald-500/40 text-xs font-mono flex items-center gap-1.5 transition-all shrink-0 active:scale-95">
+          <i data-lucide="mic" class="w-4 h-4 text-emerald-400" id="micIcon"></i>
+          <span id="lblVoice" class="hidden sm:inline">🎙️ Voice Dictate</span>
+        </button>
+
+        <!-- Natural Language Prompt Textbox -->
+        <div class="relative flex-1">
+          <input type="text" id="promptInput"
+            placeholder="Talk to Veloxis: e.g. 'What if she retires at 58 and spends $90k/yr during a 2008 market crash?'"
+            class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-500/40 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none font-sans"
+            onkeydown="if(event.key==='Enter') executeProtocol()">
+        </div>
+
+        <!-- Execute Button -->
+        <button id="btnExecute" onclick="executeProtocol()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg transition-all shrink-0 active:scale-95">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-300"></i>
+          <span id="lblExecute">Execute (0.08s)</span>
+        </button>
       </div>
 
     </section>
 
   </main>
 
-  <!-- ================= QUANT ENGINE & VISUAL RENDERING JS ================= -->
+  <!-- ================= QUANT ENGINE & LIVING PROTOCOL JS ================= -->
   <script>
     lucide.createIcons();
 
@@ -450,7 +281,7 @@
       console.warn('Supabase initialization fallback to LocalStorage:', err);
     }
 
-    // Client CRM Profiles Database (With LocalStorage + Supabase Cloud Persistence)
+    // Client CRM Profiles Database
     const clientDatabase = {
       client_sarah: {
         name: "Sarah Lin",
@@ -498,19 +329,18 @@
     // Core Financial Planning State (Plan A)
     let state = { ...clientDatabase[activeClientId], activeTab: 'monte' };
 
-    // Plan B State (For Scenario Comparison)
+    // Plan B State
     let statePlanB = {
-      retireAge: 60,
-      annualSpend: 90000,
+      retireAge: 58,
+      annualSpend: 85000,
       equityRatio: 0.80,
       ssClaimAge: 70
     };
 
-    // Cache of computed percentile paths
     let mcResults = { p10: [], p50: [], p90: [], successRate: 96, years: 50, rawPaths: [] };
     let mcResultsPlanB = { p10: [], p50: [], p90: [], successRate: 99, years: 50 };
 
-    // Box-Muller Gaussian Random Variable Generator
+    // Gaussian Random Variable Generator
     function gaussianRandom() {
       let u = 0, v = 0;
       while (u === 0) u = Math.random();
@@ -528,7 +358,7 @@
       return trimmed[idx];
     }
 
-    // High-Performance Monte Carlo Engine with Guyton-Klinger Guardrails & Social Security
+    // High-Performance Monte Carlo Engine with Guyton-Klinger & Social Security
     function runMonteCarlo(initialAssets, annualSpend, currentAge, retireAge, endAge, equity, ssPIA = 2500, ssClaimAge = 67, iterations = 1000, stress = 'none', useGK = true) {
       const totalYears = endAge - currentAge;
       const retireYears = Math.max(0, retireAge - currentAge);
@@ -541,15 +371,12 @@
       let bdVol = 0.045;
       let inflation = 0.024;
 
-      // Calculate Social Security Annual Income based on Claiming Age
-      // 62: -30% | 67 (FRA): 100% | 70: +24%
       let ssMultiplier = 1.0;
       if (ssClaimAge <= 62) ssMultiplier = 0.70;
       else if (ssClaimAge >= 70) ssMultiplier = 1.24;
       else ssMultiplier = 0.70 + ((ssClaimAge - 62) / 5) * 0.30;
       const annualSSBenefit = ssPIA * 12 * ssMultiplier;
 
-      // Apply FINRA Stress Shocks
       if (stress === 'stagflation') {
         inflation = 0.080;
         eqExpReturn = 0.020;
@@ -570,7 +397,6 @@
         for (let y = 1; y <= totalYears; y++) {
           let annualReturn = 0;
 
-          // Injected Sequence-of-Returns Crisis Shocks at Retirement
           if (stress === 'gfc2008' && y === retireYears + 1) {
             annualReturn = -0.385 * equity - 0.05 * (1 - equity);
           } else if (stress === 'dotcom' && (y >= retireYears + 1 && y <= retireYears + 3)) {
@@ -582,29 +408,20 @@
 
           balance = balance * (1 + annualReturn);
 
-          // If Retired, execute Dynamic Spending / Guyton-Klinger Guardrails
           if (y > retireYears) {
-            // Inflate spending baseline
             pathSpend = pathSpend * (1 + inflation);
 
-            // Guyton-Klinger Capital Preservation & Prosperity Rules
             if (useGK && balance > 0) {
               const currentWithdrawalRate = pathSpend / balance;
-
-              // Capital Preservation Rule: If market dropped & CWR > 1.2 * IWR, cut spending by 10%
               if (prevReturn < 0 && currentWithdrawalRate > initialWithdrawalRate * 1.20) {
                 pathSpend = pathSpend * 0.90;
-              }
-              // Prosperity Rule: If market gained & CWR < 0.8 * IWR, reward client +10% bonus
-              else if (prevReturn > 0 && currentWithdrawalRate < initialWithdrawalRate * 0.80) {
+              } else if (prevReturn > 0 && currentWithdrawalRate < initialWithdrawalRate * 0.80) {
                 pathSpend = pathSpend * 1.10;
               }
             }
 
-            // Social Security cashflow offsets required portfolio withdrawal
             const ssIncomeThisYear = (y >= ssClaimYears) ? annualSSBenefit * Math.pow(1 + inflation, y - ssClaimYears) : 0;
             const netWithdrawal = Math.max(0, pathSpend - ssIncomeThisYear);
-
             balance -= netWithdrawal;
           }
 
@@ -632,106 +449,6 @@
       return { p10, p50, p90, successRate, years: totalYears, rawPaths: paths };
     }
 
-    // Toggle Guyton-Klinger Guardrails
-    function toggleGkProtocol() {
-      isGkEnabled = !isGkEnabled;
-      const btn = document.getElementById('btnGkToggle');
-      if (isGkEnabled) {
-        btn.className = 'px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono font-bold';
-        btn.innerText = 'ACTIVE';
-      } else {
-        btn.className = 'px-2 py-0.5 rounded-full bg-slate-900 text-slate-500 border border-slate-800 text-[10px] font-mono font-bold';
-        btn.innerText = 'OFF';
-      }
-      recomputeAndRender();
-    }
-
-    // Set Social Security Claiming Age
-    function setSSClaimAge(age) {
-      state.ssClaimAge = age;
-      [62, 67, 70].forEach(a => {
-        const btn = document.getElementById('ssBtn_' + a);
-        if (a === age) {
-          btn.className = 'py-1 rounded-lg bg-amber-950 text-amber-300 border border-amber-500/60 text-[10px] font-bold text-center';
-        } else {
-          btn.className = 'py-1 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 text-[10px] font-bold text-center';
-        }
-      });
-
-      let benefit = state.ssMonthlyPIA * (age === 62 ? 0.70 : age === 70 ? 1.24 : 1.0);
-      document.getElementById('ssMonthlyTag').innerText = `$${Math.round(benefit).toLocaleString()}/mo`;
-      document.getElementById('ssAnnualBenefitTag').innerText = `+$${Math.round(benefit * 12).toLocaleString()}/yr`;
-
-      recomputeAndRender();
-    }
-
-    // Web Speech API Voice Meeting Dictation
-    let recognition = null;
-    let isRecording = false;
-
-    function toggleVoiceDictation() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert('Web Speech API is not supported on this browser (e.g. iOS Safari). Please use Chrome or Edge desktop/Android.');
-        return;
-      }
-
-      const btn = document.getElementById('btnVoiceDictation');
-      const micIcon = document.getElementById('micIcon');
-      const lbl = document.getElementById('lblVoice');
-      const input = document.getElementById('promptInput');
-
-      if (isRecording) {
-        if (recognition) recognition.stop();
-        isRecording = false;
-        btn.className = 'px-2 py-0.5 rounded-full bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono flex items-center gap-1 transition-all active:scale-95';
-        lbl.innerText = '🎙️ Voice Dictate';
-        return;
-      }
-
-      try {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'en-US';
-        recognition.interimResults = true;
-        recognition.continuous = false;
-
-        recognition.onstart = () => {
-          isRecording = true;
-          btn.className = 'px-2 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-500/60 text-[10px] font-mono flex items-center gap-1 animate-pulse';
-          lbl.innerText = '🔴 Listening...';
-        };
-
-        recognition.onresult = (event) => {
-          let transcript = '';
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
-          }
-          input.value = transcript;
-        };
-
-        recognition.onend = () => {
-          isRecording = false;
-          btn.className = 'px-2 py-0.5 rounded-full bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono flex items-center gap-1 transition-all active:scale-95';
-          lbl.innerText = '🎙️ Voice Dictate';
-          
-          if (input.value.trim().length > 10) {
-            generatePlan(); // Auto-fire Groq extraction!
-          }
-        };
-
-        recognition.onerror = (err) => {
-          console.error('Speech recognition error:', err);
-          isRecording = false;
-          btn.className = 'px-2 py-0.5 rounded-full bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/50 text-[10px] font-mono flex items-center gap-1 transition-all active:scale-95';
-          lbl.innerText = '🎙️ Voice Dictate';
-        };
-
-        recognition.start();
-      } catch (e) {
-        console.error('Recognition error:', e);
-      }
-    }
-
     // Switch Client CRM Profile
     function onClientSwitch(clientId) {
       activeClientId = clientId;
@@ -741,81 +458,11 @@
       } else {
         state = { ...clientDatabase[clientId], activeTab: state.activeTab };
       }
-
-      document.getElementById('sliderAssets').value = state.initialAssets;
-      document.getElementById('sliderRetireAge').value = state.retireAge;
-      document.getElementById('sliderSpend').value = state.annualSpend;
-      document.getElementById('sliderEquity').value = state.equityRatio;
-
-      setSSClaimAge(state.ssClaimAge || 67);
-      onLiveParamChange();
-    }
-
-    // Toggle Scenario Comparison (Plan A vs B)
-    function toggleComparisonMode() {
-      isCompareMode = !isCompareMode;
-      const btn = document.getElementById('btnCompareToggle');
-      const badge = document.getElementById('comparisonActiveBadge');
-      const legendB = document.getElementById('legendPlanB');
-
-      if (isCompareMode) {
-        btn.className = 'px-2.5 py-1 rounded-xl bg-indigo-600 text-white font-bold text-[11px] shadow transition-all flex items-center gap-1 shrink-0';
-        badge.classList.remove('hidden');
-        legendB.classList.remove('hidden');
-      } else {
-        btn.className = 'px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] text-slate-300 font-bold transition-all flex items-center gap-1 shrink-0';
-        badge.classList.add('hidden');
-        legendB.classList.add('hidden');
-      }
       recomputeAndRender();
     }
 
-    // Set Stress Test Scenario
-    function setStressMode(mode) {
-      stressMode = mode;
-      ['none', 'gfc2008', 'dotcom', 'stagflation'].forEach(m => {
-        const btn = document.getElementById('stressBtn_' + m);
-        if (m === mode) {
-          btn.className = 'px-2 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/60 text-[10px] font-bold text-center transition-all';
-        } else {
-          btn.className = 'px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-[10px] font-bold text-center transition-all';
-        }
-      });
-
-      const tag = document.getElementById('stressTestStatusTag');
-      if (mode === 'none') tag.innerText = 'Baseline Normal';
-      else if (mode === 'gfc2008') tag.innerText = '⚠️ 2008 Crisis Injected';
-      else if (mode === 'dotcom') tag.innerText = '⚠️ 2000 DotCom Injected';
-      else if (mode === 'stagflation') tag.innerText = '⚠️ Stagflation 8% Injected';
-
-      recomputeAndRender();
-    }
-
-    // Live Parameter Trigger (Bound to Sliders)
-    let animationFrameId = null;
-    function onLiveParamChange() {
-      state.initialAssets = parseInt(document.getElementById('sliderAssets').value);
-      state.retireAge = parseInt(document.getElementById('sliderRetireAge').value);
-      state.annualSpend = parseInt(document.getElementById('sliderSpend').value);
-      state.equityRatio = parseFloat(document.getElementById('sliderEquity').value);
-
-      localStorage.setItem('veloxis_' + activeClientId, JSON.stringify(state));
-
-      document.getElementById('lblAssetVal').innerText = '$' + state.initialAssets.toLocaleString();
-      document.getElementById('lblRetireAgeVal').innerText = 'Age ' + state.retireAge;
-      document.getElementById('lblSpendVal').innerText = '$' + state.annualSpend.toLocaleString() + '/yr';
-      
-      const eqPct = Math.round(state.equityRatio * 100);
-      document.getElementById('lblEquityVal').innerText = `${eqPct}% Equity / ${100 - eqPct}% Bond`;
-
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-      animationFrameId = requestAnimationFrame(() => {
-        recomputeAndRender();
-      });
-    }
-
+    // Recompute Quant Model and Render Active Canvas
     function recomputeAndRender() {
-      // Plan A Simulation
       mcResults = runMonteCarlo(
         state.initialAssets,
         state.annualSpend,
@@ -830,45 +477,42 @@
         isGkEnabled
       );
 
-      // Plan B Simulation (Retire 5 Years Later with Higher Spending & Max SS at 70)
       if (isCompareMode) {
-        statePlanB.retireAge = Math.min(state.retireAge + 5, 70);
-        statePlanB.annualSpend = state.annualSpend + 15000;
         mcResultsPlanB = runMonteCarlo(
           state.initialAssets,
           statePlanB.annualSpend,
           state.currentAge,
           statePlanB.retireAge,
           state.endAge,
-          state.equityRatio,
+          statePlanB.equityRatio,
           state.ssMonthlyPIA || 2500,
-          70,
+          statePlanB.ssClaimAge || 70,
           800,
           stressMode,
           isGkEnabled
         );
       }
 
-      // Update KPI Cards
+      // Update Top Status Badges
       const rateElem = document.getElementById('valMcSuccess');
       rateElem.innerText = mcResults.successRate + '%';
-      if (mcResults.successRate >= 85) {
-        rateElem.className = 'text-base sm:text-lg font-black text-emerald-400 font-mono mt-0.5';
-        document.getElementById('valMcLabel').innerText = 'High Confidence';
-      } else if (mcResults.successRate >= 70) {
-        rateElem.className = 'text-base sm:text-lg font-black text-amber-400 font-mono mt-0.5';
-        document.getElementById('valMcLabel').innerText = 'Caution Guardrail';
-      } else {
-        rateElem.className = 'text-base sm:text-lg font-black text-rose-500 font-mono mt-0.5';
-        document.getElementById('valMcLabel').innerText = '⚠️ High Deficit Risk';
-      }
+      rateElem.className = mcResults.successRate >= 80 ? 'text-emerald-400 font-bold' : mcResults.successRate >= 65 ? 'text-amber-400 font-bold' : 'text-rose-500 font-bold';
 
       const endMedian = mcResults.p50[mcResults.p50.length - 1];
       document.getElementById('valMedianP50').innerText = endMedian >= 1000000 
         ? '$' + (endMedian / 1000000).toFixed(2) + 'M' 
         : '$' + Math.round(endMedian / 1000) + 'k';
-      document.getElementById('valSafeFloor').innerText = '$' + Math.round(state.annualSpend * 0.8).toLocaleString();
 
+      // Update Header Pills
+      document.getElementById('badgeGK').innerHTML = `<i data-lucide="shield" class="w-3 h-3 text-emerald-400"></i><span>Guyton-Klinger: ${isGkEnabled ? 'ACTIVE' : 'OFF'}</span>`;
+      document.getElementById('badgeSS').innerHTML = `<i data-lucide="landmark" class="w-3 h-3 text-amber-400"></i><span>SS: Age ${state.ssClaimAge || 67} ($${state.ssMonthlyPIA || 2500}/mo)</span>`;
+      
+      const stressTag = stressMode === 'none' ? 'Baseline Normal' : stressMode === 'gfc2008' ? '🔴 2008 GFC (-38%)' : stressMode === 'dotcom' ? '🟠 2000 DotCom' : '🟣 Stagflation 8%';
+      document.getElementById('badgeStress').innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${stressMode === 'none' ? 'bg-emerald-400' : 'bg-rose-500'}"></span><span>Stress: ${stressTag}</span>`;
+
+      lucide.createIcons();
+
+      // Render Active View
       if (state.activeTab === 'monte') {
         drawMonteCarloCanvas();
       } else if (state.activeTab === 'estate') {
@@ -878,25 +522,25 @@
       }
     }
 
-    // High-DPI Retina Canvas Rendering with Guyton-Klinger Guardrail Zones
+    // Living Canvas Rendering: Monte Carlo Probability Corridor
     function drawMonteCarloCanvas(hoverAge = null) {
-      const canvas = document.getElementById('mcCanvas');
+      const canvas = document.getElementById('livingCanvas');
       const ctx = canvas.getContext('2d');
       const w = canvas.width;
       const h = canvas.height;
 
       ctx.clearRect(0, 0, w, h);
 
-      // Background Gradient
+      // Deep Space Gradient Background
       const bgGrad = ctx.createLinearGradient(0, 0, w, h);
-      bgGrad.addColorStop(0, '#090d16');
-      bgGrad.addColorStop(1, '#0e1526');
+      bgGrad.addColorStop(0, '#070b14');
+      bgGrad.addColorStop(1, '#0c1322');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 
-      const paddingLeft = 65;
-      const paddingRight = 65;
-      const paddingTop = 38;
+      const paddingLeft = 70;
+      const paddingRight = 75;
+      const paddingTop = 40;
       const paddingBottom = 45;
       const chartW = w - paddingLeft - paddingRight;
       const chartH = h - paddingTop - paddingBottom;
@@ -913,8 +557,8 @@
         return paddingTop + chartH - (val / maxVal) * chartH;
       }
 
-      // Draw Grid Lines & Y-Axis Labels
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+      // Grid Lines & Y-Ticks
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
       ctx.lineWidth = 1;
       ctx.fillStyle = '#64748b';
       ctx.font = '500 10px Fira Code, monospace';
@@ -929,10 +573,10 @@
         ctx.stroke();
 
         const label = val >= 1000000 ? '$' + (val / 1000000).toFixed(1) + 'M' : '$' + Math.round(val / 1000) + 'k';
-        ctx.fillText(label, 12, y + 3);
+        ctx.fillText(label, 14, y + 3);
       }
 
-      // 4% SWR Safe Harbor Rule Floor Line
+      // 4% SWR Safe Harbor Rule Line
       const swrFloorVal = state.initialAssets * 0.04 * 25;
       if (swrFloorVal < maxVal) {
         const swrY = getY(swrFloorVal);
@@ -970,7 +614,7 @@
         ctx.fillText(`Age ${age}`, x - 18, h - 15);
       });
 
-      // Draw Retirement Vertical Accent Line
+      // Retirement Vertical Line
       ctx.setLineDash([4, 4]);
       ctx.strokeStyle = '#f59e0b';
       ctx.lineWidth = 1.5;
@@ -982,23 +626,9 @@
 
       ctx.fillStyle = '#f59e0b';
       ctx.font = '700 10px Inter, sans-serif';
-      ctx.fillText(`⚡ Retire Age ${state.retireAge}`, Math.min(retireX - 35, w - 140), paddingTop - 12);
+      ctx.fillText(`⚡ Retire Age ${state.retireAge}`, Math.min(retireX - 35, w - 150), paddingTop - 12);
 
-      // Helper for drawing curve with neon glow
-      function drawCurve(data, color, glowColor, width, isDashed = false) {
-        ctx.save();
-        ctx.beginPath();
-        if (isDashed) ctx.setLineDash([5, 5]);
-        ctx.strokeStyle = color;
-        ctx.shadowColor = glowColor;
-        ctx.shadowBlur = 10;
-        ctx.lineWidth = width;
-        data.forEach((val, i) => i === 0 ? ctx.moveTo(getX(i), getY(val)) : ctx.lineTo(getX(i), getY(val)));
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // 1. Shaded Corridor (Plan A: p10 to p90)
+      // Shaded Corridor (p10 to p90)
       ctx.beginPath();
       const corridorGrad = ctx.createLinearGradient(0, paddingTop, 0, h - paddingBottom);
       corridorGrad.addColorStop(0, 'rgba(16, 185, 129, 0.22)');
@@ -1015,29 +645,30 @@
       ctx.closePath();
       ctx.fill();
 
-      // 2. Draw Plan A Curves
+      // Helper for neon curves
+      function drawCurve(data, color, glowColor, width, isDashed = false) {
+        ctx.save();
+        ctx.beginPath();
+        if (isDashed) ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = color;
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = width;
+        data.forEach((val, i) => i === 0 ? ctx.moveTo(getX(i), getY(val)) : ctx.lineTo(getX(i), getY(val)));
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Draw Curves
       drawCurve(p90, '#10b981', 'rgba(16, 185, 129, 0.6)', 2.5);
       drawCurve(p50, '#818cf8', 'rgba(129, 140, 248, 0.5)', 2.5);
       drawCurve(p10, '#f43f5e', 'rgba(244, 63, 94, 0.4)', 2);
 
-      // 3. Draw Plan B Overlapping Curve (If in Compare Mode)
       if (isCompareMode) {
-        ctx.beginPath();
-        ctx.fillStyle = 'rgba(168, 85, 247, 0.12)';
-        mcResultsPlanB.p90.forEach((val, i) => {
-          if (i === 0) ctx.moveTo(getX(i), getY(val));
-          else ctx.lineTo(getX(i), getY(val));
-        });
-        for (let i = years; i >= 0; i--) {
-          ctx.lineTo(getX(i), getY(mcResultsPlanB.p10[i]));
-        }
-        ctx.closePath();
-        ctx.fill();
-
         drawCurve(mcResultsPlanB.p50, '#c084fc', 'rgba(192, 132, 252, 0.8)', 2.5, true);
       }
 
-      // 4. Draw EndPoint Value Callout Badges
+      // EndPoint Callout Badges
       function drawEndPointBadge(val, color, bgAlpha = 0.9, yOffset = 0) {
         const lastIdx = years;
         const lastX = getX(lastIdx);
@@ -1052,8 +683,8 @@
         ctx.fillStyle = `rgba(15, 23, 42, ${bgAlpha})`;
         ctx.strokeStyle = color;
         ctx.lineWidth = 1;
-        ctx.fillRect(lastX + 6, lastY - 9, 52, 18);
-        ctx.strokeRect(lastX + 6, lastY - 9, 52, 18);
+        ctx.fillRect(lastX + 6, lastY - 9, 56, 18);
+        ctx.strokeRect(lastX + 6, lastY - 9, 56, 18);
 
         ctx.fillStyle = color;
         ctx.font = '700 9px Fira Code, monospace';
@@ -1068,7 +699,7 @@
         drawEndPointBadge(mcResultsPlanB.p50[years], '#c084fc', 0.95, -18);
       }
 
-      // 5. Draw Hover / Touch Crosshair
+      // Hover Crosshair
       if (hoverAge !== null && hoverAge >= state.currentAge && hoverAge <= state.endAge) {
         const hIdx = hoverAge - state.currentAge;
         const hX = getX(hIdx);
@@ -1094,19 +725,19 @@
       }
     }
 
-    // 2D Canvas for Estate & Trust Tree
+    // Estate & Trust Tree Topology View
     function drawEstateCanvas() {
-      const canvas = document.getElementById('estateCanvas');
+      const canvas = document.getElementById('livingCanvas');
       const ctx = canvas.getContext('2d');
       const w = canvas.width;
       const h = canvas.height;
 
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = '#090d16';
+      ctx.fillStyle = '#070b14';
       ctx.fillRect(0, 0, w, h);
 
-      function drawNode(x, y, nodeW, nodeH, title, subtitle, color, bgAlpha = 0.9) {
-        ctx.fillStyle = `rgba(15, 23, 42, ${bgAlpha})`;
+      function drawNode(x, y, nodeW, nodeH, title, subtitle, color) {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
         ctx.fillRect(x, y, nodeW, nodeH);
         ctx.strokeStyle = color;
         ctx.lineWidth = 1.5;
@@ -1147,7 +778,7 @@
         if (badgeText) {
           const midX = (x1 + x2) / 2;
           const midY = (y1 + y2) / 2;
-          const badgeW = 92;
+          const badgeW = 95;
           const badgeH = 18;
 
           ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
@@ -1164,53 +795,49 @@
         }
       }
 
-      // Root Node: Grantor Trust
-      drawNode(220, 25, 200, 52, `${state.name} Family Trust`, `Total Asset: $${(state.initialAssets * 3.5 / 1000000).toFixed(1)}M`, '#10b981');
+      const centerX = w / 2;
+      drawNode(centerX - 110, 25, 220, 52, `${state.name} Family Trust`, `Total Asset: $${(state.initialAssets * 3.5 / 1000000).toFixed(1)}M`, '#10b981');
 
-      // Layer 2: Revocable Living Trust & Dynasty Trust with Arrowheads
-      drawArrowConnector(320, 77, 150, 155, '100% Tax Basis', '#818cf8');
-      drawArrowConnector(320, 77, 480, 155, 'GST Shielded', '#f59e0b');
+      drawArrowConnector(centerX, 77, centerX - 180, 155, '100% Tax Basis', '#818cf8');
+      drawArrowConnector(centerX, 77, centerX + 180, 155, 'GST Shielded', '#f59e0b');
 
-      drawNode(55, 155, 190, 52, 'Revocable Living Trust', 'Probate Avoidance', '#818cf8');
-      drawNode(385, 155, 195, 52, 'Dynasty Trust (GST)', 'Tax-Free Compounding', '#f59e0b');
+      drawNode(centerX - 280, 155, 200, 52, 'Revocable Living Trust', 'Probate Avoidance', '#818cf8');
+      drawNode(centerX + 80, 155, 200, 52, 'Dynasty Trust (GST)', 'Tax-Free Compounding', '#f59e0b');
 
-      // Layer 3: Beneficiaries with Arrowheads
-      drawArrowConnector(150, 207, 150, 285, 'Per Stirpes', '#38bdf8');
-      drawArrowConnector(482, 207, 482, 285, 'Dynasty Split', '#ec4899');
+      drawArrowConnector(centerX - 180, 207, centerX - 180, 285, 'Per Stirpes', '#38bdf8');
+      drawArrowConnector(centerX + 180, 207, centerX + 180, 285, 'Dynasty Split', '#ec4899');
 
-      drawNode(55, 285, 190, 52, 'Beneficiary A (50%)', 'Liquid Distribution', '#38bdf8');
-      drawNode(385, 285, 195, 52, 'Beneficiary B (50%)', 'Asset Protected Trust', '#ec4899');
+      drawNode(centerX - 280, 285, 200, 52, 'Beneficiary A (50%)', 'Liquid Distribution', '#38bdf8');
+      drawNode(centerX + 80, 285, 200, 52, 'Beneficiary B (50%)', 'Asset Protected Trust', '#ec4899');
 
       ctx.fillStyle = '#64748b';
       ctx.font = '500 10px Fira Code, monospace';
-      ctx.fillText('Veloxis Visual Trust Engine • Revocable vs Irrevocable Architecture', 55, h - 20);
+      ctx.fillText('Veloxis Visual Topology • Generation-Skipping & Asset Protection Architecture', 35, h - 20);
     }
 
-    // 2D Canvas for Roth Tax Optimizer
+    // Roth Tax Alpha Waterfall View
     function drawRothCanvas() {
-      const canvas = document.getElementById('rothCanvas');
+      const canvas = document.getElementById('livingCanvas');
       const ctx = canvas.getContext('2d');
       const w = canvas.width;
       const h = canvas.height;
 
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = '#090d16';
+      ctx.fillStyle = '#070b14';
       ctx.fillRect(0, 0, w, h);
 
-      // Title & Alpha Badge
       ctx.fillStyle = '#ffffff';
       ctx.font = '800 14px Inter, sans-serif';
-      ctx.fillText('Roth Conversion Strategy vs. Traditional Pre-Tax RMD Trap', 25, 32);
+      ctx.fillText('Roth Conversion Strategy vs. Traditional Pre-Tax RMD Trap', 35, 34);
 
-      // Alpha Callout Banner
       ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
-      ctx.fillRect(w - 200, 14, 175, 28);
+      ctx.fillRect(w - 220, 16, 185, 28);
       ctx.strokeStyle = '#10b981';
       ctx.lineWidth = 1;
-      ctx.strokeRect(w - 200, 14, 175, 28);
+      ctx.strokeRect(w - 220, 16, 185, 28);
       ctx.fillStyle = '#34d399';
       ctx.font = '800 11px Fira Code, monospace';
-      ctx.fillText(`⚡ Net Tax Alpha: +$${state.taxSavings.toLocaleString()}`, w - 190, 32);
+      ctx.fillText(`⚡ Net Tax Alpha: +$${state.taxSavings.toLocaleString()}`, w - 210, 34);
 
       const brackets = [
         { label: 'Ages 35-54 (Career Peak)', tradTax: 32, rothTax: 24, tradDol: '$140k', rothDol: '$95k', desc: 'Pre-tax 401(k) contributions standard' },
@@ -1219,18 +846,18 @@
         { label: 'Ages 73+ (RMD Spike Trap)', tradTax: 37, rothTax: 0, tradDol: '$232k', rothDol: '$0', desc: 'Mandatory IRA withdrawals trigger 37% peak bracket' }
       ];
 
-      let yPos = 70;
+      let yPos = 72;
       brackets.forEach((b, idx) => {
         ctx.fillStyle = '#ffffff';
         ctx.font = '700 11px Inter, sans-serif';
-        ctx.fillText(b.label, 25, yPos);
+        ctx.fillText(b.label, 35, yPos);
 
         ctx.fillStyle = idx === 1 ? '#34d399' : '#94a3b8';
         ctx.font = '400 10px Inter, sans-serif';
-        ctx.fillText(b.desc, 25, yPos + 15);
+        ctx.fillText(b.desc, 35, yPos + 15);
 
-        const barX = 230;
-        const maxBarW = 220;
+        const barX = 260;
+        const maxBarW = 320;
         const tradW = (b.tradTax / 40) * maxBarW;
         ctx.fillStyle = 'rgba(244, 63, 94, 0.85)';
         ctx.fillRect(barX, yPos - 10, tradW, 14);
@@ -1252,59 +879,57 @@
           ctx.fillText('0% TAX-FREE ($0 Paid)', barX, yPos + 19);
         }
 
-        yPos += 72;
+        yPos += 70;
       });
 
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(25, h - 50);
-      ctx.lineTo(w - 25, h - 50);
+      ctx.moveTo(35, h - 45);
+      ctx.lineTo(w - 35, h - 45);
       ctx.stroke();
 
       ctx.fillStyle = '#f43f5e';
       ctx.font = '700 11px Inter, sans-serif';
-      ctx.fillText('🔴 Traditional Lifetime Tax: $482,000', 25, h - 25);
+      ctx.fillText('🔴 Traditional Lifetime Tax: $482,000', 35, h - 22);
 
       ctx.fillStyle = '#10b981';
       ctx.font = '700 11px Inter, sans-serif';
-      ctx.fillText('🟢 Veloxis Roth Lifetime Tax: $130,000', 260, h - 25);
+      ctx.fillText('🟢 Veloxis Roth Lifetime Tax: $130,000', 290, h - 22);
 
       ctx.fillStyle = '#f59e0b';
       ctx.font = '700 11px Fira Code, monospace';
-      ctx.fillText('🏆 Net Savings: $352,000', 490, h - 25);
+      ctx.fillText('🏆 Net Savings: $352,000', 560, h - 22);
     }
 
-    // Tab Switcher
+    // Switch Visual View
     function switchVisualTab(tabKey) {
       state.activeTab = tabKey;
       ['Monte', 'Estate', 'Roth'].forEach(t => {
         const btn = document.getElementById('tabBtn' + t);
-        const view = document.getElementById('view' + (t === 'Monte' ? 'MonteCarlo' : t === 'Estate' ? 'EstateTree' : 'RothOptimizer'));
         if (t.toLowerCase() === tabKey) {
-          btn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-sm transition-all flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs shrink-0';
-          view.classList.remove('hidden');
+          btn.className = 'px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-sm transition-all flex items-center gap-1.5 text-xs';
         } else {
-          btn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs shrink-0';
-          view.classList.add('hidden');
+          btn.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1.5 text-xs';
         }
       });
       recomputeAndRender();
     }
 
-    // Inspection Handler for Canvas
-    const mcCanvasElem = document.getElementById('mcCanvas');
+    // Living Canvas Mouse / Touch Inspection
+    const canvasElem = document.getElementById('livingCanvas');
 
     function handleInspection(clientX, clientY) {
-      const rect = mcCanvasElem.getBoundingClientRect();
-      const scaleX = mcCanvasElem.width / rect.width;
+      if (state.activeTab !== 'monte') return;
+      const rect = canvasElem.getBoundingClientRect();
+      const scaleX = canvasElem.width / rect.width;
       const x = (clientX - rect.left) * scaleX;
 
-      const paddingLeft = 65;
-      const paddingRight = 65;
-      const chartW = mcCanvasElem.width - paddingLeft - paddingRight;
+      const paddingLeft = 70;
+      const paddingRight = 75;
+      const chartW = canvasElem.width - paddingLeft - paddingRight;
 
-      if (x >= paddingLeft && x <= mcCanvasElem.width - paddingRight) {
+      if (x >= paddingLeft && x <= canvasElem.width - paddingRight) {
         const yearRatio = (x - paddingLeft) / chartW;
         const yearIndex = Math.round(yearRatio * mcResults.years);
         const age = state.currentAge + yearIndex;
@@ -1314,62 +939,112 @@
         const tt = document.getElementById('canvasTooltip');
         tt.classList.remove('hidden');
         document.getElementById('ttAge').innerText = `Simulation Point: Age ${age}`;
-        document.getElementById('ttP90').innerText = `Plan A 90% Bull: $${(mcResults.p90[yearIndex] / 1000000).toFixed(2)}M`;
-        document.getElementById('ttP50').innerText = `Plan A 50% Base: $${(mcResults.p50[yearIndex] / 1000000).toFixed(2)}M`;
-        document.getElementById('ttP10').innerText = `Plan A 10% Bear: $${(mcResults.p10[yearIndex] / 1000000).toFixed(2)}M`;
-
-        const ttPlanB = document.getElementById('ttPlanB');
-        if (isCompareMode && mcResultsPlanB.p50[yearIndex]) {
-          ttPlanB.classList.remove('hidden');
-          ttPlanB.innerText = `Plan B 50% Base: $${(mcResultsPlanB.p50[yearIndex] / 1000000).toFixed(2)}M`;
-        } else {
-          ttPlanB.classList.add('hidden');
-        }
+        document.getElementById('ttP90').innerText = `90% Bull: $${(mcResults.p90[yearIndex] / 1000000).toFixed(2)}M`;
+        document.getElementById('ttP50').innerText = `50% Base: $${(mcResults.p50[yearIndex] / 1000000).toFixed(2)}M`;
+        document.getElementById('ttP10').innerText = `10% Bear: $${(mcResults.p10[yearIndex] / 1000000).toFixed(2)}M`;
       }
     }
 
-    mcCanvasElem.addEventListener('mousemove', (e) => handleInspection(e.clientX, e.clientY));
-    mcCanvasElem.addEventListener('mouseleave', () => {
+    canvasElem.addEventListener('mousemove', (e) => handleInspection(e.clientX, e.clientY));
+    canvasElem.addEventListener('mouseleave', () => {
       document.getElementById('canvasTooltip').classList.add('hidden');
-      drawMonteCarloCanvas();
+      if (state.activeTab === 'monte') drawMonteCarloCanvas();
     });
 
-    mcCanvasElem.addEventListener('touchstart', (e) => {
+    canvasElem.addEventListener('touchstart', (e) => {
       if (e.touches.length > 0) handleInspection(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 
-    mcCanvasElem.addEventListener('touchmove', (e) => {
+    canvasElem.addEventListener('touchmove', (e) => {
       if (e.touches.length > 0) handleInspection(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 
-    mcCanvasElem.addEventListener('touchend', () => {
+    canvasElem.addEventListener('touchend', () => {
       setTimeout(() => {
         document.getElementById('canvasTooltip').classList.add('hidden');
-        drawMonteCarloCanvas();
+        if (state.activeTab === 'monte') drawMonteCarloCanvas();
       }, 2000);
     });
 
-    // Preset Prompt Helper
-    function loadPresetPrompt(type) {
+    // Web Speech API Voice Dictation
+    let recognition = null;
+    let isRecording = false;
+
+    function toggleVoiceDictation() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('Web Speech API is not supported on this browser. Please use Chrome or Edge.');
+        return;
+      }
+
+      const btn = document.getElementById('btnVoiceDictation');
+      const lbl = document.getElementById('lblVoice');
       const input = document.getElementById('promptInput');
-      if (type === 'retire') {
-        input.value = "Age 35 with $500,000 initial portfolio, targeting retirement at age 55 with $80,000 annual spending and 75% equity allocation.";
-      } else if (type === 'roth') {
-        input.value = "42-year-old high-income executive with $1.2M portfolio. Target Roth conversion window between ages 55-65 to bypass RMD spike tax.";
-      } else if (type === 'estate') {
-        input.value = "Model an estate planning structure with a $2.5M Revocable Living Trust and Dynasty Trust distributing 50/50 to two beneficiaries.";
+
+      if (isRecording) {
+        if (recognition) recognition.stop();
+        isRecording = false;
+        btn.className = 'px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-900 text-emerald-300 border border-emerald-500/40 text-xs font-mono flex items-center gap-1.5 transition-all shrink-0 active:scale-95';
+        lbl.innerText = '🎙️ Voice Dictate';
+        return;
+      }
+
+      try {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'zh-CN';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+
+        recognition.onstart = () => {
+          isRecording = true;
+          btn.className = 'px-3 py-2 rounded-xl bg-rose-950 text-rose-300 border border-rose-500/60 text-xs font-mono flex items-center gap-1.5 animate-pulse shrink-0';
+          lbl.innerText = '🔴 Listening...';
+        };
+
+        recognition.onresult = (event) => {
+          let transcript = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+          }
+          input.value = transcript;
+        };
+
+        recognition.onend = () => {
+          isRecording = false;
+          btn.className = 'px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-900 text-emerald-300 border border-emerald-500/40 text-xs font-mono flex items-center gap-1.5 transition-all shrink-0 active:scale-95';
+          lbl.innerText = '🎙️ Voice Dictate';
+          
+          if (input.value.trim().length > 3) {
+            executeProtocol();
+          }
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.error('Speech error:', e);
       }
     }
 
-    // Call API Engine
-    async function generatePlan() {
-      const prompt = document.getElementById('promptInput').value.trim();
-      if (!prompt) return alert('Please enter a financial scenario prompt.');
+    // Dispatch a structured conversational command
+    function dispatchProtocolCommand(promptText) {
+      document.getElementById('promptInput').value = promptText;
+      executeProtocol();
+    }
 
-      const btn = document.getElementById('btnGenerate');
-      const lbl = document.getElementById('lblGenerateBtn');
+    // Execute Natural Language / Action Protocol Engine
+    async function executeProtocol() {
+      const input = document.getElementById('promptInput');
+      const prompt = input.value.trim();
+      if (!prompt) return;
+
+      const btn = document.getElementById('btnExecute');
+      const lbl = document.getElementById('lblExecute');
       btn.disabled = true;
-      lbl.innerText = '⚡ Groq LPU Executing (0.08s)...';
+      lbl.innerText = '⚡ 0.08s LPU...';
+
+      // 1. Append User Bubble to Protocol Stream
+      appendUserBubble(prompt);
+      input.value = '';
 
       const startTime = performance.now();
 
@@ -1377,40 +1052,99 @@
         const res = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, language: 'en' })
+          body: JSON.stringify({ prompt })
         });
         const data = await res.json();
         const endTime = performance.now();
         const latencyMs = Math.round(endTime - startTime);
+        document.getElementById('latencyBadge').innerText = latencyMs + 'ms';
 
         if (data.success && data.data) {
           const d = data.data;
-          document.getElementById('latencyBadge').innerText = latencyMs + 'ms';
 
-          if (d.liquid_assets) {
-            state.initialAssets = d.liquid_assets;
-            document.getElementById('sliderAssets').value = d.liquid_assets;
-          }
-          if (d.retire_age) {
-            state.retireAge = d.retire_age;
-            document.getElementById('sliderRetireAge').value = d.retire_age;
-          }
-          if (d.annual_spending) {
-            state.annualSpend = d.annual_spending;
-            document.getElementById('sliderSpend').value = d.annual_spending;
+          // Apply state mutations
+          if (d.mutations) {
+            const m = d.mutations;
+            if (m.liquid_assets) state.initialAssets = m.liquid_assets;
+            if (m.retire_age) state.retireAge = m.retire_age;
+            if (m.annual_spending) state.annualSpend = m.annual_spending;
+            if (m.equity_ratio) state.equityRatio = m.equity_ratio;
+            if (m.stress_mode) stressMode = m.stress_mode;
+            if (m.is_gk_enabled !== undefined) isGkEnabled = m.is_gk_enabled;
+            if (m.ss_claim_age) state.ssClaimAge = m.ss_claim_age;
+            if (m.ss_monthly_pia) state.ssMonthlyPIA = m.ss_monthly_pia;
+            if (m.tax_savings) state.taxSavings = m.tax_savings;
           }
 
-          onLiveParamChange();
+          if (d.switch_view) {
+            state.activeTab = d.switch_view;
+            switchVisualTab(d.switch_view);
+          }
+
+          // Check if plan comparison was requested
+          if (prompt.includes('对比') || prompt.toLowerCase().includes('compare') || prompt.toLowerCase().includes('plan b')) {
+            isCompareMode = true;
+          }
+
+          // Recompute model & animate canvas
+          recomputeAndRender();
+
+          // 2. Append Protocol Response Bubble with Action Capsules
+          appendAiBubble(d.ai_response || "模型状态已实时重绘更新。", d.suggested_actions || []);
         }
       } catch (err) {
-        console.error('API Error:', err);
+        console.error('Protocol Execution Error:', err);
       } finally {
         btn.disabled = false;
-        lbl.innerText = '⚡ Extract & Recompute Model (0.08s)';
+        lbl.innerText = 'Execute (0.08s)';
       }
     }
 
-    // White-Label Advisor 4K PDF Report Export
+    function appendUserBubble(text) {
+      const stream = document.getElementById('protocolStream');
+      const div = document.createElement('div');
+      div.className = 'flex gap-2.5 items-start justify-end';
+      div.innerHTML = `
+        <div class="bg-emerald-950/60 border border-emerald-500/40 p-2.5 rounded-xl text-xs text-emerald-200 max-w-md">
+          <span class="text-[9px] font-mono text-emerald-400 font-bold block mb-0.5">ADVISOR COMMAND</span>
+          ${text}
+        </div>
+      `;
+      stream.appendChild(div);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function appendAiBubble(text, actions = []) {
+      const stream = document.getElementById('protocolStream');
+      const div = document.createElement('div');
+      div.className = 'flex gap-2.5 items-start';
+
+      let actionsHtml = '';
+      if (actions.length > 0) {
+        actionsHtml = `<div class="flex flex-wrap gap-1.5 pt-1.5">` + 
+          actions.map(a => `<button onclick="dispatchProtocolCommand('${a.prompt}')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-mono transition-all flex items-center gap-1 active:scale-95"><span>${a.label}</span></button>`).join('') +
+          `</div>`;
+      }
+
+      div.innerHTML = `
+        <div class="w-6 h-6 rounded-lg bg-emerald-950 border border-emerald-500/50 flex items-center justify-center shrink-0 mt-0.5">
+          <i data-lucide="bot" class="w-3.5 h-3.5 text-emerald-400"></i>
+        </div>
+        <div class="flex flex-col gap-1.5 flex-1 bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl text-xs">
+          <div class="flex items-center justify-between text-[10px] text-slate-400">
+            <span class="font-bold text-emerald-400">VELOXIS CORE PROTOCOL</span>
+            <span class="font-mono">Success: ${mcResults.successRate}% • Latency: ${document.getElementById('latencyBadge').innerText}</span>
+          </div>
+          <p class="text-slate-200 leading-relaxed">${text}</p>
+          ${actionsHtml}
+        </div>
+      `;
+      stream.appendChild(div);
+      lucide.createIcons();
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    // Export 4K PDF Report
     function exportPdfReport() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -1439,7 +1173,7 @@
       doc.text(`• 30-Year Monte Carlo Probability of Success: ${mcResults.successRate}%`, 14, 68);
       doc.text(`• Projected Age 85 Median Portfolio: $${(mcResults.p50[mcResults.p50.length - 1] / 1000000).toFixed(2)}M`, 14, 74);
 
-      const canvas = document.getElementById('mcCanvas');
+      const canvas = document.getElementById('livingCanvas');
       const imgData = canvas.toDataURL('image/png');
       doc.addImage(imgData, 'PNG', 14, 82, 180, 115);
 
@@ -1450,7 +1184,7 @@
       doc.save(`Veloxis_RIA_Plan_${state.name.replace(/\s+/g, '_')}_Audit.pdf`);
     }
 
-    // Initialize
+    // Initialize on window load
     window.onload = function() {
       onClientSwitch("client_sarah");
     };
