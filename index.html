@@ -194,7 +194,7 @@
 
       <!-- Canvas Bottom Quick Metrics Strip -->
       <div class="p-2.5 px-4 bg-slate-950/80 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] font-mono text-slate-400">
-        <div class="flex items-center gap-4 flex-wrap">
+        <div id="footerLegendText" class="flex items-center gap-4 flex-wrap">
           <span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-emerald-500 rounded-full inline-block shadow-[0_0_8px_#10b981]"></span> 90% Bull Corridor</span>
           <span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-indigo-500 rounded-full inline-block shadow-[0_0_8px_#818cf8]"></span> 50% Median Trajectory</span>
           <span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-rose-500 rounded-full inline-block"></span> 10% Bear Floor Guardrail</span>
@@ -558,27 +558,27 @@
       return { canvas, ctx, w: targetW, h: targetH, dpr };
     }
 
-    // Living Canvas Rendering: Monte Carlo Probability Corridor (4K Retina Sharp)
+    // Living Canvas Rendering: 20-Layer Quantum Probability Field with Topographic Contours & Gaussian PDF Bell Curve
     function drawMonteCarloCanvas(hoverAge = null) {
       const { canvas, ctx, w, h } = prepareCrispCanvas();
 
       ctx.clearRect(0, 0, w, h);
 
-      // Deep Space Gradient Background
+      // Deep Space Quantum Background
       const bgGrad = ctx.createLinearGradient(0, 0, w, h);
-      bgGrad.addColorStop(0, '#070b14');
-      bgGrad.addColorStop(1, '#0c1322');
+      bgGrad.addColorStop(0, '#050811');
+      bgGrad.addColorStop(1, '#0a101f');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 
       const paddingLeft = 70;
-      const paddingRight = 75;
+      const paddingRight = 95; // Room for Gaussian PDF Bell Curve on right
       const paddingTop = 40;
       const paddingBottom = 45;
       const chartW = w - paddingLeft - paddingRight;
       const chartH = h - paddingTop - paddingBottom;
 
-      const { p10, p50, p90, years } = mcResults;
+      const { p10, p50, p90, quantiles = [], years } = mcResults;
       const maxValRaw = Math.max(...p90, ...(isCompareMode ? mcResultsPlanB.p90 : []), state.initialAssets * 1.5);
       const magnitude = Math.pow(10, Math.floor(Math.log10(maxValRaw)));
       const maxVal = Math.ceil(maxValRaw / (magnitude / 2)) * (magnitude / 2) * 1.05;
@@ -590,7 +590,7 @@
         return paddingTop + chartH - (val / maxVal) * chartH;
       }
 
-      // Grid Lines & Y-Ticks
+      // 1. Grid Lines & Y-Ticks
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
       ctx.lineWidth = 1;
       ctx.fillStyle = '#64748b';
@@ -609,7 +609,7 @@
         ctx.fillText(label, 14, y + 3);
       }
 
-      // 4% SWR Safe Harbor Rule Line
+      // 2. 4% SWR Safe Harbor Rule Line
       const swrFloorVal = state.initialAssets * 0.04 * 25;
       if (swrFloorVal < maxVal) {
         const swrY = getY(swrFloorVal);
@@ -626,13 +626,13 @@
         ctx.fillText('• 4% SWR Baseline', paddingLeft + 8, swrY - 4);
       }
 
-      // Distribution Phase Zone Shading
+      // 3. Distribution Phase Zone Shading
       const retireYearIdx = Math.max(0, state.retireAge - state.currentAge);
       const retireX = getX(retireYearIdx);
       ctx.fillStyle = 'rgba(245, 158, 11, 0.04)';
       ctx.fillRect(retireX, paddingTop, (w - paddingRight) - retireX, chartH);
 
-      ctx.fillStyle = 'rgba(245, 158, 11, 0.4)';
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.5)';
       ctx.font = '600 9px Inter, sans-serif';
       ctx.fillText('DISTRIBUTION PHASE', retireX + 8, paddingTop + 14);
 
@@ -659,20 +659,16 @@
 
       ctx.fillStyle = '#f59e0b';
       ctx.font = '700 10px Inter, sans-serif';
-      ctx.fillText(`⚡ Retire Age ${state.retireAge}`, Math.min(retireX - 35, w - 150), paddingTop - 12);
+      ctx.fillText(`⚡ Retire Age ${state.retireAge}`, Math.min(retireX - 35, w - 170), paddingTop - 12);
 
-      // 1. 20-Layer Continuous Quantum Probability Fan (山脊连续概率光晕)
-      const quantiles = mcResults.quantiles || [];
+      // 4. 20-Layer Luminous Probability Fan Ribbons
       if (quantiles.length >= 10) {
-        // Draw 10 symmetric density ribbon pairs (p45-p55, p40-p60, ... p5-p95)
         const totalBands = Math.floor(quantiles.length / 2);
         for (let b = 0; b < totalBands; b++) {
-          const lowerQ = quantiles[b]; // e.g. p5, p10...
-          const upperQ = quantiles[quantiles.length - 1 - b]; // e.g. p95, p90...
-          
-          // Density alpha: center is glowing emerald/cyan, outer edges fade to deep space
-          const densityFactor = (b + 1) / totalBands; // 0.1 to 1.0 (1.0 is core median)
-          const alpha = 0.03 + (densityFactor * densityFactor) * 0.16;
+          const lowerQ = quantiles[b];
+          const upperQ = quantiles[quantiles.length - 1 - b];
+          const densityFactor = (b + 1) / totalBands;
+          const alpha = 0.025 + (densityFactor * densityFactor) * 0.14;
 
           ctx.beginPath();
           upperQ.forEach((val, i) => {
@@ -684,25 +680,31 @@
           }
           ctx.closePath();
 
-          // Dynamic gradient for each probability ridge
           const ridgeGrad = ctx.createLinearGradient(0, paddingTop, 0, h - paddingBottom);
-          ridgeGrad.addColorStop(0, `rgba(52, 211, 153, ${alpha * 1.2})`); // Emerald cyan
-          ridgeGrad.addColorStop(0.5, `rgba(99, 102, 241, ${alpha})`);     // Quantum Indigo
+          ridgeGrad.addColorStop(0, `rgba(52, 211, 153, ${alpha * 1.3})`);
+          ridgeGrad.addColorStop(0.5, `rgba(99, 102, 241, ${alpha * 1.1})`);
           ridgeGrad.addColorStop(1, `rgba(16, 185, 129, ${alpha * 0.4})`);
           ctx.fillStyle = ridgeGrad;
           ctx.fill();
         }
-      } else {
-        // Fallback smooth shaded corridor
-        ctx.beginPath();
-        const corridorGrad = ctx.createLinearGradient(0, paddingTop, 0, h - paddingBottom);
-        corridorGrad.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
-        corridorGrad.addColorStop(1, 'rgba(16, 185, 129, 0.04)');
-        ctx.fillStyle = corridorGrad;
-        p90.forEach((val, i) => i === 0 ? ctx.moveTo(getX(i), getY(val)) : ctx.lineTo(getX(i), getY(val)));
-        for (let i = years; i >= 0; i--) ctx.lineTo(getX(i), getY(p10[i]));
-        ctx.closePath();
-        ctx.fill();
+
+        // 5. Fine Topographic Quantile Contour Lines (等高线纹理)
+        [1, 3, 5, 7, 9, 11, 13, 15, 17].forEach(qIdx => {
+          if (quantiles[qIdx]) {
+            const isCenter = qIdx === 9;
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = isCenter ? 'rgba(129, 140, 248, 0.85)' : 'rgba(52, 211, 153, 0.25)';
+            ctx.lineWidth = isCenter ? 2.5 : 0.75;
+            if (!isCenter) ctx.setLineDash([2, 4]);
+            quantiles[qIdx].forEach((val, i) => {
+              if (i === 0) ctx.moveTo(getX(i), getY(val));
+              else ctx.lineTo(getX(i), getY(val));
+            });
+            ctx.stroke();
+            ctx.restore();
+          }
+        });
       }
 
       // Helper for neon curves
@@ -719,16 +721,49 @@
         ctx.restore();
       }
 
-      // 2. Quantum Centerline & Guardrail Trajectories
       drawCurve(p90, '#34d399', 'rgba(52, 211, 153, 0.8)', 2.5);
-      drawCurve(p50, '#818cf8', 'rgba(129, 140, 248, 0.7)', 3.0);
+      drawCurve(p50, '#818cf8', 'rgba(129, 140, 248, 0.8)', 3.0);
       drawCurve(p10, '#f43f5e', 'rgba(244, 63, 94, 0.6)', 2.0);
 
       if (isCompareMode) {
         drawCurve(mcResultsPlanB.p50, '#c084fc', 'rgba(192, 132, 252, 0.9)', 2.5, true);
       }
 
-      // 3. EndPoint Callout Badges
+      // 6. Right-Side Vertical Gaussian Probability Density Bell Curve (正态分布钟形截面)
+      const pdfBaseX = w - paddingRight;
+      const p50EndY = getY(p50[years]);
+      const p90EndY = getY(p90[years]);
+      const p10EndY = getY(p10[years]);
+      const stdDevY = Math.max(25, (p10EndY - p90EndY) / 3.2);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(pdfBaseX, paddingTop);
+      for (let y = paddingTop; y <= h - paddingBottom; y += 2) {
+        const diff = (y - p50EndY) / stdDevY;
+        const gaussian = Math.exp(-0.5 * diff * diff); // Normal PDF curve
+        const curveX = pdfBaseX + gaussian * 38;
+        ctx.lineTo(curveX, y);
+      }
+      ctx.lineTo(pdfBaseX, h - paddingBottom);
+      ctx.closePath();
+
+      const pdfGrad = ctx.createLinearGradient(pdfBaseX, 0, pdfBaseX + 40, 0);
+      pdfGrad.addColorStop(0, 'rgba(99, 102, 241, 0.35)');
+      pdfGrad.addColorStop(1, 'rgba(52, 211, 153, 0.02)');
+      ctx.fillStyle = pdfGrad;
+      ctx.fill();
+
+      ctx.strokeStyle = '#818cf8';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = '#818cf8';
+      ctx.font = '600 8px Fira Code, monospace';
+      ctx.fillText('PDF Density', pdfBaseX + 8, p50EndY - 6);
+
+      // 7. EndPoint Callout Badges
       function drawEndPointBadge(val, color, bgAlpha = 0.95, yOffset = 0) {
         const lastIdx = years;
         const lastX = getX(lastIdx);
@@ -759,7 +794,7 @@
         drawEndPointBadge(mcResultsPlanB.p50[years], '#c084fc', 0.95, -18);
       }
 
-      // Hover Crosshair
+      // 8. Hover Crosshair
       if (hoverAge !== null && hoverAge >= state.currentAge && hoverAge <= state.endAge) {
         const hIdx = hoverAge - state.currentAge;
         const hX = getX(hIdx);
@@ -790,7 +825,7 @@
       const { canvas, ctx, w, h } = prepareCrispCanvas();
 
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = '#070b14';
+      ctx.fillStyle = '#050811';
       ctx.fillRect(0, 0, w, h);
 
       function drawNode(x, y, nodeW, nodeH, title, subtitle, color) {
@@ -877,7 +912,7 @@
       const { canvas, ctx, w, h } = prepareCrispCanvas();
 
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = '#070b14';
+      ctx.fillStyle = '#050811';
       ctx.fillRect(0, 0, w, h);
 
       ctx.fillStyle = '#ffffff';
@@ -956,124 +991,222 @@
       ctx.fillText('🏆 Net Savings: $352,000', Math.min(560, w - 200), h - 22);
     }
 
-    // Full Lifecycle Sankey Cashflow River View (4K Dynamic Stream)
+    // Full Lifecycle 3-Stage Sankey Cashflow Hub (Stripe Sigma / Wealthfront Quality)
     function drawSankeyCanvas() {
       const { canvas, ctx, w, h } = prepareCrispCanvas();
 
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = '#070b14';
+      ctx.fillStyle = '#050811';
       ctx.fillRect(0, 0, w, h);
 
-      // Title & Stream Info
+      // Title & Velocity Badge
       ctx.fillStyle = '#ffffff';
       ctx.font = '800 14px Inter, sans-serif';
-      ctx.fillText('Dynamic Cashflow Sankey River — Lifetime Capital Routing', 35, 34);
+      ctx.fillText('Dynamic Cashflow Sankey River — Inflow vs Capital Allocation', 35, 34);
 
-      ctx.fillStyle = 'rgba(52, 211, 153, 0.15)';
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
       ctx.fillRect(w - 240, 16, 205, 28);
-      ctx.strokeStyle = '#34d399';
+      ctx.strokeStyle = '#38bdf8';
       ctx.lineWidth = 1;
       ctx.strokeRect(w - 240, 16, 205, 28);
-      ctx.fillStyle = '#34d399';
+      ctx.fillStyle = '#38bdf8';
       ctx.font = '800 11px Fira Code, monospace';
-      ctx.fillText('🌊 Fluid Cash Velocity: 60fps', w - 225, 34);
+      ctx.fillText('🌊 Gross Inflow: $287,500/yr', w - 228, 34);
 
-      // Income Sources (Left Column)
-      const annualIncome = 220000;
-      const ssIncome = (state.ssMonthlyPIA || 2500) * 12;
-      const portGrowth = Math.round(state.initialAssets * 0.075);
-      const totalIn = annualIncome + ssIncome + portGrowth;
+      // Calculate Real Inflows and Outflows
+      const salaryIn = 220000;
+      const ssIn = (state.ssMonthlyPIA || 2500) * 12;
+      const yieldIn = Math.round(state.initialAssets * 0.075);
+      const totalIn = salaryIn + ssIn + yieldIn;
 
-      // Expense & Asset Destinations (Right Column)
-      const spending = state.annualSpend || 80000;
-      const estTax = Math.round(annualIncome * 0.24);
-      const rothShield = state.taxSavings || 145000;
-      const trustCompound = totalIn - spending - estTax;
+      const livingExp = state.annualSpend || 80000;
+      const irsTax = Math.round(salaryIn * 0.24);
+      const retainedAlpha = totalIn - livingExp - irsTax;
 
+      // 3 Inflow Source Cards (Left)
       const sources = [
-        { label: `Salary Income ($${Math.round(annualIncome/1000)}k/yr)`, val: annualIncome, color: '#38bdf8' },
-        { label: `Social Security ($${Math.round(ssIncome/1000)}k/yr)`, val: ssIncome, color: '#fbbf24' },
-        { label: `Portfolio Yield 7.5% ($${Math.round(portGrowth/1000)}k/yr)`, val: portGrowth, color: '#34d399' }
+        { title: '💼 Salary & Bonus', val: salaryIn, pct: '77%', color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.12)' },
+        { title: '🏛️ Social Security', val: ssIn, pct: '10%', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.12)' },
+        { title: '📈 Portfolio Yield 7.5%', val: yieldIn, pct: '13%', color: '#34d399', bg: 'rgba(52, 211, 153, 0.12)' }
       ];
 
+      // 3 Outflow Destination Cards (Right)
       const destinations = [
-        { label: `Living Expenses ($${Math.round(spending/1000)}k/yr)`, val: spending, color: '#fb7185' },
-        { label: `IRS Federal Tax ($${Math.round(estTax/1000)}k/yr)`, val: estTax, color: '#f43f5e' },
-        { label: `Roth / Reinvested ($${Math.round(trustCompound/1000)}k/yr)`, val: Math.max(20000, trustCompound), color: '#818cf8' }
+        { title: '🍷 Annual Living Spend', val: livingExp, pct: `${Math.round((livingExp/totalIn)*100)}%`, color: '#fb7185', bg: 'rgba(251, 113, 133, 0.12)' },
+        { title: '🏛️ IRS Federal Tax Drag', val: irsTax, pct: `${Math.round((irsTax/totalIn)*100)}%`, color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.12)' },
+        { title: '🛡️ Retained Wealth & Roth', val: retainedAlpha, pct: `${Math.round((retainedAlpha/totalIn)*100)}%`, color: '#818cf8', bg: 'rgba(129, 140, 248, 0.12)' }
       ];
 
-      const leftX = 40;
-      const midX = w / 2;
-      const rightX = w - 40;
-      const topY = 75;
-      const availableH = h - topY - 50;
+      const leftCardW = 190;
+      const rightCardW = 195;
+      const leftX = 35;
+      const rightX = w - rightCardW - 35;
+      const cardH = 50;
+      const topY = 65;
+      const gapY = 32;
 
-      // Draw Left Source Nodes
-      let currLeftY = topY;
-      sources.forEach(src => {
-        const nodeH = Math.max(22, (src.val / totalIn) * availableH);
-        src.y = currLeftY;
-        src.h = nodeH;
+      // Draw Inflow Source Cards (Left)
+      sources.forEach((src, idx) => {
+        const y = topY + idx * (cardH + gapY);
+        src.y = y;
+        src.h = cardH;
+
+        // Card Container
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillRect(leftX, y, leftCardW, cardH);
+        ctx.strokeStyle = src.color;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(leftX, y, leftCardW, cardH);
+
+        // Left accent bar
+        ctx.fillStyle = src.color;
+        ctx.fillRect(leftX, y, 4, cardH);
+
+        // Text labels
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 11px Inter, sans-serif';
+        ctx.fillText(src.title, leftX + 12, y + 20);
 
         ctx.fillStyle = src.color;
-        ctx.fillRect(leftX, currLeftY, 12, nodeH);
+        ctx.font = '700 11px Fira Code, monospace';
+        ctx.fillText(`$${src.val.toLocaleString()}/yr`, leftX + 12, y + 38);
 
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '700 11px Inter, sans-serif';
-        ctx.fillText(src.label, leftX + 20, currLeftY + nodeH / 2 + 4);
-
-        currLeftY += nodeH + 18;
+        ctx.fillStyle = '#64748b';
+        ctx.font = '600 10px Fira Code, monospace';
+        ctx.fillText(src.pct, leftX + leftCardW - 32, y + 38);
       });
 
-      // Draw Right Destination Nodes
-      let currRightY = topY;
-      const totalDest = destinations.reduce((a, b) => a + b.val, 0);
-      destinations.forEach(dst => {
-        const nodeH = Math.max(22, (dst.val / totalDest) * availableH);
-        dst.y = currRightY;
-        dst.h = nodeH;
+      // Draw Outflow Destination Cards (Right)
+      destinations.forEach((dst, idx) => {
+        const y = topY + idx * (cardH + gapY);
+        dst.y = y;
+        dst.h = cardH;
+
+        // Card Container
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillRect(rightX, y, rightCardW, cardH);
+        ctx.strokeStyle = dst.color;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(rightX, y, rightCardW, cardH);
+
+        // Right accent bar
+        ctx.fillStyle = dst.color;
+        ctx.fillRect(rightX + rightCardW - 4, y, 4, cardH);
+
+        // Text labels
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 11px Inter, sans-serif';
+        ctx.fillText(dst.title, rightX + 12, y + 20);
 
         ctx.fillStyle = dst.color;
-        ctx.fillRect(rightX - 12, currRightY, 12, nodeH);
+        ctx.font = '700 11px Fira Code, monospace';
+        ctx.fillText(`$${dst.val.toLocaleString()}/yr`, rightX + 12, y + 38);
 
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '700 11px Inter, sans-serif';
-        ctx.textAlign = 'right';
-        ctx.fillText(dst.label, rightX - 20, currRightY + nodeH / 2 + 4);
-        ctx.textAlign = 'left';
-
-        currRightY += nodeH + 18;
+        ctx.fillStyle = '#64748b';
+        ctx.font = '600 10px Fira Code, monospace';
+        ctx.fillText(dst.pct, rightX + rightCardW - 38, y + 38);
       });
 
-      // Draw Dynamic Fluid Curved Streams between Sources & Destinations
-      sources.forEach((src, sIdx) => {
-        destinations.forEach((dst, dIdx) => {
-          const streamWeight = (src.val * dst.val) / (totalIn * totalDest);
-          const ribbonH = Math.max(4, streamWeight * availableH * 0.9);
+      // Draw Fluid Sankey Streams
+      const startX = leftX + leftCardW;
+      const endX = rightX;
+      const midX = (startX + endX) / 2;
+
+      sources.forEach(src => {
+        destinations.forEach(dst => {
+          const ratio = (src.val * dst.val) / (totalIn * totalIn);
+          const ribbonH = Math.max(3, ratio * 130);
 
           const sY = src.y + src.h * 0.5;
           const dY = dst.y + dst.h * 0.5;
 
-          const grad = ctx.createLinearGradient(leftX, 0, rightX, 0);
-          grad.addColorStop(0, src.color.replace('rgb', 'rgba').replace(')', ', 0.35)'));
-          grad.addColorStop(1, dst.color.replace('rgb', 'rgba').replace(')', ', 0.35)'));
+          const streamGrad = ctx.createLinearGradient(startX, 0, endX, 0);
+          streamGrad.addColorStop(0, src.color.replace('rgb', 'rgba').replace(')', ', 0.38)'));
+          streamGrad.addColorStop(0.5, 'rgba(99, 102, 241, 0.22)');
+          streamGrad.addColorStop(1, dst.color.replace('rgb', 'rgba').replace(')', ', 0.38)'));
 
           ctx.beginPath();
-          ctx.moveTo(leftX + 12, sY - ribbonH / 2);
-          ctx.bezierCurveTo(midX - 60, sY, midX + 60, dY, rightX - 12, dY - ribbonH / 2);
-          ctx.lineTo(rightX - 12, dY + ribbonH / 2);
-          ctx.bezierCurveTo(midX + 60, dY + ribbonH / 2, midX - 60, sY + ribbonH / 2, leftX + 12, sY + ribbonH / 2);
+          ctx.moveTo(startX, sY - ribbonH / 2);
+          ctx.bezierCurveTo(midX - 70, sY, midX + 70, dY, endX, dY - ribbonH / 2);
+          ctx.lineTo(endX, dY + ribbonH / 2);
+          ctx.bezierCurveTo(midX + 70, dY + ribbonH / 2, midX - 70, sY + ribbonH / 2, startX, sY + ribbonH / 2);
           ctx.closePath();
 
-          ctx.fillStyle = grad;
+          ctx.fillStyle = streamGrad;
           ctx.fill();
         });
       });
 
+      // Center Flow Hub Nexus Capsule
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+      ctx.fillRect(midX - 65, topY + cardH + 10, 130, 28);
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.8)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(midX - 65, topY + cardH + 10, 130, 28);
+
+      ctx.fillStyle = '#a5b4fc';
+      ctx.font = '700 10px Fira Code, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('⚡ Capital Nexus Hub', midX, topY + cardH + 28);
+      ctx.textAlign = 'left';
+
       // Bottom Legend Tag
       ctx.fillStyle = '#64748b';
       ctx.font = '500 10px Fira Code, monospace';
-      ctx.fillText('Veloxis Fluid Sankey Engine • Continuous Income-to-Destination Cashflow Stream', 35, h - 18);
+      ctx.fillText('Veloxis Fluid Sankey Hub • Total Income Inflow vs Tax Drag & Net Wealth Retention', 35, h - 18);
+    }
+
+    // Switch Visual View and update dynamic bottom footer legend
+    function switchVisualTab(tabKey) {
+      state.activeTab = tabKey;
+      ['Monte', 'Sankey', 'Estate', 'Roth'].forEach(t => {
+        const btn = document.getElementById('tabBtn' + t);
+        if (!btn) return;
+        if (t.toLowerCase() === tabKey) {
+          btn.className = 'px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-sm transition-all flex items-center gap-1.5 text-xs';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1.5 text-xs';
+        }
+      });
+
+      // Update Bottom Footer Legend Dynamically
+      const footerLegend = document.getElementById('footerLegendText');
+      if (footerLegend) {
+        if (tabKey === 'monte') {
+          footerLegend.innerHTML = `
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-emerald-500 rounded-full inline-block shadow-[0_0_8px_#10b981]"></span> 90% Bull Corridor</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-indigo-500 rounded-full inline-block shadow-[0_0_8px_#818cf8]"></span> 50% Median Trajectory</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-rose-500 rounded-full inline-block"></span> 10% Bear Floor Guardrail</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 border-t border-dashed border-amber-400 inline-block"></span> 4% SWR Safe Harbor</span>
+          `;
+        } else if (tabKey === 'sankey') {
+          footerLegend.innerHTML = `
+            <span class="text-sky-400 font-bold">Inflows: $287,500/yr</span>
+            <span class="text-slate-600">•</span>
+            <span class="text-rose-400 font-bold">Tax Drag: 18%</span>
+            <span class="text-slate-600">•</span>
+            <span class="text-emerald-400 font-bold">Retained Wealth Alpha: +$154,700/yr (54%)</span>
+          `;
+        } else if (tabKey === 'estate') {
+          footerLegend.innerHTML = `
+            <span class="text-emerald-400 font-bold">Grantor Trust: $2.5M</span>
+            <span class="text-slate-600">•</span>
+            <span class="text-amber-400 font-bold">GST Shielded Dynasty: $1.25M</span>
+            <span class="text-slate-600">•</span>
+            <span class="text-indigo-400 font-bold">Probate Avoidance: 100%</span>
+          `;
+        } else if (tabKey === 'roth') {
+          footerLegend.innerHTML = `
+            <span class="text-rose-400 font-bold">Traditional RMD Peak: 37%</span>
+            <span class="text-slate-600">•</span>
+            <span class="text-emerald-400 font-bold">Veloxis Window: 12%</span>
+            <span class="text-slate-600">•</span>
+            <span class="text-amber-400 font-bold">Net Tax Alpha: +$352,000 Saved</span>
+          `;
+        }
+      }
+
+      recomputeAndRender();
     }
 
     // Switch Visual View
