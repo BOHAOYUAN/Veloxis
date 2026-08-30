@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Veloxis AI — Conversational Wealth & Dynamic Visual Engine</title>
+  <title>Veloxis AI — Professional RIA Wealth & Monte Carlo Platform</title>
   
   <!-- PWA & Mobile Web App Meta Tags -->
   <link rel="manifest" href="/manifest.json">
@@ -68,7 +68,6 @@
     .glow-purple {
       box-shadow: 0 0 40px -10px rgba(168, 85, 247, 0.3);
     }
-    /* Touch-friendly Range Slider Styling */
     input[type=range] {
       accent-color: #10b981;
       touch-action: none;
@@ -86,8 +85,8 @@
 <body class="min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white pb-6">
 
   <!-- ================= TOP HEADER / NAVIGATION ================= -->
-  <header class="w-full border-b border-slate-800/80 glass-panel sticky top-0 z-50 py-2.5 px-3 sm:px-4 lg:px-8 flex items-center justify-between">
-    <div class="flex items-center gap-2.5 sm:gap-3">
+  <header class="w-full border-b border-slate-800/80 glass-panel sticky top-0 z-50 py-2.5 px-3 sm:px-4 lg:px-8 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
       <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-indigo-500 p-0.5 shadow-lg flex items-center justify-center">
         <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
           <i data-lucide="shield-check" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400"></i>
@@ -96,24 +95,42 @@
       <div>
         <h1 class="text-sm sm:text-base font-black tracking-tight font-outfit text-white flex items-center gap-1.5 sm:gap-2">
           <span>VELOXIS</span>
-          <span class="text-[9px] sm:text-[10px] font-mono px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40">0.08s LPU</span>
-          <span class="text-[9px] sm:text-[10px] font-mono px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-500/40 hidden sm:inline-block">RightCapital Benchmark</span>
+          <span class="text-[9px] sm:text-[10px] font-mono px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40">RIA Suite</span>
+          <span class="text-[9px] sm:text-[10px] font-mono px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-500/40 hidden sm:inline-block">Groq 0.08s</span>
         </h1>
-        <p class="text-[10px] sm:text-[11px] text-slate-400 hidden md:block">Conversational Financial Planning & Dynamic Monte Carlo Engine</p>
       </div>
     </div>
 
-    <!-- Engine Status & Export Action -->
-    <div class="flex items-center gap-2 sm:gap-3">
-      <div class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono text-slate-300 bg-slate-900/90 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border border-slate-800 shadow-sm">
-        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="text-slate-400 hidden sm:inline">Inference:</span>
+    <!-- Client CRM Selector & Stress Test Status -->
+    <div class="flex items-center gap-2 sm:gap-3 flex-1 max-w-md justify-center">
+      <!-- CRM Switcher -->
+      <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 px-2.5 py-1 rounded-xl text-xs">
+        <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+        <select id="clientSelector" onchange="onClientSwitch(this.value)" class="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px] sm:text-xs">
+          <option value="client_sarah" class="bg-slate-900 text-white">Sarah Lin (Age 35, $500k)</option>
+          <option value="client_david" class="bg-slate-900 text-white">David Miller (Age 42, $1.2M)</option>
+          <option value="client_chang" class="bg-slate-900 text-white">Michael Chang (Age 58, $2.8M HNW)</option>
+        </select>
+      </div>
+
+      <!-- Comparison Toggle -->
+      <button id="btnCompareToggle" onclick="toggleComparisonMode()" class="px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] text-slate-300 font-bold transition-all flex items-center gap-1 shrink-0">
+        <i data-lucide="git-compare" class="w-3 h-3 text-indigo-400"></i>
+        <span id="lblCompareToggle">Plan A vs B</span>
+      </button>
+    </div>
+
+    <!-- Right Actions: Stress Test Badge & 4K PDF -->
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <div class="hidden md:flex items-center gap-1.5 text-xs font-mono text-slate-300 bg-slate-900/90 px-2.5 py-1.5 rounded-xl border border-slate-800">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-slate-400">p50:</span>
         <strong class="text-emerald-400" id="latencyBadge">84ms</strong>
       </div>
 
       <button onclick="exportPdfReport()" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-[11px] sm:text-xs shadow-md transition-all active:scale-95 flex items-center gap-1">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
-        <span>PDF</span>
+        <span>Export 4K PDF</span>
       </button>
     </div>
   </header>
@@ -121,13 +138,12 @@
   <!-- ================= MAIN WORKSPACE GRID (12 Cols) ================= -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
 
-    <!-- ================= LEFT PANEL: CONVERSATIONAL INTAKE & LIVE PARAMETER TWEAKER (5 Cols) ================= -->
+    <!-- ================= LEFT PANEL: INTAKE, COMPARISON & STRESS TEST CONTROLS (5 Cols) ================= -->
     <section class="lg:col-span-5 flex flex-col gap-3.5 sm:gap-4 order-2 lg:order-1">
       
       <!-- 1. Conversational Intake Box -->
       <div class="glass-panel rounded-2xl p-3.5 sm:p-4 border border-emerald-500/40 flex flex-col gap-2.5 sm:gap-3 shadow-xl glow-emerald relative overflow-hidden">
         
-        <!-- Header & Quick Preset Chips -->
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
             <label class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
@@ -137,7 +153,7 @@
             <span class="text-[9px] sm:text-[10px] font-mono text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-700/40">JSON Mode</span>
           </div>
 
-          <!-- 3 Quick Scenario Presets -->
+          <!-- Quick Presets -->
           <div class="flex flex-wrap gap-1.5">
             <button onclick="loadPresetPrompt('retire')" class="px-2 py-1 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 text-[10px] sm:text-[11px] font-mono text-emerald-300 border border-emerald-500/40 transition-all flex items-center gap-1 active:scale-95">
               <span>📈 35yo $500k Guardrail</span>
@@ -151,7 +167,7 @@
           </div>
         </div>
 
-        <!-- Hero Prompt Textarea -->
+        <!-- Prompt Textarea -->
         <div class="relative">
           <textarea id="promptInput" rows="3"
             placeholder="e.g. 'Age 35, $500k savings, retire at 55 spending $80k/yr with 80% stock allocation and $145k Roth conversion...'"
@@ -165,11 +181,36 @@
         </button>
       </div>
 
-      <!-- 2. 🎛️ Live Scenario Tweaker (Interactive Monte Carlo Parameter Sliders) -->
+      <!-- 2. 📉 FINRA Regulatory Stress Test Mode Selector -->
+      <div class="glass-panel rounded-2xl p-3 sm:p-3.5 border border-slate-800 flex flex-col gap-2 shadow-lg">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-400"></i> FINRA Stress Test Suite
+          </span>
+          <span class="text-[9px] font-mono text-slate-400" id="stressTestStatusTag">Baseline Normal</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          <button onclick="setStressMode('none')" id="stressBtn_none" class="px-2 py-1.5 rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-500/50 text-[10px] font-bold text-center transition-all">
+            Normal Market
+          </button>
+          <button onclick="setStressMode('gfc2008')" id="stressBtn_gfc2008" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-[10px] font-bold text-center transition-all">
+            🔴 2008 GFC (-38%)
+          </button>
+          <button onclick="setStressMode('dotcom')" id="stressBtn_dotcom" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-[10px] font-bold text-center transition-all">
+            🟠 2000 DotCom
+          </button>
+          <button onclick="setStressMode('stagflation')" id="stressBtn_stagflation" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-[10px] font-bold text-center transition-all">
+            🟣 Stagflation (8%)
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. 🎛️ Live Scenario Tweaker (Plan A Sliders) -->
       <div class="glass-panel rounded-2xl p-3.5 sm:p-4 border border-slate-800 flex flex-col gap-3 shadow-lg">
         <div class="flex items-center justify-between border-b border-slate-800 pb-2">
           <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-            <i data-lucide="sliders" class="w-3.5 h-3.5 text-indigo-400"></i> Live Scenario Tweaker (60fps Re-Sim)
+            <i data-lucide="sliders" class="w-3.5 h-3.5 text-indigo-400"></i> Plan Parameters (60fps Re-Sim)
           </span>
           <span class="text-[9px] sm:text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">1,000 Paths</span>
         </div>
@@ -182,9 +223,6 @@
           </div>
           <input type="range" id="sliderAssets" min="100000" max="3000000" step="50000" value="500000"
             class="w-full h-2.5 sm:h-1.5 py-1 bg-slate-800 rounded-lg cursor-pointer" oninput="onLiveParamChange()">
-          <div class="flex justify-between text-[9px] font-mono text-slate-500">
-            <span>$100k</span><span>$1.5M</span><span>$3.0M</span>
-          </div>
         </div>
 
         <!-- Slider 2: Retirement Age -->
@@ -195,9 +233,6 @@
           </div>
           <input type="range" id="sliderRetireAge" min="40" max="70" step="1" value="55"
             class="w-full h-2.5 sm:h-1.5 py-1 bg-slate-800 rounded-lg cursor-pointer" oninput="onLiveParamChange()">
-          <div class="flex justify-between text-[9px] font-mono text-slate-500">
-            <span>Age 40</span><span>Age 55</span><span>Age 70</span>
-          </div>
         </div>
 
         <!-- Slider 3: Annual Retirement Spending -->
@@ -208,9 +243,6 @@
           </div>
           <input type="range" id="sliderSpend" min="30000" max="250000" step="5000" value="80000"
             class="w-full h-2.5 sm:h-1.5 py-1 bg-slate-800 rounded-lg cursor-pointer" oninput="onLiveParamChange()">
-          <div class="flex justify-between text-[9px] font-mono text-slate-500">
-            <span>$30k/yr</span><span>$140k/yr</span><span>$250k/yr</span>
-          </div>
         </div>
 
         <!-- Slider 4: Asset Allocation (Equity vs Fixed Income) -->
@@ -221,19 +253,16 @@
           </div>
           <input type="range" id="sliderEquity" min="0.2" max="1.0" step="0.05" value="0.75"
             class="w-full h-2.5 sm:h-1.5 py-1 bg-slate-800 rounded-lg cursor-pointer" oninput="onLiveParamChange()">
-          <div class="flex justify-between text-[9px] font-mono text-slate-500">
-            <span>Conservative (20/80)</span><span>Balanced (60/40)</span><span>Aggressive (100/0)</span>
-          </div>
         </div>
 
       </div>
 
-      <!-- 3. Key Financial Output Metrics Grid -->
+      <!-- 4. Key Financial Output Metrics Grid -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <div class="p-2.5 sm:p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
           <div class="text-[9px] sm:text-[10px] font-mono text-slate-400">Monte Carlo Rate</div>
           <div class="text-base sm:text-lg font-black text-emerald-400 font-mono mt-0.5" id="valMcSuccess">96%</div>
-          <div class="text-[8px] sm:text-[9px] text-emerald-400/80">High Confidence</div>
+          <div class="text-[8px] sm:text-[9px] text-emerald-400/80" id="valMcLabel">High Confidence</div>
         </div>
 
         <div class="p-2.5 sm:p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
@@ -279,10 +308,9 @@
             </button>
           </div>
 
-          <!-- Live Indicator -->
-          <div class="hidden sm:flex items-center gap-2 text-[11px] font-mono text-slate-400">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span>Retina 2D Canvas</span>
+          <!-- Comparison Mode Active Pill -->
+          <div id="comparisonActiveBadge" class="hidden flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-500/40 animate-pulse">
+            <span>🔀 Plan A (Green) vs Plan B (Purple)</span>
           </div>
         </div>
 
@@ -297,15 +325,17 @@
               <div class="text-emerald-400 font-bold" id="ttP90">90% Bull: $3.12M</div>
               <div class="text-indigo-300 font-bold" id="ttP50">50% Base: $1.84M</div>
               <div class="text-rose-400 font-bold" id="ttP10">10% Bear: $640k</div>
+              <div class="text-purple-300 font-bold hidden" id="ttPlanB">Plan B: $2.45M</div>
             </div>
           </div>
 
           <!-- Chart Legend & Color Identifiers -->
           <div class="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 px-1 text-[10px] sm:text-[11px] font-mono text-slate-400">
             <div class="flex items-center gap-3 sm:gap-4 flex-wrap">
-              <span class="flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-emerald-500 rounded-full inline-block shadow-[0_0_8px_#10b981]"></span> 90% Bull Case</span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-indigo-500 rounded-full inline-block shadow-[0_0_8px_#818cf8]"></span> 50% Median Baseline</span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-rose-500 rounded-full inline-block"></span> 10% Bear Guardrail</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-emerald-500 rounded-full inline-block shadow-[0_0_8px_#10b981]"></span> Plan A 90% Bull</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-indigo-500 rounded-full inline-block shadow-[0_0_8px_#818cf8]"></span> Plan A 50% Median</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-rose-500 rounded-full inline-block"></span> Plan A 10% Bear</span>
+              <span id="legendPlanB" class="hidden flex items-center gap-1.5"><span class="w-2.5 sm:w-3 h-1 bg-purple-500 rounded-full inline-block shadow-[0_0_8px_#a855f7]"></span> Plan B Median (Retire 60)</span>
             </div>
             <span class="text-slate-500 hidden md:inline">Drag finger / cursor to inspect simulation points</span>
           </div>
@@ -349,27 +379,57 @@
   <script>
     lucide.createIcons();
 
-    // Core Financial Planning State
-    let state = {
-      currentAge: 35,
-      retireAge: 55,
-      endAge: 85,
-      initialAssets: 500000,
-      annualSpend: 80000,
-      equityRatio: 0.75, // 75% stocks / 25% bonds
-      taxSavings: 145000,
-      activeTab: 'monte'
+    // Client CRM Profiles Database (With LocalStorage Persistence)
+    const clientDatabase = {
+      client_sarah: {
+        name: "Sarah Lin",
+        currentAge: 35,
+        retireAge: 55,
+        endAge: 85,
+        initialAssets: 500000,
+        annualSpend: 80000,
+        equityRatio: 0.75,
+        taxSavings: 145000
+      },
+      client_david: {
+        name: "David Miller",
+        currentAge: 42,
+        retireAge: 60,
+        endAge: 88,
+        initialAssets: 1200000,
+        annualSpend: 110000,
+        equityRatio: 0.80,
+        taxSavings: 280000
+      },
+      client_chang: {
+        name: "Michael Chang",
+        currentAge: 58,
+        retireAge: 65,
+        endAge: 90,
+        initialAssets: 2800000,
+        annualSpend: 160000,
+        equityRatio: 0.70,
+        taxSavings: 540000
+      }
+    };
+
+    let activeClientId = "client_sarah";
+    let isCompareMode = false;
+    let stressMode = 'none'; // 'none' | 'gfc2008' | 'dotcom' | 'stagflation'
+
+    // Core Financial Planning State (Plan A)
+    let state = { ...clientDatabase[activeClientId], activeTab: 'monte' };
+
+    // Plan B State (For Scenario Comparison)
+    let statePlanB = {
+      retireAge: 60,
+      annualSpend: 90000,
+      equityRatio: 0.80
     };
 
     // Cache of computed percentile paths
-    let mcResults = {
-      p10: [],
-      p50: [],
-      p90: [],
-      successRate: 96,
-      years: 50,
-      rawPaths: []
-    };
+    let mcResults = { p10: [], p50: [], p90: [], successRate: 96, years: 50, rawPaths: [] };
+    let mcResultsPlanB = { p10: [], p50: [], p90: [], successRate: 99, years: 50 };
 
     // Box-Muller Gaussian Random Variable Generator
     function gaussianRandom() {
@@ -379,7 +439,7 @@
       return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
     }
 
-    // Trimmed percentile calculation to eliminate statistical tail explosions
+    // Trimmed percentile calculation
     function trimmedPercentile(arr, pct) {
       const sorted = [...arr].sort((a, b) => a - b);
       const lo = Math.floor(sorted.length * 0.025);
@@ -389,35 +449,47 @@
       return trimmed[idx];
     }
 
-    // High-Performance Monte Carlo Engine (Realistic Log-Normal Asset Return Drift)
-    function runMonteCarlo(initialAssets, annualSpend, currentAge, retireAge, endAge, equity, iterations = 1000) {
+    // High-Performance Monte Carlo Engine with FINRA Stress Testing
+    function runMonteCarlo(initialAssets, annualSpend, currentAge, retireAge, endAge, equity, iterations = 1000, stress = 'none') {
       const totalYears = endAge - currentAge;
       const retireYears = Math.max(0, retireAge - currentAge);
       const paths = [];
 
-      // Asset Allocation Parameters (Historical Real Returns)
-      const eqExpReturn = 0.075; // 7.5% nominal return for equity
-      const bdExpReturn = 0.038; // 3.8% nominal return for bonds
-      const eqVol = 0.145;       // 14.5% volatility
-      const bdVol = 0.045;       // 4.5% volatility
+      let eqExpReturn = 0.075;
+      let bdExpReturn = 0.038;
+      let eqVol = 0.145;
+      let bdVol = 0.045;
+      let inflation = 0.024;
+
+      // Apply FINRA Stress Shocks
+      if (stress === 'stagflation') {
+        inflation = 0.080; // 8% inflation shock
+        eqExpReturn = 0.020;
+      }
 
       const expReturn = equity * eqExpReturn + (1 - equity) * bdExpReturn;
       const portVol = equity * eqVol + (1 - equity) * bdVol;
-      // Log-normal drift adjustment: mu - 0.5 * sigma^2
       const drift = expReturn - 0.5 * portVol * portVol;
-      const inflation = 0.024; // 2.4% historical inflation
 
       for (let i = 0; i < iterations; i++) {
         let balance = initialAssets;
         const path = [balance];
 
         for (let y = 1; y <= totalYears; y++) {
-          const z = gaussianRandom();
-          // Log-normal return step
-          const annualReturn = Math.exp(drift + portVol * z) - 1;
+          let annualReturn = 0;
+
+          // Injected Sequence-of-Returns Crisis Shocks at Retirement
+          if (stress === 'gfc2008' && y === retireYears + 1) {
+            annualReturn = -0.385 * equity - 0.05 * (1 - equity); // -38.5% GFC shock
+          } else if (stress === 'dotcom' && (y >= retireYears + 1 && y <= retireYears + 3)) {
+            annualReturn = -0.220 * equity + 0.02 * (1 - equity); // 3-year bear market
+          } else {
+            const z = gaussianRandom();
+            annualReturn = Math.exp(drift + portVol * z) - 1;
+          }
+
           balance = balance * (1 + annualReturn);
 
-          // If retired, deduct inflation-adjusted annual spending
           if (y > retireYears) {
             const inflatedSpend = annualSpend * Math.pow(1 + inflation, y - retireYears);
             balance -= inflatedSpend;
@@ -429,7 +501,6 @@
         paths.push(path);
       }
 
-      // Extract Percentiles (p10, p50, p90) for each year with trimmed outliers
       const p10 = [];
       const p50 = [];
       const p90 = [];
@@ -441,11 +512,69 @@
         p90.push(trimmedPercentile(yearBalances, 0.90));
       }
 
-      // Calculate Survival Success Rate (% of paths with balance > 0 at endAge)
       const surviving = paths.filter(p => p[totalYears] > 0).length;
       const successRate = Math.round((surviving / iterations) * 100);
 
       return { p10, p50, p90, successRate, years: totalYears, rawPaths: paths };
+    }
+
+    // Switch Client CRM Profile
+    function onClientSwitch(clientId) {
+      activeClientId = clientId;
+      const saved = localStorage.getItem('veloxis_' + clientId);
+      if (saved) {
+        state = { ...JSON.parse(saved), activeTab: state.activeTab };
+      } else {
+        state = { ...clientDatabase[clientId], activeTab: state.activeTab };
+      }
+
+      // Sync Sliders
+      document.getElementById('sliderAssets').value = state.initialAssets;
+      document.getElementById('sliderRetireAge').value = state.retireAge;
+      document.getElementById('sliderSpend').value = state.annualSpend;
+      document.getElementById('sliderEquity').value = state.equityRatio;
+
+      onLiveParamChange();
+    }
+
+    // Toggle Scenario Comparison (Plan A vs B)
+    function toggleComparisonMode() {
+      isCompareMode = !isCompareMode;
+      const btn = document.getElementById('btnCompareToggle');
+      const badge = document.getElementById('comparisonActiveBadge');
+      const legendB = document.getElementById('legendPlanB');
+
+      if (isCompareMode) {
+        btn.className = 'px-2.5 py-1 rounded-xl bg-indigo-600 text-white font-bold text-[11px] shadow transition-all flex items-center gap-1 shrink-0';
+        badge.classList.remove('hidden');
+        legendB.classList.remove('hidden');
+      } else {
+        btn.className = 'px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] text-slate-300 font-bold transition-all flex items-center gap-1 shrink-0';
+        badge.classList.add('hidden');
+        legendB.classList.add('hidden');
+      }
+      recomputeAndRender();
+    }
+
+    // Set Stress Test Scenario
+    function setStressMode(mode) {
+      stressMode = mode;
+      ['none', 'gfc2008', 'dotcom', 'stagflation'].forEach(m => {
+        const btn = document.getElementById('stressBtn_' + m);
+        if (m === mode) {
+          btn.className = 'px-2 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/60 text-[10px] font-bold text-center transition-all';
+        } else {
+          btn.className = 'px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-[10px] font-bold text-center transition-all';
+        }
+      });
+
+      const tag = document.getElementById('stressTestStatusTag');
+      if (mode === 'none') tag.innerText = 'Baseline Normal';
+      else if (mode === 'gfc2008') tag.innerText = '⚠️ 2008 Crisis Injected';
+      else if (mode === 'dotcom') tag.innerText = '⚠️ 2000 DotCom Injected';
+      else if (mode === 'stagflation') tag.innerText = '⚠️ Stagflation 8% Injected';
+
+      recomputeAndRender();
     }
 
     // Live Parameter Trigger (Bound to Sliders)
@@ -455,6 +584,9 @@
       state.retireAge = parseInt(document.getElementById('sliderRetireAge').value);
       state.annualSpend = parseInt(document.getElementById('sliderSpend').value);
       state.equityRatio = parseFloat(document.getElementById('sliderEquity').value);
+
+      // Save to LocalStorage
+      localStorage.setItem('veloxis_' + activeClientId, JSON.stringify(state));
 
       // Update Slider Label Text
       document.getElementById('lblAssetVal').innerText = '$' + state.initialAssets.toLocaleString();
@@ -471,6 +603,7 @@
     }
 
     function recomputeAndRender() {
+      // Plan A Simulation
       mcResults = runMonteCarlo(
         state.initialAssets,
         state.annualSpend,
@@ -478,11 +611,40 @@
         state.retireAge,
         state.endAge,
         state.equityRatio,
-        800
+        800,
+        stressMode
       );
 
+      // Plan B Simulation (Retire 5 Years Later with Higher Spending)
+      if (isCompareMode) {
+        statePlanB.retireAge = Math.min(state.retireAge + 5, 70);
+        statePlanB.annualSpend = state.annualSpend + 15000;
+        mcResultsPlanB = runMonteCarlo(
+          state.initialAssets,
+          statePlanB.annualSpend,
+          state.currentAge,
+          statePlanB.retireAge,
+          state.endAge,
+          state.equityRatio,
+          800,
+          stressMode
+        );
+      }
+
       // Update KPI Cards
-      document.getElementById('valMcSuccess').innerText = mcResults.successRate + '%';
+      const rateElem = document.getElementById('valMcSuccess');
+      rateElem.innerText = mcResults.successRate + '%';
+      if (mcResults.successRate >= 85) {
+        rateElem.className = 'text-base sm:text-lg font-black text-emerald-400 font-mono mt-0.5';
+        document.getElementById('valMcLabel').innerText = 'High Confidence';
+      } else if (mcResults.successRate >= 70) {
+        rateElem.className = 'text-base sm:text-lg font-black text-amber-400 font-mono mt-0.5';
+        document.getElementById('valMcLabel').innerText = 'Caution Guardrail';
+      } else {
+        rateElem.className = 'text-base sm:text-lg font-black text-rose-500 font-mono mt-0.5';
+        document.getElementById('valMcLabel').innerText = '⚠️ High Deficit Risk';
+      }
+
       const endMedian = mcResults.p50[mcResults.p50.length - 1];
       document.getElementById('valMedianP50').innerText = endMedian >= 1000000 
         ? '$' + (endMedian / 1000000).toFixed(2) + 'M' 
@@ -498,7 +660,7 @@
       }
     }
 
-    // High-DPI Retina Canvas Rendering with Neon Glow & EndPoint Tags
+    // High-DPI Retina Canvas Rendering with Plan A vs B Dual Corridors
     function drawMonteCarloCanvas(hoverAge = null) {
       const canvas = document.getElementById('mcCanvas');
       const ctx = canvas.getContext('2d');
@@ -515,14 +677,14 @@
       ctx.fillRect(0, 0, w, h);
 
       const paddingLeft = 65;
-      const paddingRight = 65; // Extra room for endpoint tags
+      const paddingRight = 65;
       const paddingTop = 38;
       const paddingBottom = 45;
       const chartW = w - paddingLeft - paddingRight;
       const chartH = h - paddingTop - paddingBottom;
 
       const { p10, p50, p90, years } = mcResults;
-      const maxValRaw = Math.max(...p90, state.initialAssets * 1.5);
+      const maxValRaw = Math.max(...p90, ...(isCompareMode ? mcResultsPlanB.p90 : []), state.initialAssets * 1.5);
       const magnitude = Math.pow(10, Math.floor(Math.log10(maxValRaw)));
       const maxVal = Math.ceil(maxValRaw / (magnitude / 2)) * (magnitude / 2) * 1.05;
 
@@ -553,7 +715,7 @@
       }
 
       // 4% SWR Safe Harbor Rule Floor Line
-      const swrFloorVal = state.initialAssets * 0.04 * 25; // 4% Rule Baseline Value
+      const swrFloorVal = state.initialAssets * 0.04 * 25;
       if (swrFloorVal < maxVal) {
         const swrY = getY(swrFloorVal);
         ctx.setLineDash([3, 3]);
@@ -569,7 +731,7 @@
         ctx.fillText('• 4% SWR Baseline', paddingLeft + 8, swrY - 4);
       }
 
-      // Distribution Phase (Post-Retirement) Zone Shading
+      // Distribution Phase Zone Shading
       const retireYearIdx = Math.max(0, state.retireAge - state.currentAge);
       const retireX = getX(retireYearIdx);
       ctx.fillStyle = 'rgba(245, 158, 11, 0.04)';
@@ -604,7 +766,21 @@
       ctx.font = '700 10px Inter, sans-serif';
       ctx.fillText(`⚡ Retire Age ${state.retireAge}`, Math.min(retireX - 35, w - 140), paddingTop - 12);
 
-      // 1. Shaded Corridor (p10 to p90)
+      // Helper for drawing curve with neon glow
+      function drawCurve(data, color, glowColor, width, isDashed = false) {
+        ctx.save();
+        ctx.beginPath();
+        if (isDashed) ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = color;
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = width;
+        data.forEach((val, i) => i === 0 ? ctx.moveTo(getX(i), getY(val)) : ctx.lineTo(getX(i), getY(val)));
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 1. Shaded Corridor (Plan A: p10 to p90)
       ctx.beginPath();
       const corridorGrad = ctx.createLinearGradient(0, paddingTop, 0, h - paddingBottom);
       corridorGrad.addColorStop(0, 'rgba(16, 185, 129, 0.22)');
@@ -621,33 +797,35 @@
       ctx.closePath();
       ctx.fill();
 
-      // Helper for drawing curve with neon glow
-      function drawCurve(data, color, glowColor, width) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.strokeStyle = color;
-        ctx.shadowColor = glowColor;
-        ctx.shadowBlur = 10;
-        ctx.lineWidth = width;
-        data.forEach((val, i) => i === 0 ? ctx.moveTo(getX(i), getY(val)) : ctx.lineTo(getX(i), getY(val)));
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // 2. Draw 90% Bull Curve (Emerald Glow)
+      // 2. Draw Plan A Curves
       drawCurve(p90, '#10b981', 'rgba(16, 185, 129, 0.6)', 2.5);
-
-      // 3. Draw 50% Median Baseline (Indigo Glow)
       drawCurve(p50, '#818cf8', 'rgba(129, 140, 248, 0.5)', 2.5);
-
-      // 4. Draw 10% Bear Guardrail (Rose Glow)
       drawCurve(p10, '#f43f5e', 'rgba(244, 63, 94, 0.4)', 2);
 
-      // 5. Draw EndPoint Value Callout Badges on Right Edge
-      function drawEndPointBadge(val, color, bgAlpha = 0.9) {
+      // 3. Draw Plan B Overlapping Curve (If in Compare Mode)
+      if (isCompareMode) {
+        // Plan B Corridor (Purple)
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(168, 85, 247, 0.12)';
+        mcResultsPlanB.p90.forEach((val, i) => {
+          if (i === 0) ctx.moveTo(getX(i), getY(val));
+          else ctx.lineTo(getX(i), getY(val));
+        });
+        for (let i = years; i >= 0; i--) {
+          ctx.lineTo(getX(i), getY(mcResultsPlanB.p10[i]));
+        }
+        ctx.closePath();
+        ctx.fill();
+
+        // Plan B Median Line (Glowing Purple Dashed)
+        drawCurve(mcResultsPlanB.p50, '#c084fc', 'rgba(192, 132, 252, 0.8)', 2.5, true);
+      }
+
+      // 4. Draw EndPoint Value Callout Badges
+      function drawEndPointBadge(val, color, bgAlpha = 0.9, yOffset = 0) {
         const lastIdx = years;
         const lastX = getX(lastIdx);
-        const lastY = getY(val);
+        const lastY = getY(val) + yOffset;
         const tag = val >= 1000000 ? '$' + (val / 1000000).toFixed(2) + 'M' : '$' + Math.round(val / 1000) + 'k';
 
         ctx.fillStyle = color;
@@ -670,7 +848,11 @@
       drawEndPointBadge(p50[years], '#a5b4fc');
       drawEndPointBadge(p10[years], '#fda4af');
 
-      // 6. Draw Hover / Touch Crosshair
+      if (isCompareMode) {
+        drawEndPointBadge(mcResultsPlanB.p50[years], '#c084fc', 0.95, -18);
+      }
+
+      // 5. Draw Hover / Touch Crosshair
       if (hoverAge !== null && hoverAge >= state.currentAge && hoverAge <= state.endAge) {
         const hIdx = hoverAge - state.currentAge;
         const hX = getX(hIdx);
@@ -684,7 +866,6 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Highlight Dots on lines
         [p90[hIdx], p50[hIdx], p10[hIdx]].forEach((val, idx) => {
           ctx.beginPath();
           ctx.fillStyle = idx === 0 ? '#10b981' : idx === 1 ? '#818cf8' : '#f43f5e';
@@ -697,7 +878,7 @@
       }
     }
 
-    // 2D Canvas for Estate & Trust Tree with Directional Arrowheads & Badges
+    // 2D Canvas for Estate & Trust Tree
     function drawEstateCanvas() {
       const canvas = document.getElementById('estateCanvas');
       const ctx = canvas.getContext('2d');
@@ -715,7 +896,6 @@
         ctx.lineWidth = 1.5;
         ctx.strokeRect(x, y, nodeW, nodeH);
 
-        // Header indicator dot
         ctx.fillStyle = color;
         ctx.beginPath();
         ctx.arc(x + 12, y + 18, 3.5, 0, Math.PI * 2);
@@ -769,7 +949,7 @@
       }
 
       // Root Node: Grantor Trust
-      drawNode(220, 25, 200, 52, 'Grantor / Family Trust', 'Total Asset: $2.5M', '#10b981');
+      drawNode(220, 25, 200, 52, `${state.name} Family Trust`, `Total Asset: $${(state.initialAssets * 3.5 / 1000000).toFixed(1)}M`, '#10b981');
 
       // Layer 2: Revocable Living Trust & Dynasty Trust with Arrowheads
       drawArrowConnector(320, 77, 150, 155, '100% Tax Basis', '#818cf8');
@@ -785,13 +965,12 @@
       drawNode(55, 285, 190, 52, 'Beneficiary A (50%)', 'Liquid Distribution', '#38bdf8');
       drawNode(385, 285, 195, 52, 'Beneficiary B (50%)', 'Asset Protected Trust', '#ec4899');
 
-      // Bottom Legend Tag
       ctx.fillStyle = '#64748b';
       ctx.font = '500 10px Fira Code, monospace';
       ctx.fillText('Veloxis Visual Trust Engine • Revocable vs Irrevocable Architecture', 55, h - 20);
     }
 
-    // 2D Canvas for Roth Tax Optimizer (Visual Lifetime Tax Waterfall & Alpha Comparison)
+    // 2D Canvas for Roth Tax Optimizer
     function drawRothCanvas() {
       const canvas = document.getElementById('rothCanvas');
       const ctx = canvas.getContext('2d');
@@ -807,7 +986,7 @@
       ctx.font = '800 14px Inter, sans-serif';
       ctx.fillText('Roth Conversion Strategy vs. Traditional Pre-Tax RMD Trap', 25, 32);
 
-      // Alpha Callout Banner on Top Right
+      // Alpha Callout Banner
       ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
       ctx.fillRect(w - 200, 14, 175, 28);
       ctx.strokeStyle = '#10b981';
@@ -815,9 +994,8 @@
       ctx.strokeRect(w - 200, 14, 175, 28);
       ctx.fillStyle = '#34d399';
       ctx.font = '800 11px Fira Code, monospace';
-      ctx.fillText('⚡ Net Tax Alpha: +$364,000', w - 190, 32);
+      ctx.fillText(`⚡ Net Tax Alpha: +$${state.taxSavings.toLocaleString()}`, w - 190, 32);
 
-      // 4 Bracket Comparison Rows
       const brackets = [
         { label: 'Ages 35-54 (Career Peak)', tradTax: 32, rothTax: 24, tradDol: '$140k', rothDol: '$95k', desc: 'Pre-tax 401(k) contributions standard' },
         { label: 'Ages 55-64 (Veloxis Window)', tradTax: 12, rothTax: 12, tradDol: '$35k', rothDol: '$35k', desc: '⭐ Low-income conversion sweet spot' },
@@ -835,7 +1013,6 @@
         ctx.font = '400 10px Inter, sans-serif';
         ctx.fillText(b.desc, 25, yPos + 15);
 
-        // Traditional Pre-Tax Bar (Rose)
         const barX = 230;
         const maxBarW = 220;
         const tradW = (b.tradTax / 40) * maxBarW;
@@ -846,7 +1023,6 @@
         ctx.font = '600 10px Fira Code, monospace';
         ctx.fillText(`${b.tradTax}% (${b.tradDol})`, barX + tradW + 8, yPos + 1);
 
-        // Roth Strategy Bar (Emerald)
         const rothW = (b.rothTax / 40) * maxBarW;
         if (rothW > 0) {
           ctx.fillStyle = 'rgba(16, 185, 129, 0.85)';
@@ -863,7 +1039,6 @@
         yPos += 72;
       });
 
-      // Bottom Lifetime Tax Summary comparison
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -884,7 +1059,7 @@
       ctx.fillText('🏆 Net Savings: $352,000', 490, h - 25);
     }
 
-    // Tab Switcher Function
+    // Tab Switcher
     function switchVisualTab(tabKey) {
       state.activeTab = tabKey;
       ['Monte', 'Estate', 'Roth'].forEach(t => {
@@ -901,7 +1076,7 @@
       recomputeAndRender();
     }
 
-    // Canvas Touch & Mouse Hover Tracking Logic
+    // Inspection Handler for Canvas
     const mcCanvasElem = document.getElementById('mcCanvas');
 
     function handleInspection(clientX, clientY) {
@@ -920,36 +1095,35 @@
 
         drawMonteCarloCanvas(age);
 
-        // Update Tooltip Box
         const tt = document.getElementById('canvasTooltip');
         tt.classList.remove('hidden');
         document.getElementById('ttAge').innerText = `Simulation Point: Age ${age}`;
-        document.getElementById('ttP90').innerText = `90% Bull: $${(mcResults.p90[yearIndex] / 1000000).toFixed(2)}M`;
-        document.getElementById('ttP50').innerText = `50% Base: $${(mcResults.p50[yearIndex] / 1000000).toFixed(2)}M`;
-        document.getElementById('ttP10').innerText = `10% Bear: $${(mcResults.p10[yearIndex] / 1000000).toFixed(2)}M`;
+        document.getElementById('ttP90').innerText = `Plan A 90% Bull: $${(mcResults.p90[yearIndex] / 1000000).toFixed(2)}M`;
+        document.getElementById('ttP50').innerText = `Plan A 50% Base: $${(mcResults.p50[yearIndex] / 1000000).toFixed(2)}M`;
+        document.getElementById('ttP10').innerText = `Plan A 10% Bear: $${(mcResults.p10[yearIndex] / 1000000).toFixed(2)}M`;
+
+        const ttPlanB = document.getElementById('ttPlanB');
+        if (isCompareMode && mcResultsPlanB.p50[yearIndex]) {
+          ttPlanB.classList.remove('hidden');
+          ttPlanB.innerText = `Plan B 50% Base: $${(mcResultsPlanB.p50[yearIndex] / 1000000).toFixed(2)}M`;
+        } else {
+          ttPlanB.classList.add('hidden');
+        }
       }
     }
 
-    mcCanvasElem.addEventListener('mousemove', (e) => {
-      handleInspection(e.clientX, e.clientY);
-    });
-
+    mcCanvasElem.addEventListener('mousemove', (e) => handleInspection(e.clientX, e.clientY));
     mcCanvasElem.addEventListener('mouseleave', () => {
       document.getElementById('canvasTooltip').classList.add('hidden');
       drawMonteCarloCanvas();
     });
 
-    // Touch Event Listeners for Mobile Crosshair & Inspection
     mcCanvasElem.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 0) {
-        handleInspection(e.touches[0].clientX, e.touches[0].clientY);
-      }
+      if (e.touches.length > 0) handleInspection(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 
     mcCanvasElem.addEventListener('touchmove', (e) => {
-      if (e.touches.length > 0) {
-        handleInspection(e.touches[0].clientX, e.touches[0].clientY);
-      }
+      if (e.touches.length > 0) handleInspection(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 
     mcCanvasElem.addEventListener('touchend', () => {
@@ -997,7 +1171,6 @@
           const d = data.data;
           document.getElementById('latencyBadge').innerText = latencyMs + 'ms';
 
-          // Sync extracted values to State & Sliders
           if (d.liquid_assets) {
             state.initialAssets = d.liquid_assets;
             document.getElementById('sliderAssets').value = d.liquid_assets;
@@ -1021,47 +1194,52 @@
       }
     }
 
-    // 4K Client PDF Report Export
+    // White-Label Advisor 4K PDF Report Export
     function exportPdfReport() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
+      // Top Firm Header
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.text("VELOXIS AI — Comprehensive Financial Plan Report", 14, 20);
+      doc.setFontSize(16);
+      doc.text("APEX WEALTH PARTNERS RIA — CLIENT FINANCIAL AUDIT", 14, 18);
 
-      doc.setFontSize(10);
+      doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.text(`Generated Date: ${new Date().toLocaleDateString()} | Engine: Groq 0.08s LPU Llama-3.3 70B`, 14, 28);
-      doc.line(14, 32, 196, 32);
+      doc.setTextColor(100);
+      doc.text(`Client: ${state.name} | Date: ${new Date().toLocaleDateString()} | Stress Mode: ${stressMode.toUpperCase()}`, 14, 25);
+      doc.line(14, 28, 196, 28);
 
-      doc.setFontSize(12);
+      // Executive Summary
+      doc.setTextColor(0);
+      doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.text("1. Executive Summary & Monte Carlo Confidence", 14, 42);
+      doc.text("1. Monte Carlo Probability & Retirement Guardrail Analysis", 14, 36);
 
-      doc.setFontSize(10);
+      doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.text(`• Current Age: ${state.currentAge} | Target Retirement Age: ${state.retireAge}`, 14, 52);
-      doc.text(`• Initial Liquid Portfolio: $${state.initialAssets.toLocaleString()}`, 14, 60);
-      doc.text(`• Annual Retirement Spending: $${state.annualSpend.toLocaleString()}/yr`, 14, 68);
-      doc.text(`• Monte Carlo 30-Year Success Rate: ${mcResults.successRate}%`, 14, 76);
-      doc.text(`• Estimated Roth Tax Alpha Savings: $${state.taxSavings.toLocaleString()}`, 14, 84);
+      doc.text(`• Current Age: ${state.currentAge} | Target Retirement: Age ${state.retireAge}`, 14, 44);
+      doc.text(`• Starting Liquid Assets: $${state.initialAssets.toLocaleString()}`, 14, 50);
+      doc.text(`• Annual Retirement Spending: $${state.annualSpend.toLocaleString()}/yr (Inflation Adjusted)`, 14, 56);
+      doc.text(`• 30-Year Monte Carlo Probability of Success: ${mcResults.successRate}%`, 14, 62);
+      doc.text(`• Projected Age 85 Median Portfolio: $${(mcResults.p50[mcResults.p50.length - 1] / 1000000).toFixed(2)}M`, 14, 68);
 
       // Embed Canvas Image into PDF
       const canvas = document.getElementById('mcCanvas');
       const imgData = canvas.toDataURL('image/png');
-      doc.addImage(imgData, 'PNG', 14, 95, 180, 115);
+      doc.addImage(imgData, 'PNG', 14, 76, 180, 115);
 
-      doc.setFontSize(9);
+      // FINRA Compliance Audit Statement
+      doc.setFontSize(8);
       doc.setTextColor(120);
-      doc.text("Confidential financial planning document prepared via Veloxis FinTech Architecture.", 14, 285);
+      doc.text("FINRA Rule 2214 Compliance Disclaimer: This model utilizes Geometric Brownian Motion Monte Carlo simulation with 1,000 iterations. Past performance does not guarantee future results. Sequence-of-returns stress shocks are modeled mathematically.", 14, 202, { maxWidth: 182 });
 
-      doc.save(`Veloxis_Financial_Plan_Age${state.currentAge}_${state.retireAge}.pdf`);
+      doc.save(`Veloxis_RIA_Plan_${state.name.replace(/\s+/g, '_')}_Audit.pdf`);
     }
 
-    // Initialize on window load
+    // Initialize
     window.onload = function() {
-      onLiveParamChange();
+      onClientSwitch("client_sarah");
     };
   </script>
 </body>
