@@ -369,31 +369,45 @@
       return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
     }
 
-    // High-Performance Monte Carlo Engine (Geometric Brownian Motion)
+    // Trimmed percentile calculation to eliminate unrealistic statistical tail explosions
+    function trimmedPercentile(arr, pct) {
+      const sorted = [...arr].sort((a, b) => a - b);
+      const lo = Math.floor(sorted.length * 0.025);
+      const hi = Math.ceil(sorted.length * 0.975);
+      const trimmed = sorted.slice(lo, hi);
+      const idx = Math.min(Math.floor(trimmed.length * pct), trimmed.length - 1);
+      return trimmed[idx];
+    }
+
+    // High-Performance Monte Carlo Engine (Realistic Log-Normal Asset Return Drift)
     function runMonteCarlo(initialAssets, annualSpend, currentAge, retireAge, endAge, equity, iterations = 1000) {
       const totalYears = endAge - currentAge;
-      const retireYears = retireAge - currentAge;
+      const retireYears = Math.max(0, retireAge - currentAge);
       const paths = [];
 
-      // Mean & Volatility based on Asset Allocation
-      const equityReturn = 0.085; // 8.5% historical S&P
-      const bondReturn = 0.040;   // 4.0% US Treasuries
-      const equityVol = 0.160;    // 16% volatility
-      const bondVol = 0.050;      // 5% volatility
+      // Asset Allocation Parameters (Historical Real Returns)
+      const eqExpReturn = 0.075; // 7.5% nominal return for equity
+      const bdExpReturn = 0.038; // 3.8% nominal return for bonds
+      const eqVol = 0.145;       // 14.5% volatility
+      const bdVol = 0.045;       // 4.5% volatility
 
-      const meanReturn = equity * equityReturn + (1 - equity) * bondReturn;
-      const portfolioVol = equity * equityVol + (1 - equity) * bondVol;
-      const inflation = 0.025; // 2.5% inflation adjust
+      const expReturn = equity * eqExpReturn + (1 - equity) * bdExpReturn;
+      const portVol = equity * eqVol + (1 - equity) * bdVol;
+      // Log-normal drift adjustment: mu - 0.5 * sigma^2
+      const drift = expReturn - 0.5 * portVol * portVol;
+      const inflation = 0.024; // 2.4% historical inflation
 
       for (let i = 0; i < iterations; i++) {
         let balance = initialAssets;
         const path = [balance];
 
         for (let y = 1; y <= totalYears; y++) {
-          const shock = meanReturn + portfolioVol * gaussianRandom();
-          balance = balance * (1 + shock);
+          const z = gaussianRandom();
+          // Log-normal return step
+          const annualReturn = Math.exp(drift + portVol * z) - 1;
+          balance = balance * (1 + annualReturn);
 
-          // If reached retirement age, deduct spending with inflation
+          // If retired, deduct inflation-adjusted annual spending
           if (y > retireYears) {
             const inflatedSpend = annualSpend * Math.pow(1 + inflation, y - retireYears);
             balance -= inflatedSpend;
@@ -405,16 +419,16 @@
         paths.push(path);
       }
 
-      // Extract Percentiles (p10, p50, p90) for each year
+      // Extract Percentiles (p10, p50, p90) for each year with trimmed outliers
       const p10 = [];
       const p50 = [];
       const p90 = [];
 
       for (let y = 0; y <= totalYears; y++) {
-        const yearBalances = paths.map(p => p[y]).sort((a, b) => a - b);
-        p10.push(yearBalances[Math.floor(iterations * 0.10)]);
-        p50.push(yearBalances[Math.floor(iterations * 0.50)]);
-        p90.push(yearBalances[Math.floor(iterations * 0.90)]);
+        const yearBalances = paths.map(p => p[y]);
+        p10.push(trimmedPercentile(yearBalances, 0.10));
+        p50.push(trimmedPercentile(yearBalances, 0.50));
+        p90.push(trimmedPercentile(yearBalances, 0.90));
       }
 
       // Calculate Survival Success Rate (% of paths with balance > 0 at endAge)
@@ -459,7 +473,10 @@
 
       // Update KPI Cards
       document.getElementById('valMcSuccess').innerText = mcResults.successRate + '%';
-      document.getElementById('valMedianP50').innerText = '$' + (mcResults.p50[mcResults.p50.length - 1] / 1000000).toFixed(2) + 'M';
+      const endMedian = mcResults.p50[mcResults.p50.length - 1];
+      document.getElementById('valMedianP50').innerText = endMedian >= 1000000 
+        ? '$' + (endMedian / 1000000).toFixed(2) + 'M' 
+        : '$' + Math.round(endMedian / 1000) + 'k';
       document.getElementById('valSafeFloor').innerText = '$' + Math.round(state.annualSpend * 0.8).toLocaleString();
 
       if (state.activeTab === 'monte') {
@@ -495,7 +512,10 @@
       const chartH = h - paddingTop - paddingBottom;
 
       const { p10, p50, p90, years } = mcResults;
-      const maxVal = Math.max(...p90, state.initialAssets * 2) * 1.08;
+      const maxValRaw = Math.max(...p90, state.initialAssets * 1.5);
+      // Clean financial scale ceil
+      const magnitude = Math.pow(10, Math.floor(Math.log10(maxValRaw)));
+      const maxVal = Math.ceil(maxValRaw / (magnitude / 2)) * (magnitude / 2) * 1.05;
 
       function getX(yearIndex) {
         return paddingLeft + (yearIndex / years) * chartW;
@@ -505,7 +525,7 @@
       }
 
       // Draw Grid Lines & Y-Axis Labels
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
       ctx.lineWidth = 1;
       ctx.fillStyle = '#64748b';
       ctx.font = '500 10px Fira Code, monospace';
@@ -524,10 +544,12 @@
       }
 
       // X-Axis Age Labels
-      const retireYearIdx = state.retireAge - state.currentAge;
+      const retireYearIdx = Math.max(0, state.retireAge - state.currentAge);
       const xAges = [state.currentAge, state.retireAge, 65, 75, state.endAge];
+      const drawnAges = new Set();
       xAges.forEach(age => {
-        if (age < state.currentAge || age > state.endAge) return;
+        if (age < state.currentAge || age > state.endAge || drawnAges.has(age)) return;
+        drawnAges.add(age);
         const yIdx = age - state.currentAge;
         const x = getX(yIdx);
         ctx.fillText(`Age ${age}`, x - 18, h - 15);
@@ -545,12 +567,16 @@
       ctx.setLineDash([]);
 
       ctx.fillStyle = '#f59e0b';
-      ctx.font = '600 10px Inter, sans-serif';
-      ctx.fillText(`⚡ Retire Age ${state.retireAge}`, retireX - 35, paddingTop - 12);
+      ctx.font = '700 10px Inter, sans-serif';
+      ctx.fillText(`⚡ Retire Age ${state.retireAge}`, Math.min(retireX - 35, w - 110), paddingTop - 12);
 
       // 1. Shaded Corridor (p10 to p90)
       ctx.beginPath();
-      ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
+      const corridorGrad = ctx.createLinearGradient(0, paddingTop, 0, h - paddingBottom);
+      corridorGrad.addColorStop(0, 'rgba(16, 185, 129, 0.22)');
+      corridorGrad.addColorStop(1, 'rgba(16, 185, 129, 0.04)');
+      ctx.fillStyle = corridorGrad;
+      
       p90.forEach((val, i) => {
         if (i === 0) ctx.moveTo(getX(i), getY(val));
         else ctx.lineTo(getX(i), getY(val));
@@ -561,7 +587,7 @@
       ctx.closePath();
       ctx.fill();
 
-      // 2. Draw 90% Bull Curve (Green)
+      // 2. Draw 90% Bull Curve (Emerald Green)
       ctx.beginPath();
       ctx.strokeStyle = '#10b981';
       ctx.lineWidth = 2.5;
@@ -600,13 +626,16 @@
         [p90[hIdx], p50[hIdx], p10[hIdx]].forEach((val, idx) => {
           ctx.beginPath();
           ctx.fillStyle = idx === 0 ? '#10b981' : idx === 1 ? '#818cf8' : '#f43f5e';
-          ctx.arc(hX, getY(val), 4, 0, Math.PI * 2);
+          ctx.arc(hX, getY(val), 4.5, 0, Math.PI * 2);
           ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
         });
       }
     }
 
-    // 2D Canvas for Estate & Trust Tree
+    // 2D Canvas for Estate & Trust Tree with Directional Arrowheads & High-Contrast Badges
     function drawEstateCanvas() {
       const canvas = document.getElementById('estateCanvas');
       const ctx = canvas.getContext('2d');
@@ -617,55 +646,93 @@
       ctx.fillStyle = '#090d16';
       ctx.fillRect(0, 0, w, h);
 
-      function drawNode(x, y, nodeW, nodeH, title, subtitle, color) {
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      function drawNode(x, y, nodeW, nodeH, title, subtitle, color, bgAlpha = 0.9) {
+        ctx.fillStyle = `rgba(15, 23, 42, ${bgAlpha})`;
         ctx.fillRect(x, y, nodeW, nodeH);
         ctx.strokeStyle = color;
         ctx.lineWidth = 1.5;
         ctx.strokeRect(x, y, nodeW, nodeH);
 
+        // Header indicator dot
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x + 12, y + 18, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.fillStyle = '#ffffff';
         ctx.font = '700 12px Inter, sans-serif';
-        ctx.fillText(title, x + 12, y + 20);
+        ctx.fillText(title, x + 22, y + 22);
 
         ctx.fillStyle = color;
         ctx.font = '600 10px Fira Code, monospace';
-        ctx.fillText(subtitle, x + 12, y + 36);
+        ctx.fillText(subtitle, x + 22, y + 38);
       }
 
-      function drawConnector(x1, y1, x2, y2, label) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      function drawArrowConnector(x1, y1, x2, y2, badgeText, badgeColor = '#10b981') {
+        // Draw connector line
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
         ctx.stroke();
-        if (label) {
-          ctx.fillStyle = '#94a3b8';
-          ctx.font = '500 9px Inter, sans-serif';
-          ctx.fillText(label, (x1 + x2) / 2 - 20, (y1 + y2) / 2 - 5);
+
+        // Draw Arrowhead at (x2, y2)
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        const headLength = 7;
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.8)';
+        ctx.beginPath();
+        ctx.moveTo(x2, y2);
+        ctx.lineTo(x2 - headLength * Math.cos(angle - Math.PI / 6), y2 - headLength * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(x2 - headLength * Math.cos(angle + Math.PI / 6), y2 - headLength * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw High-Contrast Badge
+        if (badgeText) {
+          const midX = (x1 + x2) / 2;
+          const midY = (y1 + y2) / 2;
+          const badgeW = 92;
+          const badgeH = 18;
+
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+          ctx.fillRect(midX - badgeW / 2, midY - badgeH / 2, badgeW, badgeH);
+          ctx.strokeStyle = badgeColor;
+          ctx.lineWidth = 1;
+          ctx.strokeRect(midX - badgeW / 2, midY - badgeH / 2, badgeW, badgeH);
+
+          ctx.fillStyle = badgeColor;
+          ctx.font = '700 9px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(badgeText, midX, midY + 3.5);
+          ctx.textAlign = 'left';
         }
       }
 
-      // Root: Grantor Trust
-      drawNode(220, 30, 200, 50, 'Grantor / Family Trust', 'Total Asset: $2.5M', '#10b981');
+      // Root Node: Grantor Trust
+      drawNode(220, 25, 200, 52, 'Grantor / Family Trust', 'Total Asset: $2.5M', '#10b981');
 
-      // Layer 2: Revocable Living Trust & Dynasty Trust
-      drawConnector(320, 80, 150, 160, '100% Tax Basis');
-      drawConnector(320, 80, 480, 160, 'GST Shielded');
+      // Layer 2: Revocable Living Trust & Dynasty Trust with Arrowheads
+      drawArrowConnector(320, 77, 150, 155, '100% Tax Basis', '#818cf8');
+      drawArrowConnector(320, 77, 480, 155, 'GST Shielded', '#f59e0b');
 
-      drawNode(60, 160, 180, 50, 'Revocable Living Trust', 'Probate Avoidance', '#818cf8');
-      drawNode(390, 160, 190, 50, 'Dynasty Trust (GST)', 'Tax-Free Compounding', '#f59e0b');
+      drawNode(55, 155, 190, 52, 'Revocable Living Trust', 'Probate Avoidance', '#818cf8');
+      drawNode(385, 155, 195, 52, 'Dynasty Trust (GST)', 'Tax-Free Compounding', '#f59e0b');
 
-      // Layer 3: Beneficiaries
-      drawConnector(150, 210, 150, 290);
-      drawConnector(485, 210, 485, 290);
+      // Layer 3: Beneficiaries with Arrowheads
+      drawArrowConnector(150, 207, 150, 285, 'Per Stirpes', '#38bdf8');
+      drawArrowConnector(482, 207, 482, 285, 'Dynasty Split', '#ec4899');
 
-      drawNode(60, 290, 180, 50, 'Beneficiary A (50%)', 'Liquid Distribution', '#38bdf8');
-      drawNode(390, 290, 190, 50, 'Beneficiary B (50%)', 'Asset Protected Account', '#ec4899');
+      drawNode(55, 285, 190, 52, 'Beneficiary A (50%)', 'Liquid Distribution', '#38bdf8');
+      drawNode(385, 285, 195, 52, 'Beneficiary B (50%)', 'Asset Protected Trust', '#ec4899');
+
+      // Bottom Legend Tag
+      ctx.fillStyle = '#64748b';
+      ctx.font = '500 10px Fira Code, monospace';
+      ctx.fillText('Veloxis Visual Trust Engine • Revocable vs Irrevocable Architecture', 55, h - 20);
     }
 
-    // 2D Canvas for Roth Conversion Matrix
+    // 2D Canvas for Roth Tax Optimizer (Visual Lifetime Tax Waterfall & Alpha Comparison)
     function drawRothCanvas() {
       const canvas = document.getElementById('rothCanvas');
       const ctx = canvas.getContext('2d');
@@ -676,36 +743,87 @@
       ctx.fillStyle = '#090d16';
       ctx.fillRect(0, 0, w, h);
 
+      // Title & Alpha Badge
       ctx.fillStyle = '#ffffff';
-      ctx.font = '700 13px Inter, sans-serif';
-      ctx.fillText('Tax Optimization: Traditional Pre-Tax IRA vs Roth Conversion', 30, 40);
+      ctx.font = '800 14px Inter, sans-serif';
+      ctx.fillText('Roth Conversion Strategy vs. Traditional Pre-Tax RMD Trap', 25, 32);
 
-      // Draw Bar Comparisons
+      // Alpha Callout Banner on Top Right
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+      ctx.fillRect(w - 200, 14, 175, 28);
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(w - 200, 14, 175, 28);
+      ctx.fillStyle = '#34d399';
+      ctx.font = '800 11px Fira Code, monospace';
+      ctx.fillText('⚡ Net Tax Alpha: +$364,000', w - 190, 32);
+
+      // 4 Bracket Comparison Rows
       const brackets = [
-        { label: 'Ages 35-54 (Career)', trad: 32, roth: 24 },
-        { label: 'Ages 55-64 (Veloxis Window)', trad: 12, roth: 12 },
-        { label: 'Ages 65-72 (Pre-RMD)', trad: 22, roth: 0 },
-        { label: 'Ages 73+ (RMD Spike Trap)', trad: 37, roth: 0 }
+        { label: 'Ages 35-54 (Career Peak)', tradTax: 32, rothTax: 24, tradDol: '$140k', rothDol: '$95k', desc: 'Pre-tax 401(k) contributions standard' },
+        { label: 'Ages 55-64 (Veloxis Window)', tradTax: 12, rothTax: 12, tradDol: '$35k', rothDol: '$35k', desc: '⭐ Low-income conversion sweet spot' },
+        { label: 'Ages 65-72 (Pre-RMD Growth)', tradTax: 22, rothTax: 0, tradDol: '$75k', rothDol: '$0', desc: 'Roth assets compound 100% tax-free' },
+        { label: 'Ages 73+ (RMD Spike Trap)', tradTax: 37, rothTax: 0, tradDol: '$232k', rothDol: '$0', desc: 'Mandatory IRA withdrawals trigger 37% peak bracket' }
       ];
 
-      let yPos = 80;
-      brackets.forEach(b => {
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '600 11px Inter, sans-serif';
-        ctx.fillText(b.label, 30, yPos);
+      let yPos = 70;
+      brackets.forEach((b, idx) => {
+        // Label & Description
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 11px Inter, sans-serif';
+        ctx.fillText(b.label, 25, yPos);
 
-        // Traditional Bar (Rose)
-        ctx.fillStyle = '#f43f5e';
-        ctx.fillRect(230, yPos - 12, b.trad * 7, 14);
-        ctx.fillText(`${b.trad}% Tax`, 235 + b.trad * 7, yPos);
+        ctx.fillStyle = idx === 1 ? '#34d399' : '#94a3b8';
+        ctx.font = '400 10px Inter, sans-serif';
+        ctx.fillText(b.desc, 25, yPos + 15);
 
-        // Roth Bar (Emerald)
-        ctx.fillStyle = '#10b981';
-        ctx.fillRect(230, yPos + 6, b.roth * 7, 14);
-        ctx.fillText(`${b.roth}% Tax`, 235 + b.roth * 7, yPos + 18);
+        // Traditional Pre-Tax Bar (Rose)
+        const barX = 230;
+        const maxBarW = 220;
+        const tradW = (b.tradTax / 40) * maxBarW;
+        ctx.fillStyle = 'rgba(244, 63, 94, 0.85)';
+        ctx.fillRect(barX, yPos - 10, tradW, 14);
 
-        yPos += 70;
+        ctx.fillStyle = '#fecdd3';
+        ctx.font = '600 10px Fira Code, monospace';
+        ctx.fillText(`${b.tradTax}% (${b.tradDol})`, barX + tradW + 8, yPos + 1);
+
+        // Roth Strategy Bar (Emerald)
+        const rothW = (b.rothTax / 40) * maxBarW;
+        if (rothW > 0) {
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.85)';
+          ctx.fillRect(barX, yPos + 8, rothW, 14);
+          ctx.fillStyle = '#a7f3d0';
+          ctx.font = '600 10px Fira Code, monospace';
+          ctx.fillText(`${b.rothTax}% (${b.rothDol})`, barX + rothW + 8, yPos + 19);
+        } else {
+          ctx.fillStyle = '#10b981';
+          ctx.font = '700 10px Fira Code, monospace';
+          ctx.fillText('0% TAX-FREE ($0 Paid)', barX, yPos + 19);
+        }
+
+        yPos += 72;
       });
+
+      // Bottom Lifetime Tax Summary comparison
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(25, h - 50);
+      ctx.lineTo(w - 25, h - 50);
+      ctx.stroke();
+
+      ctx.fillStyle = '#f43f5e';
+      ctx.font = '700 11px Inter, sans-serif';
+      ctx.fillText('🔴 Traditional Lifetime Tax: $482,000', 25, h - 25);
+
+      ctx.fillStyle = '#10b981';
+      ctx.font = '700 11px Inter, sans-serif';
+      ctx.fillText('🟢 Veloxis Roth Lifetime Tax: $130,000', 260, h - 25);
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = '700 11px Fira Code, monospace';
+      ctx.fillText('🏆 Net Savings: $352,000', 490, h - 25);
     }
 
     // Tab Switcher Function
