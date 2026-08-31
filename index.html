@@ -134,6 +134,14 @@
         <span id="advisorFirmName">RIA Firm</span>
       </div>
 
+      <!-- Subscription Tier Badge & Upgrade Launcher -->
+      <div id="subTierBadgeContainer" class="flex items-center">
+        <button onclick="openPricingModal()" id="btnUpgradeHeader" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-emerald-500/20 hover:from-amber-500/30 hover:to-emerald-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition-all active:scale-95 flex items-center gap-1">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span id="subTierText">Upgrade Pro</span>
+        </button>
+      </div>
+
       <button onclick="exportPdfReport()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center gap-1.5">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
         <span class="hidden sm:inline">Export Audit PDF</span>
@@ -146,6 +154,138 @@
       </button>
     </div>
   </header>
+
+  <!-- ================= UPGRADE CELEBRATION TOAST ================= -->
+  <div id="upgradeToast" class="fixed top-16 right-6 z-[120] hidden glass-panel border border-emerald-500/50 rounded-2xl p-4 shadow-2xl bg-emerald-950/90 text-white max-w-sm">
+    <div class="flex items-start gap-3">
+      <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-400 flex items-center justify-center shrink-0">
+        <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm text-emerald-300">Enterprise Pro Unlocked!</h4>
+        <p class="text-xs text-slate-300 mt-0.5">Stripe subscription confirmed. Unlimited clients & FINRA 4K exports are now active.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= STRIPE PRICING MODAL ================= -->
+  <div id="pricingModal" class="fixed inset-0 z-[110] flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closePricingModal()"></div>
+    <div class="relative glass-panel rounded-3xl border border-indigo-500/40 shadow-2xl p-6 sm:p-8 w-full max-w-4xl mx-4 z-10 max-h-[92vh] overflow-y-auto custom-scroll">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40">STRIPE BILLING</span>
+            <span class="text-[10px] font-mono text-slate-500">B2B SaaS Pricing</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-white font-outfit mt-1">Upgrade Your RIA Wealth Practice</h2>
+          <p class="text-slate-400 text-xs mt-0.5">Equip your advisory firm with high-frequency quantum simulations and SEC/FINRA compliant reporting.</p>
+        </div>
+        <button onclick="closePricingModal()" class="text-slate-500 hover:text-white transition-colors p-1">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Billing Cycle Toggle -->
+      <div class="flex items-center justify-center gap-3 mb-8">
+        <span id="lblMonthly" class="text-xs font-bold text-white">Monthly</span>
+        <button onclick="toggleBillingCycle()" id="toggleBillingBtn" class="w-12 h-6 rounded-full bg-slate-800 border border-slate-700 p-0.5 flex items-center transition-colors">
+          <div id="toggleBillingThumb" class="w-5 h-5 rounded-full bg-emerald-400 transition-transform"></div>
+        </button>
+        <span id="lblAnnual" class="text-xs font-bold text-slate-400 flex items-center gap-1.5">
+          <span>Annual</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/50 font-mono">SAVE 20%</span>
+        </span>
+      </div>
+
+      <!-- 3 Tier Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        
+        <!-- Starter Tier -->
+        <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between bg-slate-950/40">
+          <div>
+            <span class="text-xs font-mono text-slate-400 uppercase tracking-wider">Free Trial</span>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span class="text-2xl sm:text-3xl font-black text-white font-outfit">$0</span>
+              <span class="text-xs text-slate-500 font-mono">/ 14 days</span>
+            </div>
+            <p class="text-slate-400 text-xs mt-2 pb-4 border-b border-slate-800">For exploratory practice evaluation.</p>
+            <ul class="mt-4 space-y-2.5 text-xs text-slate-300">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Up to 2 Client Profiles</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> 60fps Living Canvas</li>
+              <li class="flex items-center gap-2 text-slate-500"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-600"></i> No FINRA 4K PDF Export</li>
+              <li class="flex items-center gap-2 text-slate-500"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-600"></i> No 2008 GFC Stress Suite</li>
+            </ul>
+          </div>
+          <button disabled class="w-full mt-6 py-2.5 rounded-xl bg-slate-900 text-slate-500 text-xs font-bold border border-slate-800 cursor-not-allowed">
+            Current Tier
+          </button>
+        </div>
+
+        <!-- Pro RIA Tier (Most Popular) -->
+        <div class="glass-panel rounded-2xl p-5 border-2 border-emerald-500 relative flex flex-col justify-between bg-emerald-950/20 shadow-xl shadow-emerald-950/50">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-emerald-500 text-slate-950 font-black text-[10px] font-mono uppercase tracking-wider">
+            Most Popular RIA Choice
+          </div>
+          <div>
+            <span class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">Pro RIA Advisory</span>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span id="pricePro" class="text-2xl sm:text-3xl font-black text-white font-outfit">$99</span>
+              <span id="periodPro" class="text-xs text-slate-400 font-mono">/ month</span>
+            </div>
+            <p class="text-slate-300 text-xs mt-2 pb-4 border-b border-emerald-500/20">Full quant power for active wealth advisors.</p>
+            <ul class="mt-4 space-y-2.5 text-xs text-slate-200">
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i> <strong>Unlimited</strong> HNW Clients</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i> <strong>FINRA Rule 2214</strong> 4K PDF Export</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i> <strong>2008 GFC & DotCom</strong> Stress Suite</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i> <strong>Roth IRA</strong> Lifetime Tax Alpha</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i> <strong>0.08s Sub-Second</strong> LPU AI Protocol</li>
+            </ul>
+          </div>
+          <button onclick="launchStripeCheckout('pro')" id="btnCheckoutPro" class="w-full mt-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-950 transition-all active:scale-95 flex items-center justify-center gap-1.5">
+            <i data-lucide="credit-card" class="w-4 h-4"></i>
+            <span id="btnCheckoutProText">Subscribe with Stripe &rarr;</span>
+          </button>
+        </div>
+
+        <!-- Enterprise Tier -->
+        <div class="glass-panel rounded-2xl p-5 border border-indigo-500/50 flex flex-col justify-between bg-indigo-950/20">
+          <div>
+            <span class="text-xs font-mono text-indigo-400 font-bold uppercase tracking-wider">Enterprise Firm</span>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span id="priceEnt" class="text-2xl sm:text-3xl font-black text-white font-outfit">$299</span>
+              <span id="periodEnt" class="text-xs text-slate-400 font-mono">/ month</span>
+            </div>
+            <p class="text-slate-400 text-xs mt-2 pb-4 border-b border-indigo-500/20">Multi-advisor institutional RIA practice.</p>
+            <ul class="mt-4 space-y-2.5 text-xs text-slate-300">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-400"></i> Everything in Pro RIA</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-400"></i> <strong>5 Advisor Seats</strong> Included</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-400"></i> <strong>White-Label</strong> Branding & Logo</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-400"></i> Custom Math Quant Parameters</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-400"></i> Dedicated Webhook API Stream</li>
+            </ul>
+          </div>
+          <button onclick="launchStripeCheckout('enterprise')" id="btnCheckoutEnt" class="w-full mt-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5">
+            <i data-lucide="building" class="w-4 h-4"></i>
+            <span id="btnCheckoutEntText">Get Enterprise Firm &rarr;</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Trust Footer -->
+      <div class="mt-8 pt-4 border-t border-slate-800 text-center flex items-center justify-center gap-4 text-[11px] text-slate-500 font-mono">
+        <span class="flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3 text-slate-400"></i> 256-Bit SSL Encrypted</span>
+        <span>•</span>
+        <span>Cancel anytime in 1-click</span>
+        <span>•</span>
+        <span>Powered by Stripe</span>
+      </div>
+
+    </div>
+  </div>
 
   <!-- ================= NEW CLIENT DRAWER ================= -->
   <div id="newClientDrawer" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
@@ -405,9 +545,137 @@
         if (firmEl) firmEl.textContent = advisor.firm_name || 'RIA Firm';
         const badgeEl = document.getElementById('advisorBadge');
         if (badgeEl) badgeEl.classList.remove('hidden');
+
+        updateSubscriptionBadge(advisor.subscription_tier || 'trial');
       }
 
+      await checkStripeReturn();
       await loadAdvisorClients();
+    }
+
+    function updateSubscriptionBadge(tier) {
+      const tierEl = document.getElementById('subTierText');
+      const btnUpgrade = document.getElementById('btnUpgradeHeader');
+      if (!tierEl || !btnUpgrade) return;
+
+      if (tier === 'pro') {
+        tierEl.textContent = '⚡ PRO RIA';
+        btnUpgrade.className = "px-2.5 py-1.5 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-xs font-bold transition-all flex items-center gap-1";
+      } else if (tier === 'enterprise') {
+        tierEl.textContent = '👑 Enterprise';
+        btnUpgrade.className = "px-2.5 py-1.5 rounded-xl bg-purple-950 text-purple-300 border border-purple-500/50 text-xs font-bold transition-all flex items-center gap-1";
+      } else {
+        tierEl.textContent = 'Upgrade Pro';
+        btnUpgrade.className = "px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-emerald-500/20 hover:from-amber-500/30 hover:to-emerald-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition-all active:scale-95 flex items-center gap-1";
+      }
+    }
+
+    // ================================================================
+    // STRIPE CHECKOUT & BILLING MODAL
+    // ================================================================
+    let billingCycle = 'month';
+
+    function openPricingModal() {
+      document.getElementById('pricingModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closePricingModal() {
+      document.getElementById('pricingModal').classList.add('hidden');
+    }
+
+    function toggleBillingCycle() {
+      billingCycle = billingCycle === 'month' ? 'year' : 'month';
+      const thumb = document.getElementById('toggleBillingThumb');
+      const lblM = document.getElementById('lblMonthly');
+      const lblA = document.getElementById('lblAnnual');
+      const pricePro = document.getElementById('pricePro');
+      const periodPro = document.getElementById('periodPro');
+      const priceEnt = document.getElementById('priceEnt');
+      const periodEnt = document.getElementById('periodEnt');
+
+      if (billingCycle === 'year') {
+        thumb.style.transform = 'translateX(24px)';
+        lblM.className = 'text-xs font-bold text-slate-400';
+        lblA.className = 'text-xs font-bold text-white flex items-center gap-1.5';
+        pricePro.textContent = '$79';
+        periodPro.textContent = '/ month, billed annually';
+        priceEnt.textContent = '$239';
+        periodEnt.textContent = '/ month, billed annually';
+      } else {
+        thumb.style.transform = 'translateX(0px)';
+        lblM.className = 'text-xs font-bold text-white';
+        lblA.className = 'text-xs font-bold text-slate-400 flex items-center gap-1.5';
+        pricePro.textContent = '$99';
+        periodPro.textContent = '/ month';
+        priceEnt.textContent = '$299';
+        periodEnt.textContent = '/ month';
+      }
+    }
+
+    async function launchStripeCheckout(tier) {
+      const btn = tier === 'enterprise' ? document.getElementById('btnCheckoutEnt') : document.getElementById('btnCheckoutPro');
+      const lbl = tier === 'enterprise' ? document.getElementById('btnCheckoutEntText') : document.getElementById('btnCheckoutProText');
+      
+      const originalText = lbl.textContent;
+      lbl.textContent = 'Redirecting to Stripe...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tier,
+            interval: billingCycle,
+            advisor_id: currentSession?.user?.id,
+            advisor_email: currentSession?.user?.email
+          })
+        });
+
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('Stripe error: ' + (data.error || 'Failed to initialize checkout session'));
+          btn.disabled = false;
+          lbl.textContent = originalText;
+        }
+      } catch (err) {
+        alert('Network error connecting to Stripe: ' + err.message);
+        btn.disabled = false;
+        lbl.textContent = originalText;
+      }
+    }
+
+    async function checkStripeReturn() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('session_id');
+      const isUpgraded = urlParams.get('upgraded') === 'true';
+
+      if (sessionId && isUpgraded) {
+        try {
+          const res = await fetch('/api/verify-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: sessionId })
+          });
+          const result = await res.json();
+          if (result.verified) {
+            updateSubscriptionBadge(result.tier || 'pro');
+            const toast = document.getElementById('upgradeToast');
+            if (toast) {
+              toast.classList.remove('hidden');
+              lucide.createIcons();
+              setTimeout(() => toast.classList.add('hidden'), 6000);
+            }
+          }
+        } catch (e) {
+          console.warn('Verify checkout failed:', e);
+        }
+        // Clean URL parameters without reloading
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     }
 
     // ================================================================
