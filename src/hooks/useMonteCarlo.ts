@@ -12,14 +12,14 @@ export const DEFAULT_SIMULATION_PARAMS: SimulationParams = {
   expectedReturn: 0.08,
   inflationRate: 0.025,
   volatility: 0.14,
-  simulationsCount: 1000,
+  simulationsCount: 10000,
 };
 
 export function useMonteCarlo(initialParams: SimulationParams = DEFAULT_SIMULATION_PARAMS) {
   const [params, setParams] = useState<SimulationParams>(initialParams);
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
 
-  // Compute main simulation result
+  // Compute main simulation result (10,000 runs)
   const simulationResult: SimulationResult = useMemo(() => {
     return runMonteCarloSimulation(params);
   }, [params]);
