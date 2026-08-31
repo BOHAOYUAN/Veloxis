@@ -100,19 +100,21 @@
       </div>
     </div>
 
-    <!-- Active Client Profile Selector -->
-    <div class="flex items-center gap-2 max-w-sm justify-center">
+    <!-- Active Client Profile Selector + New Client -->
+    <div class="flex items-center gap-2 justify-center">
       <div class="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-800 text-xs">
         <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
-        <select id="clientSelector" onchange="onClientSwitch(this.value)" class="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px] sm:text-xs">
-          <option value="client_sarah" class="bg-slate-900 text-white">Sarah Lin (Age 35, $500k)</option>
-          <option value="client_david" class="bg-slate-900 text-white">David Miller (Age 42, $1.2M)</option>
-          <option value="client_chang" class="bg-slate-900 text-white">Michael Chang (Age 58, $2.8M HNW)</option>
+        <select id="clientSelector" onchange="onClientSwitch(this.value)" class="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px] sm:text-xs max-w-[160px] sm:max-w-none">
+          <option value="" disabled class="bg-slate-900 text-slate-500">Loading clients...</option>
         </select>
       </div>
+      <button onclick="openNewClientDrawer()" class="px-2.5 py-1 rounded-xl bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-500/40 text-xs font-bold transition-all active:scale-95 flex items-center gap-1 shrink-0">
+        <i data-lucide="user-plus" class="w-3 h-3"></i>
+        <span class="hidden sm:inline">New Client</span>
+      </button>
     </div>
 
-    <!-- Right Actions: KPIs, PDF & Widget Embed -->
+    <!-- Right Actions: KPIs, PDF, Advisor Info & Logout -->
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
       <div class="hidden lg:flex items-center gap-3 text-xs font-mono text-slate-300 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
         <span class="flex items-center gap-1.5">
@@ -126,13 +128,93 @@
         <span class="text-slate-400">p50: <strong class="text-emerald-400" id="latencyBadge">84ms</strong></span>
       </div>
 
+      <!-- Advisor Firm Badge -->
+      <div id="advisorBadge" class="hidden sm:flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-800 text-[10px] font-mono text-slate-400">
+        <i data-lucide="building-2" class="w-3 h-3 text-indigo-400"></i>
+        <span id="advisorFirmName">RIA Firm</span>
+      </div>
+
       <button onclick="exportPdfReport()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center gap-1.5">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
         <span class="hidden sm:inline">Export Audit PDF</span>
         <span class="sm:hidden">PDF</span>
       </button>
+
+      <!-- Logout Button -->
+      <button onclick="handleLogout()" class="px-2.5 py-1.5 rounded-xl bg-slate-950 hover:bg-rose-950 text-slate-500 hover:text-rose-400 border border-slate-800 hover:border-rose-500/40 text-xs transition-all active:scale-95 flex items-center gap-1">
+        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+      </button>
     </div>
   </header>
+
+  <!-- ================= NEW CLIENT DRAWER ================= -->
+  <div id="newClientDrawer" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeNewClientDrawer()"></div>
+    <div class="relative glass-panel rounded-2xl border border-indigo-500/30 shadow-2xl p-6 w-full max-w-md mx-4 z-10">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="text-white font-black text-base font-outfit">New Client Profile</h2>
+          <p class="text-slate-500 text-xs mt-0.5">Data saved to your Veloxis database</p>
+        </div>
+        <button onclick="closeNewClientDrawer()" class="text-slate-500 hover:text-white transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div>
+          <label class="text-slate-400 text-xs font-mono mb-1 block">Client Name *</label>
+          <input id="nc_name" type="text" placeholder="e.g. Jennifer Walsh" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-slate-400 text-xs font-mono mb-1 block">Current Age</label>
+            <input id="nc_age" type="number" value="40" min="18" max="80" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+          </div>
+          <div>
+            <label class="text-slate-400 text-xs font-mono mb-1 block">Retire Age</label>
+            <input id="nc_retire" type="number" value="60" min="40" max="80" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-slate-400 text-xs font-mono mb-1 block">Liquid Assets ($)</label>
+            <input id="nc_assets" type="number" value="750000" min="0" step="50000" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+          </div>
+          <div>
+            <label class="text-slate-400 text-xs font-mono mb-1 block">Annual Spend ($)</label>
+            <input id="nc_spend" type="number" value="90000" min="0" step="5000" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+          </div>
+        </div>
+        <div>
+          <label class="text-slate-400 text-xs font-mono mb-1 block">Equity Allocation (%)</label>
+          <input id="nc_equity" type="number" value="75" min="0" max="100" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+        </div>
+
+        <div id="nc_error" class="hidden text-rose-400 text-xs font-mono px-1"></div>
+
+        <button onclick="saveNewClient()" id="nc_saveBtn" class="mt-1 w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+          <i data-lucide="user-plus" class="w-4 h-4"></i>
+          <span id="nc_saveLbl">Create Client & Open Plan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= EMPTY STATE (shown when 0 clients) ================= -->
+  <div id="emptyStatePanel" class="hidden flex-1 flex items-center justify-center p-8">
+    <div class="text-center max-w-sm">
+      <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-indigo-900 to-purple-900 border border-indigo-500/30 flex items-center justify-center mx-auto mb-6 shadow-xl">
+        <i data-lucide="users" class="w-10 h-10 text-indigo-400"></i>
+      </div>
+      <h2 class="text-white font-black text-xl font-outfit mb-2">Create Your First Client</h2>
+      <p class="text-slate-500 text-sm leading-relaxed mb-6">Your Veloxis advisor workspace is ready. Add your first high-net-worth client to start running Monte Carlo simulations and generating financial plans.</p>
+      <button onclick="openNewClientDrawer()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm transition-all active:scale-95 flex items-center gap-2 mx-auto">
+        <i data-lucide="user-plus" class="w-4 h-4"></i>
+        <span>Add First Client</span>
+      </button>
+    </div>
+  </div>
 
   <!-- ================= MAIN TWO-STORY WORKSPACE ================= -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 flex flex-col gap-4">
@@ -277,75 +359,297 @@
     // Supabase Cloud Database Configuration
     const SUPABASE_PROJECT_URL = 'https://mlvyjrevobzaecganmgp.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_rtB-t4wWt2N6P8e_EbHHng_Wopex2g1';
+    // ================================================================
+    // SUPABASE CLIENT
+    // ================================================================
     let supabaseClient = null;
+    let currentAdvisor = null;
+    let currentSession = null;
 
     try {
       if (window.supabase) {
         supabaseClient = window.supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_PUBLISHABLE_KEY);
-        console.log('⚡ Connected to Supabase Cloud PostgreSQL Database: VeloxisVeloxis');
       }
     } catch (err) {
-      console.warn('Supabase initialization fallback to LocalStorage:', err);
+      console.warn('Supabase init error:', err);
     }
 
-    // Client CRM Profiles Database
-    const clientDatabase = {
-      client_sarah: {
-        name: "Sarah Lin",
-        currentAge: 35,
-        retireAge: 55,
-        endAge: 85,
-        initialAssets: 500000,
-        annualSpend: 80000,
-        equityRatio: 0.75,
-        taxSavings: 145000,
-        ssMonthlyPIA: 2500,
-        ssClaimAge: 67
-      },
-      client_david: {
-        name: "David Miller",
-        currentAge: 42,
-        retireAge: 60,
-        endAge: 88,
-        initialAssets: 1200000,
-        annualSpend: 110000,
-        equityRatio: 0.80,
-        taxSavings: 280000,
-        ssMonthlyPIA: 3200,
-        ssClaimAge: 67
-      },
-      client_chang: {
-        name: "Michael Chang",
-        currentAge: 58,
-        retireAge: 65,
-        endAge: 90,
-        initialAssets: 2800000,
-        annualSpend: 160000,
-        equityRatio: 0.70,
-        taxSavings: 540000,
-        ssMonthlyPIA: 3800,
-        ssClaimAge: 70
+    // ================================================================
+    // AUTH GUARD — Redirect to auth.html if not signed in
+    // ================================================================
+    async function initAuthGuard() {
+      if (!supabaseClient) {
+        // No supabase → demo mode with fake data
+        loadDemoMode();
+        return;
       }
+
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = '/auth.html';
+        return;
+      }
+
+      currentSession = session;
+
+      // Load advisor profile
+      const { data: advisor } = await supabaseClient
+        .from('advisors')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      currentAdvisor = advisor;
+      if (advisor) {
+        const firmEl = document.getElementById('advisorFirmName');
+        if (firmEl) firmEl.textContent = advisor.firm_name || 'RIA Firm';
+        const badgeEl = document.getElementById('advisorBadge');
+        if (badgeEl) badgeEl.classList.remove('hidden');
+      }
+
+      await loadAdvisorClients();
+    }
+
+    // ================================================================
+    // LOAD CLIENTS FROM SUPABASE
+    // ================================================================
+    async function loadAdvisorClients() {
+      const { data: clients, error } = await supabaseClient
+        .from('clients')
+        .select('*')
+        .eq('advisor_id', currentSession.user.id)
+        .eq('archived', false)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Failed to load clients:', error);
+        return;
+      }
+
+      const selector = document.getElementById('clientSelector');
+      const emptyState = document.getElementById('emptyStatePanel');
+      const mainWorkspace = document.querySelector('main');
+
+      if (!clients || clients.length === 0) {
+        // Show empty state, hide main workspace
+        selector.innerHTML = '<option value="" disabled>No clients yet</option>';
+        if (emptyState) emptyState.classList.remove('hidden');
+        if (mainWorkspace) mainWorkspace.classList.add('hidden');
+        lucide.createIcons();
+        return;
+      }
+
+      // Hide empty state, show workspace
+      if (emptyState) emptyState.classList.add('hidden');
+      if (mainWorkspace) mainWorkspace.classList.remove('hidden');
+
+      // Populate selector
+      selector.innerHTML = '';
+      clients.forEach(c => {
+        const assetsLabel = c.liquid_assets >= 1000000
+          ? '$' + (c.liquid_assets / 1000000).toFixed(1) + 'M'
+          : '$' + Math.round(c.liquid_assets / 1000) + 'k';
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.client_name} (Age ${c.current_age}, ${assetsLabel})`;
+        opt.className = 'bg-slate-900 text-white';
+        selector.appendChild(opt);
+      });
+
+      // Load first client
+      await onClientSwitch(clients[0].id);
+    }
+
+    // ================================================================
+    // DEMO MODE FALLBACK (no Supabase)
+    // ================================================================
+    const clientDatabase = {
+      client_sarah: { name: "Sarah Lin", currentAge: 35, retireAge: 55, endAge: 85, initialAssets: 500000, annualSpend: 80000, equityRatio: 0.75, taxSavings: 145000, ssMonthlyPIA: 2500, ssClaimAge: 67 },
+      client_david: { name: "David Miller", currentAge: 42, retireAge: 60, endAge: 88, initialAssets: 1200000, annualSpend: 110000, equityRatio: 0.80, taxSavings: 280000, ssMonthlyPIA: 3200, ssClaimAge: 67 },
+      client_chang: { name: "Michael Chang", currentAge: 58, retireAge: 65, endAge: 90, initialAssets: 2800000, annualSpend: 160000, equityRatio: 0.70, taxSavings: 540000, ssMonthlyPIA: 3800, ssClaimAge: 70 }
     };
 
-    let activeClientId = "client_sarah";
+    function loadDemoMode() {
+      const selector = document.getElementById('clientSelector');
+      selector.innerHTML = `
+        <option value="client_sarah" class="bg-slate-900 text-white">Sarah Lin (Age 35, $500k)</option>
+        <option value="client_david" class="bg-slate-900 text-white">David Miller (Age 42, $1.2M)</option>
+        <option value="client_chang" class="bg-slate-900 text-white">Michael Chang (Age 58, $2.8M HNW)</option>
+      `;
+      onClientSwitch('client_sarah');
+    }
+
+    let activeClientId = null;
     let isCompareMode = false;
     let isGkEnabled = true;
-    let stressMode = 'none'; // 'none' | 'gfc2008' | 'dotcom' | 'stagflation'
+    let stressMode = 'none';
+    let _persistDebounceTimer = null;
 
-    // Core Financial Planning State (Plan A)
-    let state = { ...clientDatabase[activeClientId], activeTab: 'monte' };
-
-    // Plan B State
-    let statePlanB = {
-      retireAge: 58,
-      annualSpend: 85000,
-      equityRatio: 0.80,
-      ssClaimAge: 70
-    };
-
+    // Core Financial Planning State
+    let state = { name: 'Loading...', currentAge: 35, retireAge: 55, endAge: 85, initialAssets: 500000, annualSpend: 80000, equityRatio: 0.75, taxSavings: 145000, ssMonthlyPIA: 2500, ssClaimAge: 67, activeTab: 'monte' };
+    let statePlanB = { retireAge: 58, annualSpend: 85000, equityRatio: 0.80, ssClaimAge: 70 };
     let mcResults = { p10: [], p50: [], p90: [], successRate: 96, years: 50, rawPaths: [] };
     let mcResultsPlanB = { p10: [], p50: [], p90: [], successRate: 99, years: 50 };
+
+    // ================================================================
+    // SWITCH CLIENT — Load from DB or fallback to demo
+    // ================================================================
+    async function onClientSwitch(clientId) {
+      activeClientId = clientId;
+
+      if (supabaseClient && currentSession && clientId && !clientDatabase[clientId]) {
+        // Real DB mode
+        const { data: client, error } = await supabaseClient
+          .from('clients')
+          .select('*')
+          .eq('id', clientId)
+          .single();
+
+        if (client && !error) {
+          state = {
+            name: client.client_name,
+            currentAge: client.current_age,
+            retireAge: client.target_retire_age,
+            endAge: client.end_age,
+            initialAssets: parseFloat(client.liquid_assets),
+            annualSpend: parseFloat(client.annual_spending),
+            equityRatio: parseFloat(client.equity_ratio),
+            ssClaimAge: client.ss_claim_age,
+            ssMonthlyPIA: parseFloat(client.ss_monthly_pia),
+            taxSavings: parseFloat(client.tax_savings),
+            activeTab: state.activeTab
+          };
+        }
+      } else {
+        // Demo mode
+        const saved = localStorage.getItem('veloxis_' + clientId);
+        if (saved) {
+          state = { ...JSON.parse(saved), activeTab: state.activeTab };
+        } else if (clientDatabase[clientId]) {
+          state = { ...clientDatabase[clientId], activeTab: state.activeTab };
+        }
+      }
+
+      // Update selector to reflect current client
+      const selector = document.getElementById('clientSelector');
+      if (selector) selector.value = clientId;
+
+      recomputeAndRender();
+    }
+
+    // ================================================================
+    // DEBOUNCED PERSIST — 400ms after last AI mutation, UPDATE Supabase
+    // ================================================================
+    function schedulePersist() {
+      if (!supabaseClient || !currentSession || !activeClientId || clientDatabase[activeClientId]) return;
+
+      clearTimeout(_persistDebounceTimer);
+      _persistDebounceTimer = setTimeout(async () => {
+        try {
+          await supabaseClient.from('clients').update({
+            current_age: state.currentAge,
+            target_retire_age: state.retireAge,
+            liquid_assets: state.initialAssets,
+            annual_spending: state.annualSpend,
+            equity_ratio: state.equityRatio,
+            ss_claim_age: state.ssClaimAge,
+            ss_monthly_pia: state.ssMonthlyPIA,
+            tax_savings: state.taxSavings
+          }).eq('id', activeClientId);
+        } catch (e) {
+          console.warn('Persist failed (non-blocking):', e.message);
+        }
+      }, 400);
+    }
+
+    // ================================================================
+    // NEW CLIENT DRAWER
+    // ================================================================
+    function openNewClientDrawer() {
+      document.getElementById('newClientDrawer').classList.remove('hidden');
+      document.getElementById('nc_name').focus();
+      lucide.createIcons();
+    }
+
+    function closeNewClientDrawer() {
+      document.getElementById('newClientDrawer').classList.add('hidden');
+      document.getElementById('nc_error').classList.add('hidden');
+    }
+
+    async function saveNewClient() {
+      const name = document.getElementById('nc_name').value.trim();
+      const age = parseInt(document.getElementById('nc_age').value);
+      const retire = parseInt(document.getElementById('nc_retire').value);
+      const assets = parseFloat(document.getElementById('nc_assets').value);
+      const spend = parseFloat(document.getElementById('nc_spend').value);
+      const equity = parseFloat(document.getElementById('nc_equity').value) / 100;
+
+      const errEl = document.getElementById('nc_error');
+      errEl.classList.add('hidden');
+
+      if (!name) { errEl.textContent = 'Client name is required.'; errEl.classList.remove('hidden'); return; }
+      if (retire <= age) { errEl.textContent = 'Retire age must be greater than current age.'; errEl.classList.remove('hidden'); return; }
+
+      const lbl = document.getElementById('nc_saveLbl');
+      const btn = document.getElementById('nc_saveBtn');
+      lbl.textContent = 'Creating...';
+      btn.disabled = true;
+
+      if (supabaseClient && currentSession) {
+        const { data, error } = await supabaseClient.from('clients').insert({
+          advisor_id: currentSession.user.id,
+          client_name: name,
+          current_age: age,
+          target_retire_age: retire,
+          end_age: Math.max(retire + 20, 85),
+          liquid_assets: assets,
+          annual_spending: spend,
+          equity_ratio: equity,
+          ss_claim_age: 67,
+          ss_monthly_pia: 2500,
+          tax_savings: 145000
+        }).select().single();
+
+        if (error) {
+          errEl.textContent = 'Error: ' + error.message;
+          errEl.classList.remove('hidden');
+          lbl.textContent = 'Create Client & Open Plan';
+          btn.disabled = false;
+          return;
+        }
+
+        closeNewClientDrawer();
+
+        // Reload client list and switch to new client
+        await loadAdvisorClients();
+        await onClientSwitch(data.id);
+        document.getElementById('clientSelector').value = data.id;
+
+      } else {
+        // Demo mode: just load locally
+        const demoId = 'client_' + Date.now();
+        clientDatabase[demoId] = { name, currentAge: age, retireAge: retire, endAge: Math.max(retire + 20, 85), initialAssets: assets, annualSpend: spend, equityRatio: equity, taxSavings: 145000, ssMonthlyPIA: 2500, ssClaimAge: 67 };
+        const opt = document.createElement('option');
+        opt.value = demoId;
+        const assetsLabel = assets >= 1000000 ? '$' + (assets/1000000).toFixed(1)+'M' : '$'+Math.round(assets/1000)+'k';
+        opt.textContent = `${name} (Age ${age}, ${assetsLabel})`;
+        opt.className = 'bg-slate-900 text-white';
+        document.getElementById('clientSelector').appendChild(opt);
+        closeNewClientDrawer();
+        onClientSwitch(demoId);
+      }
+
+      lbl.textContent = 'Create Client & Open Plan';
+      btn.disabled = false;
+    }
+
+    // ================================================================
+    // LOGOUT
+    // ================================================================
+    async function handleLogout() {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      window.location.href = '/auth.html';
+    }
 
     // Gaussian Random Variable Generator
     function gaussianRandom() {
@@ -1386,9 +1690,13 @@
       const startTime = performance.now();
 
       try {
+        const accessToken = currentSession?.access_token || '';
         const res = await fetch('/api/generate', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {})
+          },
           body: JSON.stringify({ prompt })
         });
         const data = await res.json();
@@ -1411,6 +1719,8 @@
             if (m.ss_claim_age) state.ssClaimAge = m.ss_claim_age;
             if (m.ss_monthly_pia) state.ssMonthlyPIA = m.ss_monthly_pia;
             if (m.tax_savings) state.taxSavings = m.tax_savings;
+            // 400ms debounced persist to Supabase
+            schedulePersist();
           }
 
           if (d.switch_view) {
@@ -1534,9 +1844,9 @@
       requestAnimationFrame(masterAnimationLoop);
     }
 
-    // Initialize on window load
-    window.onload = function() {
-      onClientSwitch("client_sarah");
+    // Initialize on window load — Auth Guard first
+    window.onload = async function() {
+      await initAuthGuard();
       requestAnimationFrame(masterAnimationLoop);
     };
 

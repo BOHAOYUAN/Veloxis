@@ -22,6 +22,30 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
+  // Server-side JWT Guard — validates Supabase access token
+  const authHeader = req.headers['authorization'] || '';
+  const accessToken = authHeader.replace('Bearer ', '').trim();
+
+  let advisorId = null;
+  if (accessToken && accessToken.length > 20) {
+    try {
+      const { createClient } = require('@supabase/supabase-js');
+      const supabaseAdmin = createClient(
+        process.env.SUPABASE_URL || 'https://mlvyjrevobzaecganmgp.supabase.co',
+        process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_rtB-t4wWt2N6P8e_EbHHng_Wopex2g1'
+      );
+      const { data: { user }, error } = await supabaseAdmin.auth.getUser(accessToken);
+      if (user && !error) {
+        advisorId = user.id;
+      }
+    } catch (jwtErr) {
+      console.warn('JWT validation failed (non-blocking):', jwtErr.message);
+    }
+  }
+  // Non-blocking: if no valid token, still allow (for demo mode fallback)
+  // In production, uncomment below to enforce:
+  // if (!advisorId) return res.status(401).json({ error: 'Unauthorized' });
+
   try {
     const { prompt, language = 'en' } = req.body || {};
     if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
@@ -165,6 +189,7 @@ All response text should match the user's language (English or Chinese).`;
     return res.status(200).json({
       success: true,
       engine: engineUsed,
+      advisor_id: advisorId,
       data: result
     });
 
