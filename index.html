@@ -766,29 +766,26 @@
       return { p10, p50, p90, quantiles, successRate, years: totalYears, rawPaths: paths };
     }
 
-    // Switch Client CRM Profile
-    function onClientSwitch(clientId) {
-      activeClientId = clientId;
-      const saved = localStorage.getItem('veloxis_' + clientId);
-      if (saved) {
-        state = { ...JSON.parse(saved), activeTab: state.activeTab };
-      } else {
-        state = { ...clientDatabase[clientId], activeTab: state.activeTab };
-      }
-      recomputeAndRender();
-    }
-
     // Recompute Quant Model and Render Active Canvas
     function recomputeAndRender() {
+      const initialAssets = Number(state.initialAssets) || 750000;
+      const annualSpend = Number(state.annualSpend) || 80000;
+      const currentAge = Number(state.currentAge) || 35;
+      const retireAge = Number(state.retireAge) || 60;
+      const endAge = Number(state.endAge) || Math.max(retireAge + 20, 85);
+      const equityRatio = Number(state.equityRatio) || 0.75;
+      const ssPIA = Number(state.ssMonthlyPIA) || 2500;
+      const ssClaim = Number(state.ssClaimAge) || 67;
+
       mcResults = runMonteCarlo(
-        state.initialAssets,
-        state.annualSpend,
-        state.currentAge,
-        state.retireAge,
-        state.endAge,
-        state.equityRatio,
-        state.ssMonthlyPIA || 2500,
-        state.ssClaimAge || 67,
+        initialAssets,
+        annualSpend,
+        currentAge,
+        retireAge,
+        endAge,
+        equityRatio,
+        ssPIA,
+        ssClaim,
         800,
         stressMode,
         isGkEnabled
@@ -796,14 +793,14 @@
 
       if (isCompareMode) {
         mcResultsPlanB = runMonteCarlo(
-          state.initialAssets,
-          statePlanB.annualSpend,
-          state.currentAge,
-          statePlanB.retireAge,
-          state.endAge,
-          statePlanB.equityRatio,
-          state.ssMonthlyPIA || 2500,
-          statePlanB.ssClaimAge || 70,
+          initialAssets,
+          Number(statePlanB.annualSpend) || annualSpend,
+          currentAge,
+          Number(statePlanB.retireAge) || 58,
+          endAge,
+          Number(statePlanB.equityRatio) || 0.80,
+          ssPIA,
+          Number(statePlanB.ssClaimAge) || 70,
           800,
           stressMode,
           isGkEnabled
