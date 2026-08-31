@@ -135,11 +135,10 @@
 <body class="h-screen w-screen overflow-hidden flex antialiased selection:bg-emerald-500 selection:text-white">
 
   <!-- ========================================================================= -->
-  <!-- 1. LEFT FIXED SIDEBAR NAVIGATION (RightCapital Official Hierarchy)         -->
+  <!-- 1. LEFT FIXED SIDEBAR NAVIGATION                                         -->
   <!-- ========================================================================= -->
   <aside id="appSidebar" class="w-64 bg-white dark:bg-[#080d1a] border-r border-slate-200 dark:border-slate-800/80 flex flex-col justify-between shrink-0 h-screen z-30 transition-all shadow-sm">
     
-    <!-- Sidebar Top: Brand & Main Navigation -->
     <div class="flex flex-col">
       <!-- Brand Logo -->
       <div class="p-4 px-5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
@@ -163,25 +162,25 @@
       <nav class="p-3 flex flex-col gap-1 text-xs font-medium">
         <div class="text-[10px] font-mono text-slate-400 dark:text-slate-500 px-3 py-1.5 uppercase tracking-wider font-bold">Client Planning</div>
         
-        <!-- RightCapital View 1: Snapshot Overview -->
+        <!-- View 1: Snapshot Overview -->
         <button id="nav_snapshot" onclick="switchAppView('snapshot')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-600/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 transition-all font-bold text-left shadow-xs">
           <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
           <span>Client Snapshot (Overview)</span>
         </button>
 
-        <!-- RightCapital View 2: Retirement Analysis & Scenario Workbench -->
+        <!-- View 2: Retirement Analysis & Scenario Workbench -->
         <button id="nav_workbench" onclick="switchAppView('workbench')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all text-left">
           <i data-lucide="activity" class="w-4 h-4 text-slate-500"></i>
           <span>Retirement Analysis</span>
         </button>
 
-        <!-- RightCapital View 3: 30-Year Cashflow Matrix -->
+        <!-- View 3: 30-Year Cashflow Matrix -->
         <button id="nav_ledger" onclick="switchAppView('ledger')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all text-left">
           <i data-lucide="table" class="w-4 h-4 text-slate-500"></i>
           <span>Cashflow & Tax Matrix</span>
         </button>
 
-        <!-- RightCapital View 4: Client Directory (CRM) -->
+        <!-- View 4: Client Directory (CRM) -->
         <button id="nav_clients" onclick="switchAppView('clients')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all text-left">
           <i data-lucide="users" class="w-4 h-4 text-slate-500"></i>
           <span>Client Directory (CRM)</span>
@@ -203,8 +202,6 @@
 
     <!-- Sidebar Bottom: Theme Toggle, Advisor Profile & Sign Out -->
     <div class="p-3 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/40">
-      
-      <!-- Theme Switcher (Light / Dark) -->
       <div class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mb-2 shadow-xs">
         <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
           <i data-lucide="sun" class="w-3.5 h-3.5 text-amber-500" id="themeIcon"></i>
@@ -215,7 +212,6 @@
         </button>
       </div>
 
-      <!-- Advisor Profile Card -->
       <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between mb-2 shadow-xs">
         <div class="flex items-center gap-2 overflow-hidden">
           <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950 border border-indigo-200 dark:border-indigo-500/40 flex items-center justify-center shrink-0">
@@ -243,7 +239,7 @@
   </aside>
 
   <!-- ========================================================================= -->
-  <!-- 2. MAIN CONTENT STAGE (Header + Multi-View Router)                        -->
+  <!-- 2. MAIN CONTENT STAGE                                                    -->
   <!-- ========================================================================= -->
   <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-slate-50 dark:bg-[#060911]">
     
@@ -306,8 +302,6 @@
       <!-- VIEW 1: CLIENT SNAPSHOT (RightCapital Official Benchmark Screen)          -->
       <!-- ========================================================================= -->
       <div id="viewSnapshot" class="flex flex-col gap-4">
-        
-        <!-- Snapshot Header Banner -->
         <div class="theme-card p-5 rounded-2xl flex flex-wrap items-center justify-between gap-4 shadow-xs">
           <div>
             <div class="flex items-center gap-2">
@@ -330,10 +324,8 @@
           </div>
         </div>
 
-        <!-- 3-Card Grid Matching RightCapital Snapshot -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          
-          <!-- Card A: Balance Sheet (Assets vs Liabilities Table) -->
+          <!-- Card A: Balance Sheet Table -->
           <div class="theme-card rounded-2xl p-4 shadow-xs flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800 mb-3">
@@ -345,7 +337,6 @@
               </div>
 
               <div class="space-y-3 text-xs">
-                <!-- Assets Group -->
                 <div>
                   <div class="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 uppercase font-bold mb-1">Assets ($1,400,000)</div>
                   <div class="space-y-1.5 text-slate-600 dark:text-slate-300 font-medium">
@@ -368,7 +359,6 @@
                   </div>
                 </div>
 
-                <!-- Liabilities Group -->
                 <div>
                   <div class="text-[10px] font-mono text-rose-600 dark:text-rose-400 uppercase font-bold mb-1">Liabilities (-$151,672)</div>
                   <div class="space-y-1.5 text-slate-600 dark:text-slate-300 font-medium">
@@ -391,7 +381,7 @@
             </div>
           </div>
 
-          <!-- Card B: Tax Allocation (Donut Summary) -->
+          <!-- Card B: Tax Allocation Summary -->
           <div class="theme-card rounded-2xl p-4 shadow-xs flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800 mb-3">
@@ -402,15 +392,11 @@
                 <span class="text-[10px] font-mono text-slate-400 font-bold">3-BUCKET</span>
               </div>
 
-              <!-- Donut Visual Placeholder -->
               <div class="flex items-center justify-center py-2">
                 <div class="relative w-36 h-36 flex items-center justify-center">
                   <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
-                    <!-- Taxable Circle (cyan) -->
                     <circle cx="18" cy="18" r="14" fill="transparent" stroke="#0891b2" stroke-width="5" stroke-dasharray="30 70" stroke-dashoffset="0"></circle>
-                    <!-- Tax-Deferred (rose) -->
                     <circle cx="18" cy="18" r="14" fill="transparent" stroke="#e11d48" stroke-width="5" stroke-dasharray="45 55" stroke-dashoffset="-30"></circle>
-                    <!-- Tax-Free Roth (emerald) -->
                     <circle cx="18" cy="18" r="14" fill="transparent" stroke="#059669" stroke-width="5" stroke-dasharray="25 75" stroke-dashoffset="-75"></circle>
                   </svg>
                   <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
@@ -420,7 +406,6 @@
                 </div>
               </div>
 
-              <!-- Legend & Breakdown List -->
               <div class="space-y-2 text-xs font-mono mt-2">
                 <div class="flex justify-between items-center p-1.5 rounded-lg bg-slate-50 dark:bg-slate-900/50">
                   <span class="flex items-center gap-1.5 text-cyan-700 dark:text-cyan-400 font-bold">
@@ -453,7 +438,7 @@
             </div>
           </div>
 
-          <!-- Card C: Asset Allocation (Current vs Target Double Donut) -->
+          <!-- Card C: Asset Allocation Strategy -->
           <div class="theme-card rounded-2xl p-4 shadow-xs flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800 mb-3">
@@ -464,7 +449,6 @@
                 <span class="text-[10px] font-mono text-slate-400 font-bold">CURRENT VS TARGET</span>
               </div>
 
-              <!-- Double Comparison Rings -->
               <div class="grid grid-cols-2 gap-3 py-2 text-center">
                 <div class="flex flex-col items-center">
                   <div class="relative w-24 h-24 flex items-center justify-center">
@@ -491,7 +475,6 @@
                 </div>
               </div>
 
-              <!-- Asset Class Details Table -->
               <div class="space-y-1 text-[11px] font-mono mt-2 divide-y divide-slate-100 dark:divide-slate-800">
                 <div class="flex justify-between py-1 text-slate-600 dark:text-slate-300">
                   <span>• US Large/Mid Cap Equities</span>
@@ -517,9 +500,7 @@
               <span class="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40">Moderate Growth</span>
             </div>
           </div>
-
         </div>
-
       </div>
 
       <!-- ========================================================================= -->
@@ -533,7 +514,7 @@
           <!-- Visual Stage Panel -->
           <div class="theme-card rounded-2xl overflow-hidden shadow-xs flex flex-col">
             
-            <!-- Canvas Control Toolbar -->
+            <!-- Canvas Control Toolbar (Row 1: Tabs) -->
             <div class="p-3 px-4 border-b border-slate-200 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2 bg-slate-50/70 dark:bg-slate-950/60">
               <!-- Visual Tab Switchers -->
               <div class="flex items-center gap-1 bg-white dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold flex-wrap shadow-xs">
@@ -555,22 +536,29 @@
                 </button>
               </div>
 
-              <!-- Tools: Compare Mode & Quick Status -->
-              <div class="flex items-center gap-2 text-xs font-mono flex-wrap">
-                <button id="btnToggleCompare" onclick="toggleMultiScenarioCompare()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 font-bold transition-all active:scale-95 flex items-center gap-1.5 shadow-xs">
-                  <i data-lucide="layers" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
-                  <span id="lblCompareBtn">Compare Plans (A / B / C)</span>
-                </button>
-
-                <div class="hidden sm:flex items-center gap-1.5 text-[11px]">
+              <!-- Tools Container (Dynamic for Monte Carlo or Sankey Timeline) -->
+              <div id="canvasDynamicToolbar" class="flex items-center gap-2 text-xs font-mono flex-wrap">
+                <!-- Monte Carlo default tools -->
+                <div id="toolsMonte" class="flex items-center gap-2">
+                  <button id="btnToggleCompare" onclick="toggleMultiScenarioCompare()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 font-bold transition-all active:scale-95 flex items-center gap-1.5 shadow-xs">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
+                    <span id="lblCompareBtn">Compare Plans (A / B / C)</span>
+                  </button>
                   <span id="badgeGK" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/40 flex items-center gap-1 font-bold">
                     <i data-lucide="shield" class="w-3 h-3 text-emerald-600 dark:text-emerald-400"></i>
                     <span>GK: ACTIVE</span>
                   </span>
-                  <span id="badgeSS" class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/40 flex items-center gap-1 font-bold">
-                    <i data-lucide="landmark" class="w-3 h-3 text-amber-600 dark:text-amber-400"></i>
-                    <span>SS: Age 67</span>
-                  </span>
+                </div>
+
+                <!-- Sankey Dynamic Timeline Scrubber (Visible on Sankey tab) -->
+                <div id="toolsSankey" class="hidden flex items-center gap-2 bg-white dark:bg-slate-900 p-1 px-2.5 rounded-xl border border-slate-300 dark:border-slate-700 shadow-xs">
+                  <button onclick="toggleTimelinePlay()" id="btnTimelinePlay" class="p-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 flex items-center gap-1 font-bold px-2" title="Auto-play lifecycle animation">
+                    <i data-lucide="play" class="w-3.5 h-3.5" id="playIcon"></i>
+                    <span id="playLabel">Play Timeline</span>
+                  </button>
+                  <span class="text-slate-300 dark:text-slate-700">|</span>
+                  <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300" id="lblSankeyAge">Age 40</span>
+                  <input type="range" id="sliderSankeyAge" min="35" max="85" value="40" oninput="onSankeyAgeSlider(this.value)" class="w-32 cursor-pointer" />
                 </div>
               </div>
             </div>
@@ -588,15 +576,12 @@
               </div>
             </div>
 
-            <!-- Chart Footer Legend -->
+            <!-- Dynamic Chart Footer Legend (Auto-adapts to active tab!) -->
             <div class="p-2.5 px-4 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] font-mono text-slate-600 dark:text-slate-400">
               <div id="footerLegendText" class="flex items-center gap-4 flex-wrap font-medium">
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 bg-emerald-600 rounded-full inline-block"></span> 90% Bull Corridor</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 bg-indigo-600 rounded-full inline-block"></span> 50% Median Trajectory</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 bg-rose-600 rounded-full inline-block"></span> 10% Bear Floor Guardrail</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 border-t-2 border-dashed border-amber-500 inline-block"></span> 4% SWR Baseline</span>
+                <!-- Injected dynamically based on tab -->
               </div>
-              <span class="text-slate-400 hidden md:inline">Drag cursor over chart for year-by-year actuarial inspection</span>
+              <span class="text-slate-400 hidden md:inline" id="footerSubTip">Drag cursor over chart for year-by-year actuarial inspection</span>
             </div>
 
           </div>
@@ -632,7 +617,6 @@
 
         <!-- Right Column: Interactive Parameter Control Dock (30% width) -->
         <div class="w-full xl:w-80 theme-card rounded-2xl p-4 flex flex-col gap-4 shadow-sm shrink-0">
-          
           <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
             <div class="flex items-center gap-2">
               <i data-lucide="sliders" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
@@ -642,8 +626,6 @@
           </div>
 
           <div class="flex flex-col gap-3.5 text-xs font-mono">
-            
-            <!-- Initial Liquid Portfolio -->
             <div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400 mb-1 font-medium">
                 <span>Liquid Portfolio</span>
@@ -652,7 +634,6 @@
               <input id="dockInputAssets" type="number" step="10000" value="750000" oninput="onDockParamChange()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-bold text-xs focus:outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-900" />
             </div>
 
-            <!-- Current Age -->
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="text-slate-600 dark:text-slate-400 block mb-1 font-medium">Current Age</label>
@@ -664,7 +645,6 @@
               </div>
             </div>
 
-            <!-- Target Retirement Age Slider -->
             <div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400 mb-1 font-medium">
                 <span>Retirement Age</span>
@@ -673,7 +653,6 @@
               <input id="dockSliderRetireAge" type="range" min="40" max="75" value="60" oninput="onDockParamChange()" class="w-full cursor-pointer" />
             </div>
 
-            <!-- Annual Retirement Spending Slider -->
             <div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400 mb-1 font-medium">
                 <span>Annual Spending</span>
@@ -682,7 +661,6 @@
               <input id="dockSliderSpend" type="range" min="30000" max="300000" step="5000" value="80000" oninput="onDockParamChange()" class="w-full cursor-pointer" />
             </div>
 
-            <!-- Equity Allocation Slider -->
             <div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400 mb-1 font-medium">
                 <span>Equity Ratio</span>
@@ -691,7 +669,6 @@
               <input id="dockSliderEquity" type="range" min="10" max="100" step="5" value="75" oninput="onDockParamChange()" class="w-full cursor-pointer" />
             </div>
 
-            <!-- Social Security Claim Age -->
             <div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400 mb-1 font-medium">
                 <span>SS Claim Age</span>
@@ -700,7 +677,6 @@
               <input id="dockSliderSSClaim" type="range" min="62" max="70" step="1" value="67" oninput="onDockParamChange()" class="w-full cursor-pointer" />
             </div>
 
-            <!-- Guyton-Klinger Toggle Switch -->
             <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
               <div class="flex flex-col">
                 <span class="font-bold text-slate-900 dark:text-white text-xs">Guyton-Klinger Guardrail</span>
@@ -711,7 +687,6 @@
               </button>
             </div>
 
-            <!-- Macro Stress Test Scenario -->
             <div>
               <label class="text-slate-600 dark:text-slate-400 block mb-1 font-medium">Stress Test Scenario</label>
               <select id="dockSelectStress" onchange="onDockStressChange(this.value)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-emerald-500 font-sans cursor-pointer">
@@ -721,13 +696,11 @@
                 <option value="stagflation">🟣 Stagflation (8% Inflation / 2% Yield)</option>
               </select>
             </div>
-
           </div>
 
           <div class="pt-2 border-t border-slate-200 dark:border-slate-800 text-[10px] text-slate-400 dark:text-slate-500 text-center font-mono font-medium">
             Auto-persisted to client database
           </div>
-
         </div>
 
       </div>
@@ -820,8 +793,6 @@
   <!-- 3. SLIDE-OVER AI COPILOT DRAWER                                          -->
   <!-- ========================================================================= -->
   <div id="copilotDrawer" class="fixed inset-y-0 right-0 w-full max-w-md bg-white dark:bg-[#080d1a] border-l border-slate-200 dark:border-indigo-500/30 shadow-2xl z-50 flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out">
-    
-    <!-- Copilot Header -->
     <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60">
       <div class="flex items-center gap-2">
         <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950 border border-indigo-200 dark:border-indigo-500/50 flex items-center justify-center">
@@ -840,7 +811,6 @@
       </button>
     </div>
 
-    <!-- Copilot Chat Stream -->
     <div id="protocolStream" class="flex-1 overflow-y-auto custom-scroll p-4 flex flex-col gap-3">
       <div class="flex gap-2.5 items-start">
         <div class="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950 border border-indigo-200 dark:border-indigo-500/50 flex items-center justify-center shrink-0 mt-0.5">
@@ -866,7 +836,6 @@
       </div>
     </div>
 
-    <!-- Copilot Input Bar -->
     <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex flex-col gap-2">
       <div class="flex items-center gap-2">
         <button id="btnVoiceDictation" onclick="toggleVoiceDictation()" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 text-emerald-600 dark:text-emerald-400 border border-slate-300 dark:border-slate-700 transition-all shrink-0 shadow-xs">
@@ -878,13 +847,11 @@
         </button>
       </div>
     </div>
-
   </div>
 
   <!-- ========================================================================= -->
   <!-- 4. MODALS & TOASTS                                                        -->
   <!-- ========================================================================= -->
-  <!-- Share Toast -->
   <div id="shareToast" class="fixed top-16 right-6 z-[120] hidden bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-500/50 rounded-2xl p-4 shadow-2xl text-slate-900 dark:text-white max-w-sm">
     <div class="flex items-start gap-3">
       <div class="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-500/20 border border-indigo-300 dark:border-indigo-400 flex items-center justify-center shrink-0">
@@ -908,7 +875,6 @@
             <span class="text-[10px] font-mono text-slate-400">B2B SaaS Pricing</span>
           </div>
           <h2 class="text-xl sm:text-2xl font-black font-outfit mt-1">Upgrade Your RIA Wealth Practice</h2>
-          <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Equip your advisory firm with high-frequency quantum simulations and SEC/FINRA compliant reporting.</p>
         </div>
         <button onclick="closePricingModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors p-1">
           <i data-lucide="x" class="w-6 h-6"></i>
@@ -1007,10 +973,14 @@
     let isCompareMode = false;
     let isGkEnabled = true;
     let stressMode = 'none';
-    let billingInterval = 'monthly';
-    let currentAppView = 'snapshot'; // Default to RightCapital Snapshot!
+    let currentAppView = 'snapshot';
     let _persistDebounceTimer = null;
     let currentTheme = localStorage.getItem('theme') || 'light';
+
+    // Interactive Sankey Simulation Age & Player
+    let sankeySimAge = 40;
+    let timelinePlayInterval = null;
+    let isTimelinePlaying = false;
 
     // Apply theme
     function applyTheme(theme) {
@@ -1100,7 +1070,7 @@
       if (viewName === 'snapshot') {
         updateSnapshotValues();
       } else if (viewName === 'workbench') {
-        switchVisualTab('monte');
+        switchVisualTab(state.activeTab || 'monte');
       } else if (viewName === 'clients') {
         renderCRMTable();
       } else if (viewName === 'ledger') {
@@ -1221,6 +1191,7 @@
           ssClaimAge: Number(found.ss_claim_age) || 67,
           activeTab: state.activeTab || 'monte'
         };
+        sankeySimAge = state.currentAge;
       }
 
       const selector = document.getElementById('clientSelector');
@@ -1287,6 +1258,13 @@
       setText('dockValSpend', '$' + Math.round(state.annualSpend).toLocaleString() + '/yr');
       setText('dockValEquity', Math.round(state.equityRatio * 100) + '% Stocks');
       setText('dockValSSClaim', 'Age ' + state.ssClaimAge);
+
+      const sankeySlider = document.getElementById('sliderSankeyAge');
+      if (sankeySlider) {
+        sankeySlider.min = state.currentAge;
+        sankeySlider.max = state.endAge;
+        sankeySlider.value = Math.max(state.currentAge, Math.min(sankeySimAge, state.endAge));
+      }
     }
 
     function onDockParamChange() {
@@ -1347,6 +1325,46 @@
           console.warn('Persist err:', e);
         }
       }, 400);
+    }
+
+    // ================================================================
+    // SANKEY TIMELINE SCRUBBER & AUTO-PLAY LOGIC
+    // ================================================================
+    function onSankeyAgeSlider(val) {
+      sankeySimAge = parseInt(val);
+      const lbl = document.getElementById('lblSankeyAge');
+      if (lbl) {
+        const isRet = sankeySimAge >= state.retireAge;
+        lbl.textContent = `Age ${sankeySimAge} (${isRet ? 'Decumulation' : 'Accumulation'})`;
+      }
+      drawSankeyCanvas();
+    }
+
+    function toggleTimelinePlay() {
+      isTimelinePlaying = !isTimelinePlaying;
+      const btn = document.getElementById('btnTimelinePlay');
+      const lbl = document.getElementById('playLabel');
+      const icon = document.getElementById('playIcon');
+
+      if (isTimelinePlaying) {
+        if (sankeySimAge >= state.endAge) sankeySimAge = state.currentAge;
+        lbl.textContent = "Pause";
+        icon.setAttribute('data-lucide', 'pause');
+        timelinePlayInterval = setInterval(() => {
+          sankeySimAge++;
+          if (sankeySimAge > state.endAge) {
+            sankeySimAge = state.currentAge;
+          }
+          const slider = document.getElementById('sliderSankeyAge');
+          if (slider) slider.value = sankeySimAge;
+          onSankeyAgeSlider(sankeySimAge);
+        }, 700);
+      } else {
+        clearInterval(timelinePlayInterval);
+        lbl.textContent = "Play Timeline";
+        icon.setAttribute('data-lucide', 'play');
+      }
+      lucide.createIcons();
     }
 
     // ================================================================
@@ -1473,15 +1491,15 @@
 
       const badgeGK = document.getElementById('badgeGK');
       if (badgeGK) badgeGK.innerHTML = `<i data-lucide="shield" class="w-3 h-3 text-emerald-600 dark:text-emerald-400"></i><span>GK: ${isGkEnabled ? 'ACTIVE' : 'OFF'}</span>`;
-      const badgeSS = document.getElementById('badgeSS');
-      if (badgeSS) badgeSS.innerHTML = `<i data-lucide="landmark" class="w-3 h-3 text-amber-600 dark:text-amber-400"></i><span>SS: Age ${state.ssClaimAge || 67}</span>`;
 
       lucide.createIcons();
 
       if (currentAppView === 'ledger') renderPageLedgerTable();
       if (currentAppView === 'snapshot') updateSnapshotValues();
 
-      // Render Active View Canvas
+      // Render Active View Canvas & Dynamic Footer Legend
+      updateDynamicFooterLegend();
+
       if (state.activeTab === 'monte') drawMonteCarloCanvas();
       else if (state.activeTab === 'sankey') drawSankeyCanvas();
       else if (state.activeTab === 'estate') drawEstateCanvas();
@@ -1489,7 +1507,54 @@
     }
 
     // ================================================================
-    // CANVAS 2D DRAWING ENGINES (RightCapital Light + Dark Theme Aware)
+    // DYNAMIC FOOTER LEGEND & TOOLBAR ADAPTATION
+    // ================================================================
+    function updateDynamicFooterLegend() {
+      const legend = document.getElementById('footerLegendText');
+      const tip = document.getElementById('footerSubTip');
+      const tab = state.activeTab;
+
+      // Update Toolbar buttons visibility
+      document.getElementById('toolsMonte')?.classList.toggle('hidden', tab !== 'monte');
+      document.getElementById('toolsSankey')?.classList.toggle('hidden', tab !== 'sankey');
+
+      if (!legend) return;
+
+      if (tab === 'monte') {
+        legend.innerHTML = `
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 bg-emerald-600 rounded-full inline-block"></span> 90% Bull Corridor</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 bg-indigo-600 rounded-full inline-block"></span> 50% Median Trajectory</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 bg-rose-600 rounded-full inline-block"></span> 10% Bear Floor Guardrail</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 border-t-2 border-dashed border-amber-500 inline-block"></span> 4% SWR Baseline</span>
+        `;
+        if (tip) tip.textContent = "Drag cursor over chart for year-by-year actuarial inspection";
+      } else if (tab === 'sankey') {
+        legend.innerHTML = `
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-sky-500 rounded-sm inline-block"></span> Salary & Portfolio Inflows</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-amber-500 rounded-sm inline-block"></span> Social Security (Age 67+)</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-rose-500 rounded-sm inline-block"></span> Living Spending & IRS Tax</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-indigo-500 rounded-sm inline-block"></span> Net Capital Reinvestment</span>
+        `;
+        if (tip) tip.textContent = "Use Timeline slider or Play button above to watch cash flows morph across your lifetime";
+      } else if (tab === 'roth') {
+        legend.innerHTML = `
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-cyan-600 rounded-sm inline-block"></span> Taxable Brokerage</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-rose-600 rounded-sm inline-block"></span> Tax-Deferred 401(k)</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-emerald-600 rounded-sm inline-block"></span> Tax-Free Roth Conversion</span>
+        `;
+        if (tip) tip.textContent = "Ages 55-72 Golden Window minimizes mandatory RMD taxes after age 73";
+      } else if (tab === 'estate') {
+        legend.innerHTML = `
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-indigo-600 rounded-sm inline-block"></span> Revocable Living Trust</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-emerald-600 rounded-sm inline-block"></span> Generation-Skipping Trust</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-cyan-600 rounded-sm inline-block"></span> ILIT Insurance Trust</span>
+        `;
+        if (tip) tip.textContent = "Dynasty wealth transfer shielded from 40% estate tax exemption limit";
+      }
+    }
+
+    // ================================================================
+    // CANVAS 2D DRAWING ENGINES
     // ================================================================
     function prepareCrispCanvas() {
       const canvas = document.getElementById('livingCanvas');
@@ -1530,7 +1595,6 @@
       const getX = (yearIndex) => paddingLeft + (yearIndex / years) * chartW;
       const getY = (val) => paddingTop + chartH - (val / maxVal) * chartH;
 
-      // Grid Lines & Y Ticks
       ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)';
       ctx.lineWidth = 1;
       ctx.fillStyle = '#64748b';
@@ -1548,7 +1612,6 @@
         ctx.fillText(label, 14, y + 3);
       }
 
-      // SWR Line
       const swrFloorVal = state.initialAssets * 0.04 * 25;
       if (swrFloorVal < maxVal) {
         const swrY = getY(swrFloorVal);
@@ -1564,7 +1627,6 @@
         ctx.fillText('• 4% SWR Baseline', paddingLeft + 8, swrY - 4);
       }
 
-      // Distribution Zone
       const retireYearIdx = Math.max(0, state.retireAge - state.currentAge);
       const retireX = getX(retireYearIdx);
       ctx.fillStyle = isDark ? 'rgba(245, 158, 11, 0.04)' : 'rgba(245, 158, 11, 0.07)';
@@ -1573,7 +1635,6 @@
       ctx.font = '700 9px Inter, sans-serif';
       ctx.fillText('DISTRIBUTION PHASE', retireX + 8, paddingTop + 14);
 
-      // X-Axis Labels
       const xAges = [state.currentAge, state.retireAge, 65, 75, state.endAge];
       const drawnAges = new Set();
       xAges.forEach(age => {
@@ -1582,7 +1643,6 @@
         ctx.fillText(`Age ${age}`, getX(age - state.currentAge) - 18, h - 12);
       });
 
-      // Quantile Ribbons
       if (quantiles.length >= 19) {
         for (let b = 0; b < 9; b++) {
           const lowerQ = quantiles[b];
@@ -1620,7 +1680,6 @@
         drawCurve(mcResultsPlanC.p50, '#d97706', 'rgba(217, 119, 6, 0.9)', 2.5, true);
       }
 
-      // End Badges
       function drawEndPointBadge(val, color, yOffset = 0) {
         const lastX = getX(years);
         const lastY = getY(val) + yOffset;
@@ -1648,7 +1707,6 @@
         drawEndPointBadge(mcResultsPlanC.p50[years], '#d97706', 20);
       }
 
-      // Hover Crosshair
       if (hoverAge !== null && hoverAge >= state.currentAge && hoverAge <= state.endAge) {
         const hIdx = hoverAge - state.currentAge;
         const hX = getX(hIdx);
@@ -1740,7 +1798,6 @@
         ctx.fillText('⭐ Golden Roth Conversion Window (Ages 55-72)', cX1 + 6, chartY + 14);
       }
 
-      // Bands
       ctx.beginPath();
       ctx.moveTo(getBx(0), getBy(0));
       for (let i = 0; i <= totalYears; i++) ctx.lineTo(getBx(i), getBy(rothCurve[i]));
@@ -1765,7 +1822,6 @@
       ctx.fillStyle = isDark ? 'rgba(6, 182, 212, 0.55)' : 'rgba(8, 145, 178, 0.45)';
       ctx.fill();
 
-      // Right Bracket Comparison
       const rightX = leftChartW + 85, rightW = w - rightX - 25;
       ctx.fillStyle = isDark ? '#ffffff' : '#0f172a';
       ctx.font = '700 11px Inter, sans-serif';
@@ -1805,7 +1861,6 @@
         barY += 54;
       });
 
-      // Bottom Legend
       ctx.fillStyle = '#0891b2';
       ctx.font = '700 10px Inter, sans-serif';
       ctx.fillText('■ Taxable Pool (30%)', 35, h - 14);
@@ -1815,23 +1870,30 @@
       ctx.fillText('■ Tax-Free Roth Pool (20% → 85%)', 370, h - 14);
     }
 
+    // ================================================================
+    // INTERACTIVE LIFE-TIMELINE SANKEY (DYNAMIC MORPHING ENGINE)
+    // ================================================================
     function drawSankeyCanvas() {
       const { ctx, w, h, isDark } = prepareCrispCanvas();
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = isDark ? '#070b14' : '#ffffff';
       ctx.fillRect(0, 0, w, h);
 
+      const simAge = sankeySimAge;
       const currentAge = Number(state.currentAge) || 35;
       const retireAge = Number(state.retireAge) || 60;
       const ssClaimAge = Number(state.ssClaimAge) || 67;
-      const isRetired = currentAge >= retireAge;
-      const isClaimingSS = currentAge >= ssClaimAge;
+      const isRetired = simAge >= retireAge;
+      const isClaimingSS = simAge >= ssClaimAge;
 
-      let salaryIn = 0, ssIn = 0, yieldIn = 0, livingExp = Number(state.annualSpend) || 80000, irsTax = 0, retainedAlpha = 0;
+      const inflationFactor = Math.pow(1.024, Math.max(0, simAge - currentAge));
+      const livingExp = Math.round((Number(state.annualSpend) || 80000) * (isRetired ? inflationFactor : 1.0));
+
+      let salaryIn = 0, ssIn = 0, yieldIn = 0, irsTax = 0, retainedAlpha = 0;
 
       if (!isRetired) {
-        salaryIn = Math.round((livingExp * 1.45) / 0.72);
-        yieldIn = Math.round(Number(state.initialAssets) * 0.075);
+        salaryIn = Math.round(((Number(state.annualSpend) || 80000) * 1.45) * inflationFactor / 0.72);
+        yieldIn = Math.round((Number(state.initialAssets) * Math.pow(1.07, Math.max(0, simAge - currentAge))) * 0.075);
         ssIn = 0;
         irsTax = Math.round(salaryIn * 0.22);
         const totalGross = salaryIn + yieldIn;
@@ -1839,34 +1901,45 @@
       } else {
         salaryIn = 0;
         let ssMultiplier = ssClaimAge <= 62 ? 0.70 : (ssClaimAge >= 70 ? 1.24 : 0.70 + ((ssClaimAge - 62) / 5) * 0.30);
-        ssIn = isClaimingSS ? Math.round((Number(state.ssMonthlyPIA) || 2500) * 12 * ssMultiplier) : 0;
-        yieldIn = Math.round(Number(state.initialAssets) * 0.045);
-        irsTax = Math.round((livingExp + ssIn) * 0.12);
+        ssIn = isClaimingSS ? Math.round((Number(state.ssMonthlyPIA) || 2500) * 12 * ssMultiplier * Math.pow(1.024, Math.max(0, simAge - 67))) : 0;
+        yieldIn = Math.round((Number(state.initialAssets) * Math.pow(1.045, Math.max(0, simAge - retireAge))) * 0.045);
+        irsTax = Math.round((livingExp + ssIn) * (simAge >= 73 ? 0.18 : 0.12));
         const totalGross = ssIn + yieldIn + Math.max(0, livingExp - ssIn);
         retainedAlpha = Math.max(0, totalGross - livingExp - irsTax);
       }
 
-      const totalIn = salaryIn + ssIn + yieldIn;
+      const totalIn = Math.max(1000, salaryIn + ssIn + yieldIn);
 
+      // Title & Dynamic Badge
       ctx.fillStyle = isDark ? '#ffffff' : '#0f172a';
       ctx.font = '800 13px Inter, sans-serif';
-      ctx.fillText(`Dynamic Cashflow Sankey — ${isRetired ? 'Distribution Phase' : 'Wealth Accumulation Phase (Age ' + currentAge + ')'}`, 35, 30);
+      ctx.fillText(`Life Cashflow Simulator — Simulation Point: Age ${simAge} (${isRetired ? '🏖️ Retirement Phase' : '💼 Working Accumulation Phase'})`, 35, 30);
+
+      ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.15)' : '#e0f2fe';
+      ctx.fillRect(w - 250, 12, 215, 28);
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(w - 250, 12, 215, 28);
+      ctx.fillStyle = '#0284c7';
+      ctx.font = '800 11px Fira Code, monospace';
+      ctx.fillText(`🌊 Annual Flow: $${totalIn.toLocaleString()}`, w - 238, 30);
 
       const sources = [
-        { title: isRetired ? '💼 Active Salary (Retired)' : '💼 Salary & Earned Comp', val: salaryIn, color: '#0284c7' },
-        { title: `🏛️ Social Security (Age ${ssClaimAge})`, val: ssIn, color: '#d97706' },
-        { title: `📈 Portfolio Yield (${isRetired ? '4.5% Draw' : '7.5% Growth'})`, val: yieldIn, color: '#059669' }
+        { title: isRetired ? '💼 Active Salary (Retired $0)' : '💼 Active Salary & Comp', val: salaryIn, color: '#0284c7', desc: isRetired ? 'Employment concluded' : 'Primary wage income' },
+        { title: `🏛️ Social Security (Age ${ssClaimAge})`, val: ssIn, color: '#d97706', desc: isClaimingSS ? `Active ($${Math.round(ssIn/12)}/mo)` : `Starts at age ${ssClaimAge}` },
+        { title: isRetired ? `📈 Portfolio Draw / Capital Yield` : `📈 Portfolio Capital Yield (7.5%)`, val: yieldIn, color: '#059669', desc: isRetired ? 'Liquid decumulation draw' : 'Compounding growth' }
       ];
 
       const destinations = [
-        { title: '🍷 Annual Living Spend', val: livingExp, color: '#e11d48' },
-        { title: '🏛️ IRS Federal Tax Drag', val: irsTax, color: '#dc2626' },
-        { title: isRetired ? '🛡️ Portfolio Preservation Alpha' : '🛡️ Net Wealth Growth & 401(k)', val: retainedAlpha, color: '#4f46e5' }
+        { title: '🍷 Annual Living Spend', val: livingExp, color: '#e11d48', desc: 'Family lifestyle & housing' },
+        { title: simAge >= 73 ? '🏛️ IRS Tax Drag (RMD Bracket)' : '🏛️ IRS Federal Tax Drag', val: irsTax, color: '#dc2626', desc: simAge >= 73 ? 'Required Minimum Distribution' : 'Effective tax liability' },
+        { title: isRetired ? '🛡️ Portfolio Preservation' : '🛡️ Net Wealth Growth & 401(k)', val: retainedAlpha, color: '#4f46e5', desc: isRetired ? 'Remaining estate buffer' : 'Reinvested surplus' }
       ];
 
-      const leftCardW = 195, rightCardW = 205, leftX = 35, rightX = w - rightCardW - 35, cardH = 50, topY = 60, gapY = 26;
-      const startX = leftX + leftCardW, endX = rightX, midX = (startX + endX) / 2, hubCenterY = topY + cardH + gapY / 2 + 25;
+      const leftCardW = 205, rightCardW = 215, leftX = 35, rightX = w - rightCardW - 35, cardH = 52, topY = 60, gapY = 24;
+      const startX = leftX + leftCardW, endX = rightX, midX = (startX + endX) / 2, hubCenterY = topY + cardH + gapY / 2 + 26;
 
+      // Draw Source Cards
       sources.forEach((src, idx) => {
         const y = topY + idx * (cardH + gapY);
         src.y = y; src.h = cardH;
@@ -1878,12 +1951,16 @@
         ctx.fillRect(leftX, y, 4, cardH);
         ctx.fillStyle = isDark ? '#ffffff' : '#0f172a';
         ctx.font = '700 10.5px Inter, sans-serif';
-        ctx.fillText(src.title, leftX + 12, y + 18);
+        ctx.fillText(src.title, leftX + 12, y + 17);
         ctx.fillStyle = src.val > 0 ? src.color : '#94a3b8';
         ctx.font = '700 11px Fira Code, monospace';
-        ctx.fillText(`$${src.val.toLocaleString()}/yr`, leftX + 12, y + 36);
+        ctx.fillText(`$${src.val.toLocaleString()}/yr`, leftX + 12, y + 33);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '500 9px Inter, sans-serif';
+        ctx.fillText(src.desc, leftX + 12, y + 46);
       });
 
+      // Draw Destination Cards
       destinations.forEach((dst, idx) => {
         const y = topY + idx * (cardH + gapY);
         dst.y = y; dst.h = cardH;
@@ -1895,16 +1972,20 @@
         ctx.fillRect(rightX + rightCardW - 4, y, 4, cardH);
         ctx.fillStyle = isDark ? '#ffffff' : '#0f172a';
         ctx.font = '700 10.5px Inter, sans-serif';
-        ctx.fillText(dst.title, rightX + 12, y + 20);
+        ctx.fillText(dst.title, rightX + 12, y + 17);
         ctx.fillStyle = dst.color;
         ctx.font = '700 11px Fira Code, monospace';
-        ctx.fillText(`$${dst.val.toLocaleString()}/yr`, rightX + 12, y + 38);
+        ctx.fillText(`$${dst.val.toLocaleString()}/yr`, rightX + 12, y + 33);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '500 9px Inter, sans-serif';
+        ctx.fillText(dst.desc, rightX + 12, y + 46);
       });
 
+      // Draw Fluid Inflow Streams
       sources.forEach(src => {
         if (src.val <= 0) return;
         const ratio = src.val / totalIn;
-        const ribbonH = Math.max(4, ratio * 70);
+        const ribbonH = Math.max(4, ratio * 72);
         const sY = src.y + src.h * 0.5;
         const streamGrad = ctx.createLinearGradient(startX, 0, midX, 0);
         streamGrad.addColorStop(0, isDark ? 'rgba(2, 132, 199, 0.4)' : 'rgba(2, 132, 199, 0.25)');
@@ -1919,10 +2000,11 @@
         ctx.fill();
       });
 
+      // Draw Fluid Outflow Streams
       destinations.forEach(dst => {
         if (dst.val <= 0) return;
         const ratio = dst.val / totalIn;
-        const ribbonH = Math.max(4, ratio * 70);
+        const ribbonH = Math.max(4, ratio * 72);
         const dY = dst.y + dst.h * 0.5;
         const streamGrad = ctx.createLinearGradient(midX, 0, endX, 0);
         streamGrad.addColorStop(0, isDark ? 'rgba(79, 70, 229, 0.35)' : 'rgba(79, 70, 229, 0.2)');
@@ -1937,6 +2019,7 @@
         ctx.fill();
       });
 
+      // Central Nexus Hub Box
       ctx.save();
       ctx.translate(midX, hubCenterY);
       ctx.fillStyle = isDark ? 'rgba(15, 23, 42, 0.96)' : '#ffffff';
@@ -1995,6 +2078,19 @@
             : 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 text-xs font-semibold';
         }
       });
+
+      if (tabName === 'sankey') {
+        sankeySimAge = state.currentAge;
+        const slider = document.getElementById('sliderSankeyAge');
+        if (slider) {
+          slider.min = state.currentAge;
+          slider.max = state.endAge;
+          slider.value = state.currentAge;
+        }
+        const lbl = document.getElementById('lblSankeyAge');
+        if (lbl) lbl.textContent = `Age ${state.currentAge} (Accumulation)`;
+      }
+
       recomputeAndRender();
     }
 
