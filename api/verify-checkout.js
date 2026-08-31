@@ -1,4 +1,4 @@
-﻿// Veloxis AI — Stripe Checkout Session Verifier & Tier Activator
+// Veloxis AI — Stripe Checkout Session Verifier & Tier Activator
 
 const SUPABASE_PROJECT_URL = process.env.SUPABASE_URL || 'https://mlvyjrevobzaecganmgp.supabase.co';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_rtB-t4wWt2N6P8e_EbHHng_Wopex2g1';

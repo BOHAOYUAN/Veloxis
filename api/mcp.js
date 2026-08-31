@@ -1,4 +1,4 @@
-﻿// Veloxis AI — Model Context Protocol (MCP) JSON-RPC 2.0 Serverless Endpoint
+// Veloxis AI — Model Context Protocol (MCP) JSON-RPC 2.0 Serverless Endpoint
 // Spec: Anthropic MCP 2024 / OpenAI Actions Standard
 // Allows Claude Desktop, ChatGPT, Cursor, and Perplexity to execute real-time Monte Carlo simulations and generate interactive plan links.
 
