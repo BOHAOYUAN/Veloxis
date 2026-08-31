@@ -1,35 +1,36 @@
 # Veloxis Wealth OS — Conversational RIA Financial Planning Engine
 
 <p align="center">
-  <a href="https://veloxis-tau.vercel.app/"><img src="https://img.shields.io/badge/Live_Demo-Interactive_App-blue?style=for-the-badge&logo=vercel" alt="Live Demo" /></a>
-  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Groq_LPU-85ms_Inference-f55036?style=for-the-badge" alt="Groq LPU" />
-  <img src="https://img.shields.io/badge/HTML5_Canvas-60fps_GBM-orange?style=for-the-badge" alt="Canvas 2D" />
-  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" />
+  <a href="https://veloxis.lumiere-private.com/"><img src="https://img.shields.io/badge/Live_Demo-veloxis.lumiere--private.com-00DC82?style=for-the-badge&logo=vercel" alt="Live Demo" /></a>
+  <img src="https://img.shields.io/badge/Next.js_15-App_Router-black?style=for-the-badge&logo=next.js" alt="Next.js 15" />
+  <img src="https://img.shields.io/badge/React_19-00D8FF?style=for-the-badge&logo=react" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript_5.7-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vitest-10_Passed-729B1B?style=for-the-badge&logo=vitest&logoColor=white" alt="Vitest Tests" />
 </p>
 
-> **Veloxis** is an open-source conversational wealth planning platform designed as an architectural benchmark for next-generation RIA (Registered Investment Advisor) ecosystems (e.g., RightCapital, eMoney).
+> **Veloxis Wealth OS** is a production-grade, open-source conversational wealth planning platform designed as an architectural benchmark for next-generation RIA (Registered Investment Advisor) ecosystems (e.g., RightCapital, eMoney).
 > 
-> It replaces traditional 40+ manual form fields with sub-second natural language entity extraction (Groq LPU + Gemini) and high-performance client-side Monte Carlo simulations rendered at 60fps on HTML5 2D Canvas.
+> Built on **Next.js 15 (App Router), React 19, TypeScript 5.7, and Tailwind CSS 4**, it replaces traditional 40+ manual form fields with sub-second natural language entity extraction and executes 10,000-path stochastic Monte Carlo simulations directly on the client side at 60fps.
 
 ---
 
-## ⚡ Core Highlights & Architectural Advantages
+## ⚡ 5 Real-Time Interactive Quantitative Modules
 
-- **Sub-Second Intent Parsing**: Leverages **Groq LPU (Llama-3.3 70B)** to achieve an **85ms p50 latency** for extracting complex financial inputs (assets, liabilities, tax brackets, retirement targets).
-- **Client-Side Monte Carlo Engine (10,000 runs)**: Offloads heavy stochastic path simulations (Geometric Brownian Motion) from server to browser, eliminating 3-5s network latency.
-- **60fps Vector Probability Corridor**: Renders 10,000 simulation curves and asset dynamic corridors using **HTML5 2D Canvas + `requestAnimationFrame`** instead of heavy DOM/SVG trees.
-- **Resilient Multi-Engine Failover**: Seamless circuit breaker with primary Groq LPU routing and Gemini / DeepSeek structured JSON Schema validation.
+1. **📈 蒙特卡洛扇形推演 (Monte Carlo Fan)**: 10,000-path stochastic life-cycle simulation using Box-Muller Gaussian transforms and `Float64Array` typed array memory optimizations, rendered on HTML5 2D Canvas at 60fps.
+2. **🌊 终身现金流桑基图 (Cashflow Sankey)**: Dynamic multi-source inflow (Salary, Social Security, Drawdown) to outflow (Living, Taxes, Discretionary, Reinvestment) vector graph with age slider controls.
+3. **💧 资产三桶税收瀑布流 (% 3-Bucket Tax Waterfall)**: Taxable, Tax-Deferred (401k/IRA), and Tax-Free (Roth) allocation engine with an interactive **Roth Conversion Tax Bracket Arbitrage Sandbox**.
+4. **🏛️ 财富传承与信托拓扑 (Estate Planning & Trust Topology)**: Living Trust vs Probate Court process topology, calculating 5% legal loss avoidance and stepped-up basis tax benefits.
+5. **🔥 宏观压力测试矩阵 (Stress Matrix)**: Scenario patches (e.g., 1970s Stagflation, Tech Crash 2000, 2008 GFC) with real-time sensitivity ruin probability heatmaps.
 
 ---
 
 ## 🏛️ System Architecture
 
 ```
-[ User Input (Voice / Conversational Text) ]
+[ User Conversational Financial Prompt ]
                    │
                    ▼
-[ Vercel Edge Serverless Gateway (/api/generate) ]
+[ Vercel Edge Serverless Gateway (/api/generate/route.ts) ]
                    │
          ┌─────────┴────────────────────────┐
          ▼                                  ▼
@@ -38,25 +39,31 @@
          │                                  │
          └─────────┬────────────────────────┘
                    ▼
-[ TypeScript Zod Defensive Validation Layer ]
+[ TypeScript Zod Defensive Harness Layer (financialSchema.ts) ]
                    │
                    ▼
-[ Client-Side Computation & Visual Engine ]
-         ├── 10,000x Monte Carlo (GBM) Stochastic Simulation
-         ├── Living Cashflow & Roth Conversion Tax Sandbox
-         └── 60fps Canvas Dynamic Corridor (Linear Interpolation Hit-Testing)
+[ Client-Side Pure TypeScript Quantitative & Visual Engine ]
+         ├── 10,000x Monte Carlo (GBM) Simulation (monteCarlo.ts)
+         ├── Typed Array (Float64Array) Percentile Compute
+         ├── Reactive State Hook (useMonteCarlo.ts)
+         └── SVG / Canvas 2D Vector Visualizations (60fps)
 ```
 
 ---
 
-## 📊 Latency & Performance Budget
+## 🧪 Automated Testing & CI Quality Gate
 
-| Pipeline Stage | Target Latency (p50) | Target Latency (p99) | Execution Layer |
-| :--- | :--- | :--- | :--- |
-| **Edge Gateway Routing** | 12ms | 45ms | Vercel Edge Runtime |
-| **Financial Entity Extraction** | **85ms** | **160ms** | Groq LPU (JSON Mode) |
-| **Monte Carlo (10k Paths)** | **<5ms** | 12ms | Client Web Worker / JS Engine |
-| **Canvas Graphic Render** | **16.6ms (60fps)** | 33ms | HTML5 2D Canvas Context |
+The project includes **10 automated Vitest unit tests** verifying mathematical distributions, boundary monotonicity, 3-Bucket tax allocations, and estate trust algorithms:
+
+```bash
+# Run TypeScript static type checking
+npm run type-check
+
+# Run Vitest test suite
+npm test
+```
+
+Continuous integration is enforced via **GitHub Actions** (`.github/workflows/ci.yml`) on every push and pull request.
 
 ---
 
@@ -67,13 +74,14 @@
 git clone https://github.com/BOHAOYUAN/Veloxis.git
 cd Veloxis
 
-# Configure environment variables (.env.local)
-cp .env.example .env.local
-
-# Run development server
+# Install dependencies
 npm install
+
+# Run local development server
 npm run dev
 ```
+
+Open [https://veloxis.lumiere-private.com/](https://veloxis.lumiere-private.com/) for instant live interactive exploration.
 
 ---
 
