@@ -2123,7 +2123,7 @@
       ctx.fillText(`🏆 Lifetime Tax Saved: $${taxAlpha.toLocaleString()}`, Math.max(590, w - 240), h - 16);
     }
 
-    // Full Lifecycle 3-Stage Sankey Cashflow Hub (Stripe Sigma / Wealthfront Quality + 60fps Flowing Photons)
+    // Full Lifecycle Dynamic Cashflow Sankey Hub (Institutional Stage-Aware & RightCapital Grade)
     function drawSankeyCanvas(time = 0) {
       const { canvas, ctx, w, h } = prepareCrispCanvas();
 
@@ -2131,97 +2131,165 @@
       ctx.fillStyle = '#050811';
       ctx.fillRect(0, 0, w, h);
 
-      // Title & Velocity Badge
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '800 14px Inter, sans-serif';
-      ctx.fillText('Dynamic Cashflow Sankey River — Inflow vs Capital Allocation', 35, 34);
+      const currentAge = Number(state.currentAge) || 35;
+      const retireAge = Number(state.retireAge) || 60;
+      const ssClaimAge = Number(state.ssClaimAge) || 67;
+      const isRetired = currentAge >= retireAge;
+      const isClaimingSS = currentAge >= ssClaimAge;
 
-      ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
-      ctx.fillRect(w - 240, 16, 205, 28);
-      ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(w - 240, 16, 205, 28);
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = '800 11px Fira Code, monospace';
-      ctx.fillText('🌊 Gross Inflow: $287,500/yr', w - 228, 34);
+      // Dynamic Lifecycle Cashflow Calculations
+      let salaryIn = 0;
+      let ssIn = 0;
+      let yieldIn = 0;
+      let livingExp = Number(state.annualSpend) || 80000;
+      let irsTax = 0;
+      let retainedAlpha = 0;
 
-      // Calculate Real Inflows and Outflows
-      const salaryIn = 220000;
-      const ssIn = (state.ssMonthlyPIA || 2500) * 12;
-      const yieldIn = Math.round(state.initialAssets * 0.075);
+      if (!isRetired) {
+        // Accumulation Phase
+        salaryIn = Math.round((livingExp * 1.45) / 0.72);
+        yieldIn = Math.round(Number(state.initialAssets) * 0.075);
+        ssIn = 0; // Not claiming while working
+        irsTax = Math.round(salaryIn * 0.22);
+        const totalGross = salaryIn + yieldIn;
+        retainedAlpha = Math.max(0, totalGross - livingExp - irsTax);
+      } else {
+        // Decumulation / Retirement Phase
+        salaryIn = 0;
+        let ssMultiplier = ssClaimAge <= 62 ? 0.70 : (ssClaimAge >= 70 ? 1.24 : 0.70 + ((ssClaimAge - 62) / 5) * 0.30);
+        ssIn = isClaimingSS ? Math.round((Number(state.ssMonthlyPIA) || 2500) * 12 * ssMultiplier) : 0;
+        yieldIn = Math.round(Number(state.initialAssets) * 0.045);
+        irsTax = Math.round((livingExp + ssIn) * 0.12);
+        const totalGross = ssIn + yieldIn + Math.max(0, livingExp - ssIn);
+        retainedAlpha = Math.max(0, totalGross - livingExp - irsTax);
+      }
+
       const totalIn = salaryIn + ssIn + yieldIn;
 
-      const livingExp = state.annualSpend || 80000;
-      const irsTax = Math.round(salaryIn * 0.24);
-      const retainedAlpha = totalIn - livingExp - irsTax;
+      // Title & Status Badge
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 13px Inter, sans-serif';
+      ctx.fillText(`Dynamic Cashflow Sankey — ${isRetired ? 'Distribution & Decumulation Phase' : 'Wealth Accumulation Phase (Age ' + currentAge + ')'}`, 35, 30);
+
+      // Top Gross Inflow Pill
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
+      ctx.fillRect(w - 240, 12, 205, 28);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(w - 240, 12, 205, 28);
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '800 11px Fira Code, monospace';
+      ctx.fillText(`🌊 Gross Flow: $${totalIn.toLocaleString()}/yr`, w - 228, 30);
 
       // 3 Inflow Source Cards (Left)
       const sources = [
-        { title: '💼 Salary & Bonus', val: salaryIn, pct: '77%', color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.12)' },
-        { title: '🏛️ Social Security', val: ssIn, pct: '10%', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.12)' },
-        { title: '📈 Portfolio Yield 7.5%', val: yieldIn, pct: '13%', color: '#34d399', bg: 'rgba(52, 211, 153, 0.12)' }
+        {
+          title: isRetired ? '💼 Active Salary (Retired)' : '💼 Salary & Earned Comp',
+          val: salaryIn,
+          pct: totalIn > 0 ? `${Math.round((salaryIn / totalIn) * 100)}%` : '0%',
+          color: '#38bdf8',
+          sub: isRetired ? '$0 (Retired)' : 'Primary wage income'
+        },
+        {
+          title: `🏛️ Social Security (Age ${ssClaimAge})`,
+          val: ssIn,
+          pct: totalIn > 0 ? `${Math.round((ssIn / totalIn) * 100)}%` : '0%',
+          color: '#fbbf24',
+          sub: isClaimingSS ? `Active ($${Math.round(ssIn / 12)}/mo)` : `Accruing (Eligible Age ${ssClaimAge})`
+        },
+        {
+          title: `📈 Portfolio Yield (${isRetired ? '4.5% Draw' : '7.5% Growth'})`,
+          val: yieldIn,
+          pct: totalIn > 0 ? `${Math.round((yieldIn / totalIn) * 100)}%` : '0%',
+          color: '#34d399',
+          sub: `$${(Number(state.initialAssets) / 1000).toFixed(0)}k Assets`
+        }
       ];
 
       // 3 Outflow Destination Cards (Right)
       const destinations = [
-        { title: '🍷 Annual Living Spend', val: livingExp, pct: `${Math.round((livingExp/totalIn)*100)}%`, color: '#fb7185', bg: 'rgba(251, 113, 133, 0.12)' },
-        { title: '🏛️ IRS Federal Tax Drag', val: irsTax, pct: `${Math.round((irsTax/totalIn)*100)}%`, color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.12)' },
-        { title: '🛡️ Retained Wealth & Roth', val: retainedAlpha, pct: `${Math.round((retainedAlpha/totalIn)*100)}%`, color: '#818cf8', bg: 'rgba(129, 140, 248, 0.12)' }
+        {
+          title: '🍷 Annual Living Spend',
+          val: livingExp,
+          pct: totalIn > 0 ? `${Math.round((livingExp / totalIn) * 100)}%` : '0%',
+          color: '#fb7185'
+        },
+        {
+          title: '🏛️ IRS Federal Tax Drag',
+          val: irsTax,
+          pct: totalIn > 0 ? `${Math.round((irsTax / totalIn) * 100)}%` : '0%',
+          color: '#f43f5e'
+        },
+        {
+          title: isRetired ? '🛡️ Portfolio Preservation Alpha' : '🛡️ Net Wealth Growth & 401(k)',
+          val: retainedAlpha,
+          pct: totalIn > 0 ? `${Math.round((retainedAlpha / totalIn) * 100)}%` : '0%',
+          color: '#818cf8'
+        }
       ];
 
-      const leftCardW = 190;
-      const rightCardW = 195;
+      const leftCardW = 195;
+      const rightCardW = 205;
       const leftX = 35;
       const rightX = w - rightCardW - 35;
-      const cardH = 50;
+      const cardH = 52;
       const topY = 65;
-      const gapY = 32;
+      const gapY = 28;
 
-      // Draw Inflow Source Cards (Left)
+      const startX = leftX + leftCardW;
+      const endX = rightX;
+      const midX = (startX + endX) / 2;
+      const hubCenterY = topY + cardH + gapY / 2 + 25;
+
+      // Draw Left Cards
       sources.forEach((src, idx) => {
         const y = topY + idx * (cardH + gapY);
         src.y = y;
         src.h = cardH;
 
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
         ctx.fillRect(leftX, y, leftCardW, cardH);
-        ctx.strokeStyle = src.color;
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = src.val > 0 ? src.color : 'rgba(100, 116, 139, 0.3)';
+        ctx.lineWidth = 1.2;
         ctx.strokeRect(leftX, y, leftCardW, cardH);
 
-        ctx.fillStyle = src.color;
+        ctx.fillStyle = src.val > 0 ? src.color : '#475569';
         ctx.fillRect(leftX, y, 4, cardH);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '700 11px Inter, sans-serif';
-        ctx.fillText(src.title, leftX + 12, y + 20);
+        ctx.font = '700 10.5px Inter, sans-serif';
+        ctx.fillText(src.title, leftX + 12, y + 18);
 
-        ctx.fillStyle = src.color;
+        ctx.fillStyle = src.val > 0 ? src.color : '#64748b';
         ctx.font = '700 11px Fira Code, monospace';
-        ctx.fillText(`$${src.val.toLocaleString()}/yr`, leftX + 12, y + 38);
+        ctx.fillText(`$${src.val.toLocaleString()}/yr`, leftX + 12, y + 36);
 
         ctx.fillStyle = '#64748b';
+        ctx.font = '500 9px Fira Code, monospace';
+        ctx.fillText(src.sub, leftX + 12, y + 47);
+
+        ctx.fillStyle = '#94a3b8';
         ctx.font = '600 10px Fira Code, monospace';
-        ctx.fillText(src.pct, leftX + leftCardW - 32, y + 38);
+        ctx.fillText(src.pct, leftX + leftCardW - 32, y + 36);
       });
 
-      // Draw Outflow Destination Cards (Right)
+      // Draw Right Cards
       destinations.forEach((dst, idx) => {
         const y = topY + idx * (cardH + gapY);
         dst.y = y;
         dst.h = cardH;
 
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
         ctx.fillRect(rightX, y, rightCardW, cardH);
         ctx.strokeStyle = dst.color;
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1.2;
         ctx.strokeRect(rightX, y, rightCardW, cardH);
 
         ctx.fillStyle = dst.color;
         ctx.fillRect(rightX + rightCardW - 4, y, 4, cardH);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '700 11px Inter, sans-serif';
+        ctx.font = '700 10.5px Inter, sans-serif';
         ctx.fillText(dst.title, rightX + 12, y + 20);
 
         ctx.fillStyle = dst.color;
@@ -2233,59 +2301,70 @@
         ctx.fillText(dst.pct, rightX + rightCardW - 38, y + 38);
       });
 
-      // Draw Fluid Sankey Streams & Flowing Photons
-      const startX = leftX + leftCardW;
-      const endX = rightX;
-      const midX = (startX + endX) / 2;
+      // Clean Funnel Stream: Inflows -> Central Nexus Hub
+      sources.forEach(src => {
+        if (src.val <= 0) return;
+        const ratio = src.val / totalIn;
+        const ribbonH = Math.max(4, ratio * 70);
+        const sY = src.y + src.h * 0.5;
 
-      sources.forEach((src, sIdx) => {
-        destinations.forEach((dst, dIdx) => {
-          const ratio = (src.val * dst.val) / (totalIn * totalIn);
-          const ribbonH = Math.max(3, ratio * 130);
+        const streamGrad = ctx.createLinearGradient(startX, 0, midX, 0);
+        streamGrad.addColorStop(0, src.color.replace('rgb', 'rgba').replace(')', ', 0.42)'));
+        streamGrad.addColorStop(1, 'rgba(99, 102, 241, 0.35)');
 
-          const sY = src.y + src.h * 0.5;
-          const dY = dst.y + dst.h * 0.5;
-
-          const streamGrad = ctx.createLinearGradient(startX, 0, endX, 0);
-          streamGrad.addColorStop(0, src.color.replace('rgb', 'rgba').replace(')', ', 0.38)'));
-          streamGrad.addColorStop(0.5, 'rgba(99, 102, 241, 0.22)');
-          streamGrad.addColorStop(1, dst.color.replace('rgb', 'rgba').replace(')', ', 0.38)'));
-
-          ctx.beginPath();
-          ctx.moveTo(startX, sY - ribbonH / 2);
-          ctx.bezierCurveTo(midX - 70, sY, midX + 70, dY, endX, dY - ribbonH / 2);
-          ctx.lineTo(endX, dY + ribbonH / 2);
-          ctx.bezierCurveTo(midX + 70, dY + ribbonH / 2, midX - 70, sY + ribbonH / 2, startX, sY + ribbonH / 2);
-          ctx.closePath();
-
-          ctx.fillStyle = streamGrad;
-          ctx.fill();
-        });
+        ctx.beginPath();
+        ctx.moveTo(startX, sY - ribbonH / 2);
+        ctx.bezierCurveTo(startX + (midX - startX) * 0.5, sY, midX - (midX - startX) * 0.3, hubCenterY, midX - 60, hubCenterY - ribbonH / 2);
+        ctx.lineTo(midX - 60, hubCenterY + ribbonH / 2);
+        ctx.bezierCurveTo(midX - (midX - startX) * 0.3, hubCenterY, startX + (midX - startX) * 0.5, sY, startX, sY + ribbonH / 2);
+        ctx.closePath();
+        ctx.fillStyle = streamGrad;
+        ctx.fill();
       });
 
-      // Center Flow Hub Nexus Capsule with Breathing Neon Heartbeat
-      const hubPulse = 1 + 0.05 * Math.sin(time * 4);
+      // Clean Outflow Stream: Central Nexus Hub -> Destinations
+      destinations.forEach(dst => {
+        if (dst.val <= 0) return;
+        const ratio = dst.val / totalIn;
+        const ribbonH = Math.max(4, ratio * 70);
+        const dY = dst.y + dst.h * 0.5;
+
+        const streamGrad = ctx.createLinearGradient(midX, 0, endX, 0);
+        streamGrad.addColorStop(0, 'rgba(99, 102, 241, 0.35)');
+        streamGrad.addColorStop(1, dst.color.replace('rgb', 'rgba').replace(')', ', 0.42)'));
+
+        ctx.beginPath();
+        ctx.moveTo(midX + 60, hubCenterY - ribbonH / 2);
+        ctx.bezierCurveTo(midX + 60 + (endX - midX) * 0.3, hubCenterY, endX - (endX - midX) * 0.5, dY, endX, dY - ribbonH / 2);
+        ctx.lineTo(endX, dY + ribbonH / 2);
+        ctx.bezierCurveTo(endX - (endX - midX) * 0.5, dY, midX + 60 + (endX - midX) * 0.3, hubCenterY, midX + 60, hubCenterY + ribbonH / 2);
+        ctx.closePath();
+        ctx.fillStyle = streamGrad;
+        ctx.fill();
+      });
+
+      // Center Flow Hub Nexus Capsule
       ctx.save();
-      ctx.translate(midX, topY + cardH + 24);
-      ctx.scale(hubPulse, hubPulse);
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
-      ctx.fillRect(-65, -14, 130, 28);
+      ctx.translate(midX, hubCenterY);
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.96)';
+      ctx.fillRect(-65, -16, 130, 32);
       ctx.strokeStyle = 'rgba(99, 102, 241, 0.9)';
-      ctx.shadowColor = 'rgba(99, 102, 241, 0.6)';
+      ctx.shadowColor = 'rgba(99, 102, 241, 0.5)';
       ctx.shadowBlur = 10;
-      ctx.lineWidth = 1;
-      ctx.strokeRect(-65, -14, 130, 28);
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(-65, -16, 130, 32);
 
       ctx.fillStyle = '#a5b4fc';
-      ctx.font = '700 10px Fira Code, monospace';
+      ctx.font = '700 10.5px Fira Code, monospace';
       ctx.textAlign = 'center';
       ctx.fillText('⚡ Capital Nexus Hub', 0, 4);
       ctx.restore();
 
-      // Bottom Legend Tag
+      // Bottom Legend
       ctx.fillStyle = '#64748b';
       ctx.font = '500 10px Fira Code, monospace';
-      ctx.fillText('Veloxis Fluid Sankey Hub • Total Income Inflow vs Tax Drag & Net Wealth Retention', 35, h - 18);
+      ctx.textAlign = 'left';
+      ctx.fillText(`Veloxis Stage-Calibrated Sankey • ${isRetired ? 'Retirement Phase: Preserving Capital & Social Security Waterfall' : 'Career Accumulation: Primary Salary Flowing into Living & 401(k) Surplus'}`, 35, h - 18);
     }
 
     // Switch Visual View and update dynamic bottom footer legend
