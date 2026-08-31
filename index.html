@@ -19,7 +19,7 @@
     "@context": "https://schema.org",
     "@type": "FinancialProduct",
     "name": "Veloxis Wealth OS — Enterprise RIA Wealth Planning Platform",
-    "description": "Professional RIA Wealth Operating System featuring 1,000-path Log-Normal Monte Carlo, Guyton-Klinger dynamic guardrails, 3-Bucket tax waterfall optimization, and Model Context Protocol (MCP) server integration.",
+    "description": "Professional RIA Wealth Operating System featuring Balance Sheet audit, Tax Allocation analysis, Asset Allocation modeling, 1,000-path Log-Normal Monte Carlo, and Guyton-Klinger dynamic guardrails.",
     "provider": {
       "@type": "Organization",
       "name": "Veloxis Wealth Technologies",
@@ -64,9 +64,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- D3.js & D3-Sankey for Mathematical Topological & Flow Curves -->
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
   <!-- jsPDF for 4K PDF Export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <!-- Supabase Cloud Client SDK -->
@@ -138,7 +135,7 @@
 <body class="h-screen w-screen overflow-hidden flex antialiased selection:bg-emerald-500 selection:text-white">
 
   <!-- ========================================================================= -->
-  <!-- 1. LEFT FIXED SIDEBAR NAVIGATION (RightCapital / Linear Clean Paper Style)-->
+  <!-- 1. LEFT FIXED SIDEBAR NAVIGATION (RightCapital Official Hierarchy)         -->
   <!-- ========================================================================= -->
   <aside id="appSidebar" class="w-64 bg-white dark:bg-[#080d1a] border-r border-slate-200 dark:border-slate-800/80 flex flex-col justify-between shrink-0 h-screen z-30 transition-all shadow-sm">
     
@@ -164,29 +161,33 @@
 
       <!-- Navigation Menu Items -->
       <nav class="p-3 flex flex-col gap-1 text-xs font-medium">
-        <div class="text-[10px] font-mono text-slate-400 dark:text-slate-500 px-3 py-1.5 uppercase tracking-wider font-bold">Planning Studio</div>
+        <div class="text-[10px] font-mono text-slate-400 dark:text-slate-500 px-3 py-1.5 uppercase tracking-wider font-bold">Client Planning</div>
         
-        <button id="nav_workbench" onclick="switchAppView('workbench')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-600/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 transition-all font-bold text-left shadow-xs">
-          <i data-lucide="activity" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
-          <span>Scenario Workbench</span>
+        <!-- RightCapital View 1: Snapshot Overview -->
+        <button id="nav_snapshot" onclick="switchAppView('snapshot')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-600/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 transition-all font-bold text-left shadow-xs">
+          <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+          <span>Client Snapshot (Overview)</span>
         </button>
 
+        <!-- RightCapital View 2: Retirement Analysis & Scenario Workbench -->
+        <button id="nav_workbench" onclick="switchAppView('workbench')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all text-left">
+          <i data-lucide="activity" class="w-4 h-4 text-slate-500"></i>
+          <span>Retirement Analysis</span>
+        </button>
+
+        <!-- RightCapital View 3: 30-Year Cashflow Matrix -->
+        <button id="nav_ledger" onclick="switchAppView('ledger')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all text-left">
+          <i data-lucide="table" class="w-4 h-4 text-slate-500"></i>
+          <span>Cashflow & Tax Matrix</span>
+        </button>
+
+        <!-- RightCapital View 4: Client Directory (CRM) -->
         <button id="nav_clients" onclick="switchAppView('clients')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all text-left">
           <i data-lucide="users" class="w-4 h-4 text-slate-500"></i>
           <span>Client Directory (CRM)</span>
         </button>
 
-        <button id="nav_ledger" onclick="switchAppView('ledger')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all text-left">
-          <i data-lucide="table" class="w-4 h-4 text-slate-500"></i>
-          <span>30-Yr Cashflow Matrix</span>
-        </button>
-
-        <button id="nav_tax" onclick="switchAppView('tax')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all text-left">
-          <i data-lucide="percent" class="w-4 h-4 text-slate-500"></i>
-          <span>Tax & Roth Studio</span>
-        </button>
-
-        <div class="text-[10px] font-mono text-slate-400 dark:text-slate-500 px-3 pt-4 pb-1.5 uppercase tracking-wider font-bold">Compliance & Tools</div>
+        <div class="text-[10px] font-mono text-slate-400 dark:text-slate-500 px-3 pt-4 pb-1.5 uppercase tracking-wider font-bold">Audit & Billing</div>
 
         <button onclick="exportPdfReport()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all text-left">
           <i data-lucide="file-text" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
@@ -221,7 +222,7 @@
             <i data-lucide="building" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
           </div>
           <div class="overflow-hidden">
-            <div id="advisorFirmName" class="text-xs font-bold text-slate-900 dark:text-white truncate">RIA Wealth Firm</div>
+            <div id="advisorFirmName" class="text-xs font-bold text-slate-900 dark:text-white truncate">Abundo & RIA Wealth</div>
             <div id="subTierText" class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">⚡ PRO RIA</div>
           </div>
         </div>
@@ -231,7 +232,7 @@
       </div>
 
       <div class="flex items-center justify-between px-1 text-xs text-slate-400 dark:text-slate-500 font-mono">
-        <span class="flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3 text-emerald-600 dark:text-emerald-400"></i> SOC-2 & RLS</span>
+        <span class="flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3 text-emerald-600 dark:text-emerald-400"></i> FINRA Rule 2214</span>
         <button onclick="handleLogout()" class="hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center gap-1">
           <i data-lucide="log-out" class="w-3 h-3"></i>
           <span>Sign Out</span>
@@ -266,20 +267,20 @@
 
       <!-- Center: Key Quantitative Health Metrics -->
       <div class="hidden xl:flex items-center gap-3 text-xs font-mono text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
+        <span>Net Worth: <strong class="text-slate-900 dark:text-white font-bold" id="valHeaderNetWorth">$1.25M</strong></span>
+        <span class="text-slate-300 dark:text-slate-700">|</span>
         <span class="flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Success:</span>
+          <span>Monte Carlo:</span>
           <strong class="text-emerald-600 dark:text-emerald-400 font-bold" id="valMcSuccess">96%</strong>
         </span>
-        <span class="text-slate-300 dark:text-slate-700">|</span>
-        <span>Median Wealth: <strong class="text-indigo-600 dark:text-indigo-300 font-bold" id="valMedianP50">$1.84M</strong></span>
         <span class="text-slate-300 dark:text-slate-700">|</span>
         <span>Tax Alpha: <strong class="text-emerald-600 dark:text-emerald-400 font-bold" id="valHeaderTaxAlpha">+$348k</strong></span>
       </div>
 
       <!-- Right: Actions & AI Copilot Launcher -->
       <div class="flex items-center gap-2">
-        <button onclick="shareInteractivePlanUrl()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5 shadow-xs" title="Copy stateful URL for client or ChatGPT">
+        <button onclick="shareInteractivePlanUrl()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5 shadow-xs" title="Copy stateful URL for client">
           <i data-lucide="share-2" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
           <span class="hidden sm:inline">Share Plan</span>
         </button>
@@ -302,33 +303,253 @@
     <main class="flex-1 overflow-y-auto custom-scroll p-3 sm:p-5 relative">
       
       <!-- ========================================================================= -->
-      <!-- VIEW A: SCENARIO WORKBENCH (Two-Column Clean RightCapital Layout)         -->
+      <!-- VIEW 1: CLIENT SNAPSHOT (RightCapital Official Benchmark Screen)          -->
       <!-- ========================================================================= -->
-      <div id="viewWorkbench" class="flex flex-col xl:flex-row gap-4 h-full">
+      <div id="viewSnapshot" class="flex flex-col gap-4">
+        
+        <!-- Snapshot Header Banner -->
+        <div class="theme-card p-5 rounded-2xl flex flex-wrap items-center justify-between gap-4 shadow-xs">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/40 font-bold">CLIENT SNAPSHOT</span>
+              <span class="text-[10px] font-mono text-slate-500" id="snapClientMeta">Jennifer Walsh • Age 35 (Retire Target: 60)</span>
+            </div>
+            <h1 class="text-2xl font-black text-slate-900 dark:text-white font-outfit mt-1">Financial Planning Snapshot & Balance Sheet</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Comprehensive audit of assets, liabilities, tax location buckets, and asset allocation strategy.</p>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <div class="text-[10px] font-mono text-slate-400 uppercase font-bold">Total Net Worth</div>
+              <div class="text-2xl font-black text-slate-900 dark:text-white font-outfit" id="snapTotalNetWorth">$1,248,328</div>
+            </div>
+            <button onclick="switchAppView('workbench')" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all active:scale-95 flex items-center gap-2 shadow-sm">
+              <span>Open Retirement Sim</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3-Card Grid Matching RightCapital Snapshot -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          
+          <!-- Card A: Balance Sheet (Assets vs Liabilities Table) -->
+          <div class="theme-card rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800 mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="scale" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+                  <h3 class="font-bold text-sm text-slate-900 dark:text-white font-outfit">Balance Sheet Summary</h3>
+                </div>
+                <span class="text-[10px] font-mono text-slate-400 font-bold">AUDIT READY</span>
+              </div>
+
+              <div class="space-y-3 text-xs">
+                <!-- Assets Group -->
+                <div>
+                  <div class="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 uppercase font-bold mb-1">Assets ($1,400,000)</div>
+                  <div class="space-y-1.5 text-slate-600 dark:text-slate-300 font-medium">
+                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg">
+                      <span>• Liquid & Cash Reserves</span>
+                      <strong class="text-slate-900 dark:text-white font-mono" id="snapValCash">$120,000</strong>
+                    </div>
+                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg">
+                      <span>• Taxable Brokerage Assets</span>
+                      <strong class="text-slate-900 dark:text-white font-mono" id="snapValBrokerage">$250,000</strong>
+                    </div>
+                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg">
+                      <span>• 401(k) / IRA Retirement Accounts</span>
+                      <strong class="text-slate-900 dark:text-white font-mono" id="snapVal401k">$380,000</strong>
+                    </div>
+                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg">
+                      <span>• Primary Residence Property</span>
+                      <strong class="text-slate-900 dark:text-white font-mono">$650,000</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Liabilities Group -->
+                <div>
+                  <div class="text-[10px] font-mono text-rose-600 dark:text-rose-400 uppercase font-bold mb-1">Liabilities (-$151,672)</div>
+                  <div class="space-y-1.5 text-slate-600 dark:text-slate-300 font-medium">
+                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg">
+                      <span>• Mortgage (3.25% 30-Yr Fixed)</span>
+                      <strong class="text-rose-600 dark:text-rose-400 font-mono">-$135,000</strong>
+                    </div>
+                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg">
+                      <span>• Auto Loan & Other Credit</span>
+                      <strong class="text-rose-600 dark:text-rose-400 font-mono">-$16,672</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
+              <span class="text-xs font-bold text-slate-900 dark:text-white">Net Worth:</span>
+              <span class="text-base font-black font-outfit text-emerald-600 dark:text-emerald-400" id="snapValNetWorthBottom">$1,248,328</span>
+            </div>
+          </div>
+
+          <!-- Card B: Tax Allocation (Donut Summary) -->
+          <div class="theme-card rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800 mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="percent" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+                  <h3 class="font-bold text-sm text-slate-900 dark:text-white font-outfit">Tax Allocation Summary</h3>
+                </div>
+                <span class="text-[10px] font-mono text-slate-400 font-bold">3-BUCKET</span>
+              </div>
+
+              <!-- Donut Visual Placeholder -->
+              <div class="flex items-center justify-center py-2">
+                <div class="relative w-36 h-36 flex items-center justify-center">
+                  <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                    <!-- Taxable Circle (cyan) -->
+                    <circle cx="18" cy="18" r="14" fill="transparent" stroke="#0891b2" stroke-width="5" stroke-dasharray="30 70" stroke-dashoffset="0"></circle>
+                    <!-- Tax-Deferred (rose) -->
+                    <circle cx="18" cy="18" r="14" fill="transparent" stroke="#e11d48" stroke-width="5" stroke-dasharray="45 55" stroke-dashoffset="-30"></circle>
+                    <!-- Tax-Free Roth (emerald) -->
+                    <circle cx="18" cy="18" r="14" fill="transparent" stroke="#059669" stroke-width="5" stroke-dasharray="25 75" stroke-dashoffset="-75"></circle>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                    <span class="text-[9px] font-mono text-slate-400">Total Liquid</span>
+                    <span class="text-xs font-black text-slate-900 dark:text-white font-outfit" id="snapDonutTotal">$750k</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Legend & Breakdown List -->
+              <div class="space-y-2 text-xs font-mono mt-2">
+                <div class="flex justify-between items-center p-1.5 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                  <span class="flex items-center gap-1.5 text-cyan-700 dark:text-cyan-400 font-bold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-600 inline-block"></span>
+                    <span>Taxable Accounts</span>
+                  </span>
+                  <span class="font-bold text-slate-900 dark:text-white" id="snapTaxableDonutVal">$370,000 (30%)</span>
+                </div>
+
+                <div class="flex justify-between items-center p-1.5 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                  <span class="flex items-center gap-1.5 text-rose-700 dark:text-rose-400 font-bold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block"></span>
+                    <span>Tax-Deferred 401(k)</span>
+                  </span>
+                  <span class="font-bold text-slate-900 dark:text-white" id="snapDeferredDonutVal">$380,000 (50%)</span>
+                </div>
+
+                <div class="flex justify-between items-center p-1.5 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                  <span class="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-bold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span>
+                    <span>Tax-Free Roth / HSA</span>
+                  </span>
+                  <span class="font-bold text-slate-900 dark:text-white" id="snapRothDonutVal">$150,000 (20%)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-[10px] text-slate-400 font-mono text-center">
+              Target: 70% Roth by Age 72 via conversion window
+            </div>
+          </div>
+
+          <!-- Card C: Asset Allocation (Current vs Target Double Donut) -->
+          <div class="theme-card rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800 mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="target" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+                  <h3 class="font-bold text-sm text-slate-900 dark:text-white font-outfit">Asset Allocation Strategy</h3>
+                </div>
+                <span class="text-[10px] font-mono text-slate-400 font-bold">CURRENT VS TARGET</span>
+              </div>
+
+              <!-- Double Comparison Rings -->
+              <div class="grid grid-cols-2 gap-3 py-2 text-center">
+                <div class="flex flex-col items-center">
+                  <div class="relative w-24 h-24 flex items-center justify-center">
+                    <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                      <circle cx="18" cy="18" r="14" fill="transparent" stroke="#4f46e5" stroke-width="4.5" stroke-dasharray="75 25" stroke-dashoffset="0"></circle>
+                      <circle cx="18" cy="18" r="14" fill="transparent" stroke="#059669" stroke-width="4.5" stroke-dasharray="25 75" stroke-dashoffset="-75"></circle>
+                    </svg>
+                    <span class="absolute text-xs font-black text-slate-900 dark:text-white font-mono" id="snapCurrentRatio">75/25</span>
+                  </div>
+                  <div class="text-[11px] font-bold text-slate-900 dark:text-white mt-1">Current Portfolio</div>
+                  <div class="text-[10px] text-slate-500 font-mono">Exp Return: 7.2% | Vol: 13.5%</div>
+                </div>
+
+                <div class="flex flex-col items-center">
+                  <div class="relative w-24 h-24 flex items-center justify-center">
+                    <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                      <circle cx="18" cy="18" r="14" fill="transparent" stroke="#4f46e5" stroke-width="4.5" stroke-dasharray="80 20" stroke-dashoffset="0"></circle>
+                      <circle cx="18" cy="18" r="14" fill="transparent" stroke="#059669" stroke-width="4.5" stroke-dasharray="20 80" stroke-dashoffset="-80"></circle>
+                    </svg>
+                    <span class="absolute text-xs font-black text-indigo-600 dark:text-indigo-300 font-mono">80/20</span>
+                  </div>
+                  <div class="text-[11px] font-bold text-indigo-700 dark:text-indigo-400 mt-1">Target Model</div>
+                  <div class="text-[10px] text-slate-500 font-mono">Exp Return: 7.8% | Vol: 14.2%</div>
+                </div>
+              </div>
+
+              <!-- Asset Class Details Table -->
+              <div class="space-y-1 text-[11px] font-mono mt-2 divide-y divide-slate-100 dark:divide-slate-800">
+                <div class="flex justify-between py-1 text-slate-600 dark:text-slate-300">
+                  <span>• US Large/Mid Cap Equities</span>
+                  <strong class="text-slate-900 dark:text-white">55%</strong>
+                </div>
+                <div class="flex justify-between py-1 text-slate-600 dark:text-slate-300">
+                  <span>• International Equities</span>
+                  <strong class="text-slate-900 dark:text-white">20%</strong>
+                </div>
+                <div class="flex justify-between py-1 text-slate-600 dark:text-slate-300">
+                  <span>• US Core Aggregate Bonds</span>
+                  <strong class="text-slate-900 dark:text-white">20%</strong>
+                </div>
+                <div class="flex justify-between py-1 text-slate-600 dark:text-slate-300">
+                  <span>• Cash & Short-Term Reserves</span>
+                  <strong class="text-slate-900 dark:text-white">5%</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
+              <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Risk Profile:</span>
+              <span class="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40">Moderate Growth</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 2: RETIREMENT ANALYSIS & SCENARIO WORKBENCH                         -->
+      <!-- ========================================================================= -->
+      <div id="viewWorkbench" class="hidden flex flex-col xl:flex-row gap-4 h-full">
         
         <!-- Left Column: Visual Chart Stage & Health KPI Deck (70% width) -->
         <div class="flex-1 flex flex-col gap-4 min-w-0">
           
           <!-- Visual Stage Panel -->
-          <div class="theme-card rounded-2xl overflow-hidden shadow-sm flex flex-col">
+          <div class="theme-card rounded-2xl overflow-hidden shadow-xs flex flex-col">
             
             <!-- Canvas Control Toolbar -->
             <div class="p-3 px-4 border-b border-slate-200 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2 bg-slate-50/70 dark:bg-slate-950/60">
               <!-- Visual Tab Switchers -->
               <div class="flex items-center gap-1 bg-white dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold flex-wrap shadow-xs">
-                <button id="tabBtnMonte" onclick="switchVisualTab('monte')" class="px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-xs transition-all flex items-center gap-1.5 text-xs">
+                <button id="tabBtnMonte" onclick="switchVisualTab('monte')" class="px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-xs transition-all flex items-center gap-1.5 text-xs font-bold">
                   <i data-lucide="activity" class="w-3.5 h-3.5"></i>
                   <span>Monte Carlo Fan</span>
                 </button>
-                <button id="tabBtnSankey" onclick="switchVisualTab('sankey')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 text-xs">
+                <button id="tabBtnSankey" onclick="switchVisualTab('sankey')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 text-xs font-semibold">
                   <i data-lucide="git-merge" class="w-3.5 h-3.5"></i>
                   <span>Cashflow Sankey</span>
                 </button>
-                <button id="tabBtnRoth" onclick="switchVisualTab('roth')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 text-xs">
+                <button id="tabBtnRoth" onclick="switchVisualTab('roth')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 text-xs font-semibold">
                   <i data-lucide="percent" class="w-3.5 h-3.5"></i>
                   <span>3-Bucket Tax Waterfall</span>
                 </button>
-                <button id="tabBtnEstate" onclick="switchVisualTab('estate')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 text-xs">
+                <button id="tabBtnEstate" onclick="switchVisualTab('estate')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 text-xs font-semibold">
                   <i data-lucide="git-branch" class="w-3.5 h-3.5"></i>
                   <span>Estate Topology</span>
                 </button>
@@ -512,50 +733,13 @@
       </div>
 
       <!-- ========================================================================= -->
-      <!-- VIEW B: CLIENT DIRECTORY CRM (Full Clean SaaS Table)                     -->
-      <!-- ========================================================================= -->
-      <div id="viewClientsCRM" class="hidden flex flex-col gap-4">
-        <div class="theme-card p-5 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xs">
-          <div>
-            <h2 class="text-xl font-black text-slate-900 dark:text-white font-outfit">Advisor Client Directory</h2>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">High-net-worth clients registered in your RIA firm database.</p>
-          </div>
-          <button onclick="openNewClientDrawer()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all active:scale-95 flex items-center gap-1.5 shadow-sm">
-            <i data-lucide="user-plus" class="w-4 h-4"></i>
-            <span>Add New Client</span>
-          </button>
-        </div>
-
-        <div class="theme-card rounded-2xl overflow-hidden shadow-xs">
-          <div class="overflow-x-auto custom-scroll">
-            <table class="w-full text-left text-xs font-mono">
-              <thead class="bg-slate-100/80 dark:bg-slate-900/90 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 text-[11px]">
-                <tr>
-                  <th class="p-3.5 font-bold text-slate-800 dark:text-slate-200">Client Name</th>
-                  <th class="p-3.5 font-bold">Age / Retire</th>
-                  <th class="p-3.5 font-bold">Liquid AUM</th>
-                  <th class="p-3.5 font-bold">Annual Spend</th>
-                  <th class="p-3.5 font-bold text-emerald-600 dark:text-emerald-400">MC Probability</th>
-                  <th class="p-3.5 font-bold text-indigo-600 dark:text-indigo-400">Tax Savings</th>
-                  <th class="p-3.5 font-bold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="crmTableBody" class="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
-                <!-- Dynamically populated rows -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ========================================================================= -->
-      <!-- VIEW C: 30-YEAR CASHFLOW DIFF MATRIX PAGE                                -->
+      <!-- VIEW 3: CASHFLOW & TAX MATRIX PAGE                                       -->
       <!-- ========================================================================= -->
       <div id="viewLedgerPage" class="hidden flex flex-col gap-4">
         <div class="theme-card p-5 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xs">
           <div>
             <div class="flex items-center gap-2">
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 font-bold">ACTUARIAL LEDGER</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 font-bold">ACTUARIAL MATRIX</span>
               <span class="text-[10px] font-mono text-slate-500">Head-to-Head 30-Year Matrix</span>
             </div>
             <h2 class="text-xl font-black text-slate-900 dark:text-white font-outfit mt-1">30-Year Multi-Scenario Cashflow Matrix</h2>
@@ -585,6 +769,43 @@
                 </tr>
               </thead>
               <tbody id="pageLedgerTableBody" class="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 4: CLIENT DIRECTORY CRM                                             -->
+      <!-- ========================================================================= -->
+      <div id="viewClientsCRM" class="hidden flex flex-col gap-4">
+        <div class="theme-card p-5 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xs">
+          <div>
+            <h2 class="text-xl font-black text-slate-900 dark:text-white font-outfit">Advisor Client Directory</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">High-net-worth clients registered in your RIA firm database.</p>
+          </div>
+          <button onclick="openNewClientDrawer()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all active:scale-95 flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span>Add New Client</span>
+          </button>
+        </div>
+
+        <div class="theme-card rounded-2xl overflow-hidden shadow-xs">
+          <div class="overflow-x-auto custom-scroll">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-100/80 dark:bg-slate-900/90 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 text-[11px]">
+                <tr>
+                  <th class="p-3.5 font-bold text-slate-800 dark:text-slate-200">Client Name</th>
+                  <th class="p-3.5 font-bold">Age / Retire</th>
+                  <th class="p-3.5 font-bold">Liquid AUM</th>
+                  <th class="p-3.5 font-bold">Annual Spend</th>
+                  <th class="p-3.5 font-bold text-emerald-600 dark:text-emerald-400">MC Probability</th>
+                  <th class="p-3.5 font-bold text-indigo-600 dark:text-indigo-400">Tax Savings</th>
+                  <th class="p-3.5 font-bold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="crmTableBody" class="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
                 <!-- Dynamically populated rows -->
               </tbody>
             </table>
@@ -676,19 +897,6 @@
     </div>
   </div>
 
-  <!-- Upgrade Celebration Toast -->
-  <div id="upgradeToast" class="fixed top-16 right-6 z-[120] hidden bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-500/50 rounded-2xl p-4 shadow-2xl text-slate-900 dark:text-white max-w-sm">
-    <div class="flex items-start gap-3">
-      <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-500/20 border border-emerald-300 dark:border-emerald-400 flex items-center justify-center shrink-0">
-        <i data-lucide="sparkles" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
-      </div>
-      <div>
-        <h4 class="font-bold text-sm text-emerald-700 dark:text-emerald-300">Enterprise Pro Unlocked!</h4>
-        <p class="text-xs text-slate-500 dark:text-slate-300 mt-0.5">Stripe subscription confirmed. Unlimited clients & FINRA 4K exports active.</p>
-      </div>
-    </div>
-  </div>
-
   <!-- Stripe Pricing Modal -->
   <div id="pricingModal" class="fixed inset-0 z-[110] flex items-center justify-center hidden">
     <div class="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md" onclick="closePricingModal()"></div>
@@ -707,78 +915,33 @@
         </button>
       </div>
 
-      <div class="flex items-center justify-center gap-3 mb-8">
-        <span id="lblMonthly" class="text-xs font-bold text-slate-900 dark:text-white">Monthly</span>
-        <button onclick="toggleBillingCycle()" id="toggleBillingBtn" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-0.5 flex items-center transition-colors">
-          <div id="toggleBillingThumb" class="w-5 h-5 rounded-full bg-emerald-500 transition-transform"></div>
-        </button>
-        <span id="lblAnnual" class="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-          <span>Annual</span>
-          <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/50 font-mono">SAVE 20%</span>
-        </span>
-      </div>
-
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-        <!-- Starter Tier -->
         <div class="rounded-2xl p-5 border border-slate-200 dark:border-slate-800 flex flex-col justify-between bg-slate-50/50 dark:bg-slate-950/40">
           <div>
             <div class="text-slate-500 text-xs font-bold font-mono">STARTER</div>
-            <div class="mt-2 flex items-baseline gap-1">
-              <span class="text-3xl font-black font-outfit" id="priceStarter">$0</span>
-              <span class="text-xs text-slate-400 font-mono">/mo</span>
-            </div>
+            <div class="mt-2 text-3xl font-black font-outfit">$0<span class="text-xs text-slate-400 font-mono">/mo</span></div>
             <p class="text-slate-500 text-xs mt-2">Essential tools for individual wealth planning exploration.</p>
-            <ul class="mt-5 space-y-2 text-xs text-slate-600 dark:text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Up to 3 Clients</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Monte Carlo Sim</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Standard Web UI</li>
-            </ul>
           </div>
           <button class="w-full mt-6 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 font-bold text-xs cursor-default">Current Plan</button>
         </div>
 
-        <!-- Pro RIA Tier -->
         <div class="rounded-2xl p-5 border-2 border-emerald-500 flex flex-col justify-between bg-emerald-50/40 dark:bg-emerald-950/20 relative shadow-md">
           <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider font-mono">Most Popular</div>
           <div>
             <div class="text-emerald-700 dark:text-emerald-400 text-xs font-bold font-mono">PRO RIA</div>
-            <div class="mt-2 flex items-baseline gap-1">
-              <span class="text-3xl font-black text-emerald-900 dark:text-white font-outfit" id="pricePro">$99</span>
-              <span class="text-xs text-slate-500 font-mono">/mo</span>
-            </div>
+            <div class="mt-2 text-3xl font-black text-emerald-900 dark:text-white font-outfit">$99<span class="text-xs text-slate-500 font-mono">/mo</span></div>
             <p class="text-slate-600 dark:text-slate-300 text-xs mt-2">Full platform for independent RIA advisors & wealth managers.</p>
-            <ul class="mt-5 space-y-2 text-xs text-slate-700 dark:text-slate-300 font-medium">
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Unlimited Clients</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Guyton-Klinger Guardrails</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Roth Tax Alpha Studio</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> 4K PDF Audit Reports</li>
-            </ul>
           </div>
-          <button onclick="launchStripeCheckout('pro')" id="btnCheckoutPro" class="w-full mt-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5">
-            <i data-lucide="zap" class="w-4 h-4"></i>
-            <span id="btnCheckoutProText">Get Pro RIA &rarr;</span>
-          </button>
+          <button onclick="launchStripeCheckout('pro')" class="w-full mt-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition-all active:scale-95">Get Pro RIA &rarr;</button>
         </div>
 
-        <!-- Enterprise Firm Tier -->
         <div class="rounded-2xl p-5 border border-indigo-200 dark:border-indigo-500/50 flex flex-col justify-between bg-indigo-50/30 dark:bg-indigo-950/20">
           <div>
             <div class="text-indigo-700 dark:text-indigo-400 text-xs font-bold font-mono">ENTERPRISE FIRM</div>
-            <div class="mt-2 flex items-baseline gap-1">
-              <span class="text-3xl font-black font-outfit" id="priceEnterprise">$299</span>
-              <span class="text-xs text-slate-500 font-mono">/mo</span>
-            </div>
+            <div class="mt-2 text-3xl font-black font-outfit">$299<span class="text-xs text-slate-500 font-mono">/mo</span></div>
             <p class="text-slate-600 dark:text-slate-400 text-xs mt-2">Multi-advisor teams with custom RIA branding & API access.</p>
-            <ul class="mt-5 space-y-2 text-xs text-slate-700 dark:text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-indigo-600"></i> Multi-Advisor Team Access</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-indigo-600"></i> Model Context Protocol (MCP) API</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-indigo-600"></i> Custom RIA Firm Logo & Branding</li>
-            </ul>
           </div>
-          <button onclick="launchStripeCheckout('enterprise')" id="btnCheckoutEnt" class="w-full mt-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5">
-            <i data-lucide="building" class="w-4 h-4"></i>
-            <span id="btnCheckoutEntText">Get Enterprise Firm &rarr;</span>
-          </button>
+          <button onclick="launchStripeCheckout('enterprise')" class="w-full mt-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all active:scale-95">Get Enterprise &rarr;</button>
         </div>
       </div>
     </div>
@@ -821,10 +984,9 @@
           <label class="text-slate-600 dark:text-slate-400 text-xs font-mono mb-1 block font-medium">Annual Retirement Spend ($)</label>
           <input id="nc_spending" type="number" value="80000" step="5000" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
         </div>
-        <div id="nc_error" class="hidden text-rose-500 text-xs font-mono px-1"></div>
-        <button onclick="saveNewClient()" id="nc_saveBtn" class="mt-1 w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm">
+        <button onclick="saveNewClient()" class="mt-1 w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm">
           <i data-lucide="user-plus" class="w-4 h-4"></i>
-          <span id="nc_saveLbl">Create Client & Open Plan</span>
+          <span>Create Client & Open Plan</span>
         </button>
       </div>
     </div>
@@ -839,7 +1001,6 @@
 
     let supabaseClient = null;
     let currentSession = null;
-    let currentAdvisor = null;
     let advisorClients = [];
     let activeClientId = null;
 
@@ -847,7 +1008,7 @@
     let isGkEnabled = true;
     let stressMode = 'none';
     let billingInterval = 'monthly';
-    let currentAppView = 'workbench';
+    let currentAppView = 'snapshot'; // Default to RightCapital Snapshot!
     let _persistDebounceTimer = null;
     let currentTheme = localStorage.getItem('theme') || 'light';
 
@@ -891,21 +1052,8 @@
       activeTab: 'monte'
     };
 
-    let statePlanB = {
-      name: 'Plan B (Early 58)',
-      retireAge: 58,
-      annualSpend: 72000,
-      equityRatio: 0.80,
-      ssClaimAge: 67
-    };
-
-    let statePlanC = {
-      name: 'Plan C (Max SS 70 & Legacy)',
-      retireAge: 62,
-      annualSpend: 85000,
-      equityRatio: 0.70,
-      ssClaimAge: 70
-    };
+    let statePlanB = { name: 'Plan B (Early 58)', retireAge: 58, annualSpend: 72000, equityRatio: 0.80, ssClaimAge: 67 };
+    let statePlanC = { name: 'Plan C (Max SS 70 & Legacy)', retireAge: 62, annualSpend: 85000, equityRatio: 0.70, ssClaimAge: 70 };
 
     let mcResults = { p10: [], p50: [], p90: [], successRate: 96, years: 50, rawPaths: [] };
     let mcResultsPlanB = { p10: [], p50: [], p90: [], successRate: 91, years: 50, rawPaths: [] };
@@ -933,10 +1081,10 @@
     function switchAppView(viewName) {
       currentAppView = viewName;
 
-      ['workbench', 'clients', 'ledger', 'tax'].forEach(name => {
+      ['snapshot', 'workbench', 'clients', 'ledger'].forEach(name => {
         const btn = document.getElementById('nav_' + name);
         if (btn) {
-          if (name === viewName || (viewName === 'workbench' && name === 'workbench')) {
+          if (name === viewName) {
             btn.className = "w-full flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-600/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 transition-all font-bold text-left shadow-xs";
           } else {
             btn.className = "w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all text-left";
@@ -944,12 +1092,13 @@
         }
       });
 
-      document.getElementById('viewWorkbench').classList.toggle('hidden', viewName !== 'workbench' && viewName !== 'tax');
+      document.getElementById('viewSnapshot').classList.toggle('hidden', viewName !== 'snapshot');
+      document.getElementById('viewWorkbench').classList.toggle('hidden', viewName !== 'workbench');
       document.getElementById('viewClientsCRM').classList.toggle('hidden', viewName !== 'clients');
       document.getElementById('viewLedgerPage').classList.toggle('hidden', viewName !== 'ledger');
 
-      if (viewName === 'tax') {
-        switchVisualTab('roth');
+      if (viewName === 'snapshot') {
+        updateSnapshotValues();
       } else if (viewName === 'workbench') {
         switchVisualTab('monte');
       } else if (viewName === 'clients') {
@@ -962,45 +1111,56 @@
     }
 
     // ================================================================
-    // AUTH GUARD & INITIALIZATION
+    // UPDATE RIGHTCAPITAL SNAPSHOT VALUES
     // ================================================================
-    async function initAuthGuard() {
-      if (!supabaseClient) {
-        loadDemoMode();
-        return;
-      }
+    function updateSnapshotValues() {
+      const liquid = Number(state.initialAssets) || 750000;
+      const cash = Math.round(liquid * 0.16);
+      const brokerage = Math.round(liquid * 0.34);
+      const retirement401k = Math.round(liquid * 0.50);
+      const realEstate = 650000;
+      const mortgage = 135000;
+      const autoLoan = 16672;
+      const totalLiabilities = mortgage + autoLoan;
+      const totalAssets = liquid + realEstate;
+      const netWorth = totalAssets - totalLiabilities;
 
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        window.location.href = '/auth.html';
-        return;
-      }
+      const fmt = (v) => '$' + Math.round(v).toLocaleString();
+      const fmtM = (v) => v >= 1000000 ? '$' + (v / 1000000).toFixed(2) + 'M' : '$' + Math.round(v / 1000) + 'k';
 
-      currentSession = session;
+      const setT = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+      setT('snapTotalNetWorth', fmt(netWorth));
+      setT('snapValNetWorthBottom', fmt(netWorth));
+      setT('valHeaderNetWorth', fmtM(netWorth));
+      setT('snapValCash', fmt(cash));
+      setT('snapValBrokerage', fmt(brokerage));
+      setT('snapVal401k', fmt(retirement401k));
+      setT('snapDonutTotal', fmtM(liquid));
 
-      const { data: advisor } = await supabaseClient
-        .from('advisors')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
+      setT('snapTaxableDonutVal', `${fmt(brokerage + cash)} (30%)`);
+      setT('snapDeferredDonutVal', `${fmt(retirement401k)} (50%)`);
+      setT('snapRothDonutVal', `${fmt(Math.round(liquid * 0.20))} (20%)`);
 
-      currentAdvisor = advisor;
-      if (advisor) {
-        const firmEl = document.getElementById('advisorFirmName');
-        if (firmEl) firmEl.textContent = advisor.firm_name || 'RIA Wealth Firm';
-        updateSubscriptionBadge(advisor.subscription_tier || 'trial');
-      }
-
-      await checkStripeReturn();
-      await loadAdvisorClients();
+      const eqPct = Math.round((Number(state.equityRatio) || 0.75) * 100);
+      const fiPct = 100 - eqPct;
+      setT('snapCurrentRatio', `${eqPct}/${fiPct}`);
+      setT('snapClientMeta', `${state.name} • Age ${state.currentAge} (Retire Target: ${state.retireAge})`);
     }
 
-    function updateSubscriptionBadge(tier) {
-      const tierEl = document.getElementById('subTierText');
-      if (!tierEl) return;
-      if (tier === 'pro') tierEl.textContent = '⚡ PRO RIA';
-      else if (tier === 'enterprise') tierEl.textContent = '👑 Enterprise';
-      else tierEl.textContent = 'Free Trial';
+    // ================================================================
+    // AUTH GUARD & CLIENT DATA
+    // ================================================================
+    async function initAuthGuard() {
+      if (!supabaseClient) { loadDemoMode(); return; }
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = '/auth.html'; return; }
+      currentSession = session;
+      const { data: advisor } = await supabaseClient.from('advisors').select('*').eq('id', session.user.id).single();
+      if (advisor) {
+        const firmEl = document.getElementById('advisorFirmName');
+        if (firmEl) firmEl.textContent = advisor.firm_name || 'Abundo & RIA Wealth';
+      }
+      await loadAdvisorClients();
     }
 
     async function handleLogout() {
@@ -1008,26 +1168,10 @@
       window.location.href = '/auth.html';
     }
 
-    // ================================================================
-    // CLIENT CRM & SWITCHING
-    // ================================================================
     async function loadAdvisorClients() {
-      if (!supabaseClient || !currentSession) {
-        loadDemoMode();
-        return;
-      }
-
-      const { data: clients, error } = await supabaseClient
-        .from('clients')
-        .select('*')
-        .eq('advisor_id', currentSession.user.id)
-        .order('created_at', { ascending: false });
-
-      if (error || !clients || clients.length === 0) {
-        loadDemoMode();
-        return;
-      }
-
+      if (!supabaseClient || !currentSession) { loadDemoMode(); return; }
+      const { data: clients } = await supabaseClient.from('clients').select('*').eq('advisor_id', currentSession.user.id).order('created_at', { ascending: false });
+      if (!clients || clients.length === 0) { loadDemoMode(); return; }
       advisorClients = clients;
       populateClientSelector(clients);
       renderCRMTable();
@@ -1083,6 +1227,7 @@
       if (selector) selector.value = clientId;
 
       syncStateToDockControls();
+      updateSnapshotValues();
       recomputeAndRender();
     }
 
@@ -1112,8 +1257,8 @@
             <td class="p-3.5 text-emerald-600 dark:text-emerald-400 font-bold">96% Safe</td>
             <td class="p-3.5 text-emerald-600 dark:text-emerald-400 font-bold">${taxStr}</td>
             <td class="p-3.5 text-right">
-              <button onclick="onClientSwitch('${c.id}'); switchAppView('workbench');" class="px-3 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 text-[11px] font-bold transition-all shadow-xs">
-                Open Plan &rarr;
+              <button onclick="onClientSwitch('${c.id}'); switchAppView('snapshot');" class="px-3 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 text-[11px] font-bold transition-all shadow-xs">
+                View Snapshot &rarr;
               </button>
             </td>
           </tr>
@@ -1162,6 +1307,7 @@
       setText('dockValEquity', Math.round(state.equityRatio * 100) + '% Stocks');
       setText('dockValSSClaim', 'Age ' + state.ssClaimAge);
 
+      updateSnapshotValues();
       recomputeAndRender();
       schedulePersist();
     }
@@ -1188,18 +1334,15 @@
       clearTimeout(_persistDebounceTimer);
       _persistDebounceTimer = setTimeout(async () => {
         try {
-          await supabaseClient
-            .from('clients')
-            .update({
-              liquid_assets: state.initialAssets,
-              annual_spending: state.annualSpend,
-              target_retire_age: state.retireAge,
-              current_age: state.currentAge,
-              equity_ratio: state.equityRatio,
-              ss_claim_age: state.ssClaimAge,
-              tax_savings: state.taxSavings
-            })
-            .eq('id', activeClientId);
+          await supabaseClient.from('clients').update({
+            liquid_assets: state.initialAssets,
+            annual_spending: state.annualSpend,
+            target_retire_age: state.retireAge,
+            current_age: state.currentAge,
+            equity_ratio: state.equityRatio,
+            ss_claim_age: state.ssClaimAge,
+            tax_savings: state.taxSavings
+          }).eq('id', activeClientId);
         } catch (e) {
           console.warn('Persist err:', e);
         }
@@ -1336,6 +1479,7 @@
       lucide.createIcons();
 
       if (currentAppView === 'ledger') renderPageLedgerTable();
+      if (currentAppView === 'snapshot') updateSnapshotValues();
 
       // Render Active View Canvas
       if (state.activeTab === 'monte') drawMonteCarloCanvas();
@@ -1371,7 +1515,6 @@
       const { ctx, w, h, isDark } = prepareCrispCanvas();
       ctx.clearRect(0, 0, w, h);
 
-      // Clean White / Deep Dark Background
       ctx.fillStyle = isDark ? '#070b14' : '#ffffff';
       ctx.fillRect(0, 0, w, h);
 
@@ -1390,7 +1533,7 @@
       // Grid Lines & Y Ticks
       ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)';
       ctx.lineWidth = 1;
-      ctx.fillStyle = isDark ? '#64748b' : '#64748b';
+      ctx.fillStyle = '#64748b';
       ctx.font = '600 10px Fira Code, monospace';
 
       const yTicks = 5;
@@ -1478,7 +1621,7 @@
       }
 
       // End Badges
-      function drawEndPointBadge(val, color, isLightColor = false, yOffset = 0) {
+      function drawEndPointBadge(val, color, yOffset = 0) {
         const lastX = getX(years);
         const lastY = getY(val) + yOffset;
         const tag = val >= 1000000 ? '$' + (val / 1000000).toFixed(2) + 'M' : '$' + Math.round(val / 1000) + 'k';
@@ -1501,8 +1644,8 @@
       drawEndPointBadge(p10[years], '#e11d48');
 
       if (isCompareMode) {
-        drawEndPointBadge(mcResultsPlanB.p50[years], '#9333ea', false, -20);
-        drawEndPointBadge(mcResultsPlanC.p50[years], '#d97706', false, 20);
+        drawEndPointBadge(mcResultsPlanB.p50[years], '#9333ea', -20);
+        drawEndPointBadge(mcResultsPlanC.p50[years], '#d97706', 20);
       }
 
       // Hover Crosshair
@@ -1629,13 +1772,13 @@
       ctx.fillText('IRS Tax Bracket & RMD Trap Comparison', rightX, chartY + 6);
 
       const comparisonBars = [
-        { label: 'Ages 35-54: Accumulation', naive: 28, veloxis: 28, desc: 'Pre-tax 401(k) matching' },
-        { label: 'Ages 55-72: Conversion Window', naive: 12, veloxis: 22, desc: '⭐ Veloxis fills 12-22% bracket' },
-        { label: 'Ages 73-85: RMD Mandate', naive: 37, veloxis: 0, desc: '💥 Naive hits 37% RMD | Veloxis: 0%' }
+        { label: 'Ages 35-54: Accumulation', naive: 28, veloxis: 28 },
+        { label: 'Ages 55-72: Conversion Window', naive: 12, veloxis: 22 },
+        { label: 'Ages 73-85: RMD Mandate', naive: 37, veloxis: 0 }
       ];
 
       let barY = chartY + 28;
-      comparisonBars.forEach((item, idx) => {
+      comparisonBars.forEach((item) => {
         ctx.fillStyle = isDark ? '#cbd5e1' : '#334155';
         ctx.font = '600 10px Inter, sans-serif';
         ctx.fillText(item.label, rightX, barY);
@@ -1670,9 +1813,6 @@
       ctx.fillText('■ Tax-Deferred 401(k) (50%)', 180, h - 14);
       ctx.fillStyle = '#059669';
       ctx.fillText('■ Tax-Free Roth Pool (20% → 85%)', 370, h - 14);
-      ctx.fillStyle = '#b45309';
-      ctx.font = '700 10px Fira Code, monospace';
-      ctx.fillText(`🏆 Lifetime Tax Saved: $${taxAlpha.toLocaleString()}`, Math.max(590, w - 240), h - 14);
     }
 
     function drawSankeyCanvas() {
@@ -1712,19 +1852,10 @@
       ctx.font = '800 13px Inter, sans-serif';
       ctx.fillText(`Dynamic Cashflow Sankey — ${isRetired ? 'Distribution Phase' : 'Wealth Accumulation Phase (Age ' + currentAge + ')'}`, 35, 30);
 
-      ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.15)' : '#e0f2fe';
-      ctx.fillRect(w - 240, 12, 205, 28);
-      ctx.strokeStyle = '#0284c7';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(w - 240, 12, 205, 28);
-      ctx.fillStyle = '#0284c7';
-      ctx.font = '800 11px Fira Code, monospace';
-      ctx.fillText(`🌊 Gross Flow: $${totalIn.toLocaleString()}/yr`, w - 228, 30);
-
       const sources = [
-        { title: isRetired ? '💼 Active Salary (Retired)' : '💼 Salary & Earned Comp', val: salaryIn, color: '#0284c7', sub: isRetired ? '$0 (Retired)' : 'Primary wage income' },
-        { title: `🏛️ Social Security (Age ${ssClaimAge})`, val: ssIn, color: '#d97706', sub: isClaimingSS ? `Active ($${Math.round(ssIn/12)}/mo)` : `Accruing (Age ${ssClaimAge})` },
-        { title: `📈 Portfolio Yield (${isRetired ? '4.5% Draw' : '7.5% Growth'})`, val: yieldIn, color: '#059669', sub: `$${(Number(state.initialAssets)/1000).toFixed(0)}k Assets` }
+        { title: isRetired ? '💼 Active Salary (Retired)' : '💼 Salary & Earned Comp', val: salaryIn, color: '#0284c7' },
+        { title: `🏛️ Social Security (Age ${ssClaimAge})`, val: ssIn, color: '#d97706' },
+        { title: `📈 Portfolio Yield (${isRetired ? '4.5% Draw' : '7.5% Growth'})`, val: yieldIn, color: '#059669' }
       ];
 
       const destinations = [
@@ -1997,6 +2128,7 @@
         if (urlParams.get('stress')) stressMode = urlParams.get('stress');
         if (urlParams.get('tab')) state.activeTab = urlParams.get('tab');
         syncStateToDockControls();
+        updateSnapshotValues();
         recomputeAndRender();
       }
     }
@@ -2051,6 +2183,7 @@
             if (m.is_gk_enabled !== undefined) isGkEnabled = m.is_gk_enabled;
             if (m.ss_claim_age) state.ssClaimAge = m.ss_claim_age;
             syncStateToDockControls();
+            updateSnapshotValues();
             recomputeAndRender();
             schedulePersist();
           }
@@ -2135,16 +2268,6 @@
     function openPricingModal() { document.getElementById('pricingModal').classList.remove('hidden'); }
     function closePricingModal() { document.getElementById('pricingModal').classList.add('hidden'); }
 
-    function toggleBillingCycle() {
-      billingInterval = billingInterval === 'monthly' ? 'annual' : 'monthly';
-      const isAnnual = billingInterval === 'annual';
-      document.getElementById('toggleBillingThumb').style.transform = isAnnual ? 'translateX(24px)' : 'translateX(0)';
-      document.getElementById('lblMonthly').className = isAnnual ? 'text-xs font-bold text-slate-400' : 'text-xs font-bold text-slate-900 dark:text-white';
-      document.getElementById('lblAnnual').className = isAnnual ? 'text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5' : 'text-xs font-bold text-slate-400 flex items-center gap-1.5';
-      document.getElementById('pricePro').textContent = isAnnual ? '$79' : '$99';
-      document.getElementById('priceEnterprise').textContent = isAnnual ? '$239' : '$299';
-    }
-
     async function launchStripeCheckout(tier) {
       try {
         const res = await fetch('/api/create-checkout-session', {
@@ -2152,7 +2275,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             tier,
-            interval: billingInterval,
+            interval: 'monthly',
             advisor_id: currentSession?.user?.id || 'demo_advisor',
             advisor_email: currentSession?.user?.email || 'demo@veloxis.ai'
           })
@@ -2162,30 +2285,6 @@
         else alert('Stripe Error: ' + (data.error || 'Failed to initialize'));
       } catch (err) {
         alert('Stripe Connection Error: ' + err.message);
-      }
-    }
-
-    async function checkStripeReturn() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const sessionId = urlParams.get('session_id');
-      const isUpgraded = urlParams.get('upgraded') === 'true';
-      if (sessionId && isUpgraded) {
-        try {
-          const res = await fetch('/api/verify-checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: sessionId })
-          });
-          const result = await res.json();
-          if (result.verified) {
-            updateSubscriptionBadge(result.tier || 'pro');
-            const toast = document.getElementById('upgradeToast');
-            if (toast) { toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 5000); }
-          }
-        } catch (e) {
-          console.warn('Verify checkout failed:', e);
-        }
-        window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
 
@@ -2205,31 +2304,27 @@
       if (!name) { alert('Client name is required'); return; }
 
       if (supabaseClient && currentSession) {
-        const { data, error } = await supabaseClient
-          .from('clients')
-          .insert([{
-            advisor_id: currentSession.user.id,
-            client_name: name,
-            current_age: age,
-            target_retire_age: retire,
-            liquid_assets: assets,
-            annual_spending: spend,
-            equity_ratio: 0.75,
-            ss_monthly_pia: 2500,
-            ss_claim_age: 67
-          }])
-          .select()
-          .single();
+        const { data, error } = await supabaseClient.from('clients').insert([{
+          advisor_id: currentSession.user.id,
+          client_name: name,
+          current_age: age,
+          target_retire_age: retire,
+          liquid_assets: assets,
+          annual_spending: spend,
+          equity_ratio: 0.75,
+          ss_monthly_pia: 2500,
+          ss_claim_age: 67
+        }]).select().single();
 
         if (!error && data) {
           closeNewClientDrawer();
           await loadAdvisorClients();
           await onClientSwitch(data.id);
+          switchAppView('snapshot');
           return;
         }
       }
 
-      // Demo fallback
       const newId = 'demo_' + Date.now();
       const demoClient = { id: newId, client_name: name, current_age: age, target_retire_age: retire, liquid_assets: assets, annual_spending: spend, equity_ratio: 0.75, ss_monthly_pia: 2500, ss_claim_age: 67 };
       advisorClients.unshift(demoClient);
@@ -2237,6 +2332,7 @@
       renderCRMTable();
       closeNewClientDrawer();
       onClientSwitch(newId);
+      switchAppView('snapshot');
     }
 
     // ================================================================
@@ -2316,6 +2412,7 @@
       await initAuthGuard();
       hydrateStateFromUrlParams();
       syncStateToDockControls();
+      updateSnapshotValues();
       recomputeAndRender();
     };
 
