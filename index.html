@@ -1686,27 +1686,6 @@
         drawCurve(mcResultsPlanC.p50, '#fbbf24', 'rgba(251, 191, 36, 0.9)', 2.5, true);
       }
 
-      // Dynamic Flowing Light Photon on Median Curve
-      if (p50.length > 0) {
-        const photonT = (time * 0.3) % 1.0;
-        const photonIdxFloat = photonT * (years);
-        const pIdxLow = Math.floor(photonIdxFloat);
-        const pIdxHigh = Math.min(years, pIdxLow + 1);
-        const frac = photonIdxFloat - pIdxLow;
-
-        const photonX = getX(pIdxLow) + frac * (getX(pIdxHigh) - getX(pIdxLow));
-        const photonY = getY(p50[pIdxLow]) + frac * (getY(p50[pIdxHigh]) - getY(p50[pIdxLow]));
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = '#818cf8';
-        ctx.shadowBlur = 16;
-        ctx.arc(photonX, photonY, 4.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-
       // 6. Right-Side Vertical Gaussian Probability Density Bell Curve (正态分布钟形截面)
       const pdfBaseX = w - paddingRight;
       const p50EndY = getY(p50[years]);
@@ -2061,20 +2040,6 @@
       ctx.fillStyle = taxGrad;
       ctx.fill();
 
-      // Flow Photons along Roth Acceleration Line
-      const pT = (time * 0.25) % 1.0;
-      const pIdx = Math.floor(pT * totalYears);
-      const pX = getBx(pIdx);
-      const pY = getBy(rothCurve[pIdx]);
-      ctx.save();
-      ctx.beginPath();
-      ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = '#10b981';
-      ctx.shadowBlur = 14;
-      ctx.arc(pX, pY, 4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-
       // Left Chart Axis Labels
       ctx.fillStyle = '#64748b';
       ctx.font = '500 9px Fira Code, monospace';
@@ -2295,27 +2260,6 @@
 
           ctx.fillStyle = streamGrad;
           ctx.fill();
-
-          // 60fps Flowing Light Photon on this Stream
-          const photonT = ((time * 0.35 + (sIdx * 0.25 + dIdx * 0.33)) % 1.0);
-          const p0 = { x: startX, y: sY };
-          const p1 = { x: midX - 70, y: sY };
-          const p2 = { x: midX + 70, y: dY };
-          const p3 = { x: endX, y: dY };
-
-          // Cubic Bézier calculation
-          const oneMinusT = 1 - photonT;
-          const px = Math.pow(oneMinusT, 3) * p0.x + 3 * Math.pow(oneMinusT, 2) * photonT * p1.x + 3 * oneMinusT * Math.pow(photonT, 2) * p2.x + Math.pow(photonT, 3) * p3.x;
-          const py = Math.pow(oneMinusT, 3) * p0.y + 3 * Math.pow(oneMinusT, 2) * photonT * p1.y + 3 * oneMinusT * Math.pow(photonT, 2) * p2.y + Math.pow(photonT, 3) * p3.y;
-
-          ctx.save();
-          ctx.beginPath();
-          ctx.fillStyle = '#ffffff';
-          ctx.shadowColor = src.color;
-          ctx.shadowBlur = 12;
-          ctx.arc(px, py, 3.5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
         });
       });
 
