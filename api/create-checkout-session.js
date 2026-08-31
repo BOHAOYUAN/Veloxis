@@ -1,4 +1,4 @@
-﻿// Veloxis AI — Stripe Checkout Session Creator (Zero-Dependency High-Speed Serverless Function)
+// Veloxis AI — Stripe Checkout Session Creator (Zero-Dependency High-Speed Serverless Function)
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -60,6 +60,7 @@ module.exports = async function handler(req, res) {
     params.append('line_items[0][price_data][recurring][interval]', isAnnual ? 'year' : 'month');
     params.append('line_items[0][price_data][product_data][name]', productName);
     params.append('line_items[0][price_data][product_data][description]', productDesc);
+    params.append('line_items[0][price_data][product_data][tax_code]', 'txcd_10000000'); // Software as a Service (SaaS)
     params.append('line_items[0][price_data][product_data][images][0]', 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png');
     params.append('line_items[0][quantity]', '1');
 
