@@ -302,11 +302,11 @@
               <span class="font-bold text-emerald-400">VELOXIS CORE PROTOCOL</span>
               <span class="font-mono">Ready • 0.08s LPU</span>
             </div>
-            <p class="text-slate-200 leading-relaxed">
-              已载入客户 <strong>Sarah Lin ($500,000 Portfolio)</strong> 财务模型。当前 35 岁，目标 55 岁退休，年支出 $80,000。蒙特卡洛基准成功率 <strong>96%</strong>，已启用 Guyton-Klinger 动态提款防线。
+            <p id="welcomeProtocolText" class="text-slate-200 leading-relaxed">
+              已载入客户画像模型。已启用 Guyton-Klinger 动态提款防线与高阶连续概率密度测算。
             </p>
             
-            <!-- Dynamic Action Capsules (交互动作胶囊) -->
+            <!-- Dynamic Action Capsules -->
             <div class="flex flex-wrap gap-1.5 pt-1" id="initialActionPills">
               <button onclick="dispatchProtocolCommand('注入 2008 年金融危机压力测试')" class="px-2.5 py-1 rounded-lg bg-rose-950/70 hover:bg-rose-900 border border-rose-500/40 text-rose-300 text-[10px] font-mono transition-all flex items-center gap-1 active:scale-95">
                 <span>🔴 注入 2008 GFC 压力测试</span>
@@ -533,6 +533,13 @@
       // Update selector to reflect current client
       const selector = document.getElementById('clientSelector');
       if (selector) selector.value = clientId;
+
+      // Update welcome bubble text
+      const welcomeEl = document.getElementById('welcomeProtocolText');
+      if (welcomeEl && state.name) {
+        const assetStr = state.initialAssets >= 1000000 ? '$' + (state.initialAssets / 1000000).toFixed(2) + 'M' : '$' + Math.round(state.initialAssets / 1000) + 'k';
+        welcomeEl.innerHTML = `已载入客户 <strong>${state.name} (${assetStr} Portfolio)</strong> 财务模型。当前 ${state.currentAge} 岁，目标 ${state.retireAge} 岁退休，年支出 $${Math.round(state.annualSpend).toLocaleString()}。已启用连续概率微积分测算。`;
+      }
 
       recomputeAndRender();
     }
