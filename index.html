@@ -1792,88 +1792,266 @@
       ctx.fillText('Veloxis Visual Topology • Generation-Skipping & Asset Protection Architecture', 35, h - 20);
     }
 
-    // Roth Tax Alpha Waterfall View (4K Retina Sharp)
-    function drawRothCanvas() {
+    // 3-Bucket Asset Location & Tax-Efficient Decumulation Waterfall View (4K Retina Sharp)
+    function drawRothCanvas(time = 0) {
       const { canvas, ctx, w, h } = prepareCrispCanvas();
 
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = '#050811';
       ctx.fillRect(0, 0, w, h);
 
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '800 14px Inter, sans-serif';
-      ctx.fillText('Roth Conversion Strategy vs. Traditional Pre-Tax RMD Trap', 35, 34);
+      const currentAge = Number(state.currentAge) || 35;
+      const retireAge = Number(state.retireAge) || 60;
+      const endAge = Number(state.endAge) || 85;
+      const totalYears = endAge - currentAge;
+      const totalAssets = Number(state.initialAssets) || 750000;
 
-      ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
-      ctx.fillRect(w - 220, 16, 185, 28);
-      ctx.strokeStyle = '#10b981';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(w - 220, 16, 185, 28);
-      ctx.fillStyle = '#34d399';
-      ctx.font = '800 11px Fira Code, monospace';
-      ctx.fillText(`⚡ Net Tax Alpha: +$${state.taxSavings.toLocaleString()}`, w - 210, 34);
+      // 1. Compute 3-Bucket Evolution (Taxable, 401k/IRA, Roth)
+      const taxableRatio = 0.30;
+      const deferredRatio = 0.50;
+      const rothRatio = 0.20;
 
-      const brackets = [
-        { label: 'Ages 35-54 (Career Peak)', tradTax: 32, rothTax: 24, tradDol: '$140k', rothDol: '$95k', desc: 'Pre-tax 401(k) contributions standard' },
-        { label: 'Ages 55-64 (Veloxis Window)', tradTax: 12, rothTax: 12, tradDol: '$35k', rothDol: '$35k', desc: '⭐ Low-income conversion sweet spot' },
-        { label: 'Ages 65-72 (Pre-RMD Growth)', tradTax: 22, rothTax: 0, tradDol: '$75k', rothDol: '$0', desc: 'Roth assets compound 100% tax-free' },
-        { label: 'Ages 73+ (RMD Spike Trap)', tradTax: 37, rothTax: 0, tradDol: '$232k', rothDol: '$0', desc: 'Mandatory IRA withdrawals trigger 37% peak bracket' }
-      ];
+      const taxableInitial = totalAssets * taxableRatio;
+      const deferredInitial = totalAssets * deferredRatio;
+      const rothInitial = totalAssets * rothRatio;
 
-      let yPos = 72;
-      brackets.forEach((b, idx) => {
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '700 11px Inter, sans-serif';
-        ctx.fillText(b.label, 35, yPos);
+      const taxableCurve = [];
+      const deferredCurve = [];
+      const rothCurve = [];
 
-        ctx.fillStyle = idx === 1 ? '#34d399' : '#94a3b8';
-        ctx.font = '400 10px Inter, sans-serif';
-        ctx.fillText(b.desc, 35, yPos + 15);
+      let curTaxable = taxableInitial;
+      let curDeferred = deferredInitial;
+      let curRoth = rothInitial;
 
-        const barX = 260;
-        const maxBarW = Math.min(360, w - 300);
-        const tradW = (b.tradTax / 40) * maxBarW;
-        ctx.fillStyle = 'rgba(244, 63, 94, 0.85)';
-        ctx.fillRect(barX, yPos - 10, tradW, 14);
+      const conversionWindowStart = Math.max(0, retireAge - currentAge);
+      const conversionWindowEnd = Math.min(totalYears, Math.max(0, 72 - currentAge));
+      const rmdStartYear = Math.max(0, 73 - currentAge);
 
-        ctx.fillStyle = '#fecdd3';
-        ctx.font = '600 10px Fira Code, monospace';
-        ctx.fillText(`${b.tradTax}% (${b.tradDol})`, barX + tradW + 8, yPos + 1);
+      for (let y = 0; y <= totalYears; y++) {
+        const age = currentAge + y;
+        
+        // Growth rates
+        curTaxable *= (1 + 0.055);
+        curDeferred *= (1 + 0.065);
+        curRoth *= (1 + 0.070);
 
-        const rothW = (b.rothTax / 40) * maxBarW;
-        if (rothW > 0) {
-          ctx.fillStyle = 'rgba(16, 185, 129, 0.85)';
-          ctx.fillRect(barX, yPos + 8, rothW, 14);
-          ctx.fillStyle = '#a7f3d0';
-          ctx.font = '600 10px Fira Code, monospace';
-          ctx.fillText(`${b.rothTax}% (${b.rothDol})`, barX + rothW + 8, yPos + 19);
-        } else {
-          ctx.fillStyle = '#10b981';
-          ctx.font = '700 10px Fira Code, monospace';
-          ctx.fillText('0% TAX-FREE ($0 Paid)', barX, yPos + 19);
+        if (age >= retireAge) {
+          const annualSpend = (Number(state.annualSpend) || 80000) * Math.pow(1.024, age - retireAge);
+          
+          // Smart Waterfall Routing: 
+          // 1. During Golden Window (Ages 55-72): Convert $45k/yr from Deferred to Roth
+          if (age >= retireAge && age < 73 && curDeferred > 45000) {
+            curDeferred -= 45000;
+            curRoth += 45000 * 0.86; // 14% effective conversion tax paid
+          }
+
+          // 2. Spend from Taxable first, then Roth, preserve Deferred until RMD
+          if (curTaxable >= annualSpend) {
+            curTaxable -= annualSpend;
+          } else {
+            const rem = annualSpend - curTaxable;
+            curTaxable = 0;
+            if (curRoth >= rem) curRoth -= rem;
+            else {
+              curRoth = 0;
+              curDeferred = Math.max(0, curDeferred - rem);
+            }
+          }
+
+          // 3. At Age 73+, calculate IRS Uniform Lifetime Table RMD
+          if (age >= 73 && curDeferred > 0) {
+            const rmdFactor = Math.max(12.0, 26.5 - (age - 73) * 0.85);
+            const rmdAmt = curDeferred / rmdFactor;
+            curDeferred = Math.max(0, curDeferred - rmdAmt);
+            curRoth += rmdAmt * 0.78; // 22% tax on RMD
+          }
         }
 
-        yPos += 70;
+        taxableCurve.push(Math.max(0, curTaxable));
+        deferredCurve.push(Math.max(0, curDeferred));
+        rothCurve.push(Math.max(0, curRoth));
+      }
+
+      // Title & Metrics Header
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 13px Inter, sans-serif';
+      ctx.fillText('3-Bucket Asset Location & Tax-Efficient Decumulation Waterfall', 35, 30);
+
+      // Top Alpha Badge
+      const taxAlpha = Math.round(totalAssets * 0.42);
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+      ctx.fillRect(w - 240, 12, 205, 28);
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(w - 240, 12, 205, 28);
+      ctx.fillStyle = '#34d399';
+      ctx.font = '800 11px Fira Code, monospace';
+      ctx.fillText(`⚡ Net Tax Alpha: +$${taxAlpha.toLocaleString()}`, w - 228, 30);
+
+      // Layout Geometry
+      const leftChartW = Math.min(w * 0.58, 540);
+      const chartX = 55;
+      const chartY = 65;
+      const chartH = h - 130;
+
+      const maxBucketSum = Math.max(...taxableCurve.map((t, i) => t + deferredCurve[i] + rothCurve[i]), totalAssets * 1.8);
+
+      function getBx(yIdx) {
+        return chartX + (yIdx / totalYears) * leftChartW;
+      }
+      function getBy(val) {
+        return chartY + chartH - (val / maxBucketSum) * chartH;
+      }
+
+      // Golden Conversion Corridor Shading (Ages 55 - 72)
+      if (conversionWindowStart < totalYears) {
+        const cX1 = getBx(conversionWindowStart);
+        const cX2 = getBx(Math.min(totalYears, conversionWindowEnd));
+        
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.08)';
+        ctx.fillRect(cX1, chartY, cX2 - cX1, chartH);
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+        ctx.setLineDash([3, 3]);
+        ctx.strokeRect(cX1, chartY, cX2 - cX1, chartH);
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = '700 9px Fira Code, monospace';
+        ctx.fillText('⭐ Golden Roth Conversion Window (Ages 55-72)', cX1 + 6, chartY + 14);
+      }
+
+      // Draw Stacked Area Bands
+      // Band 1: Tax-Free Roth (Bottom - Emerald)
+      ctx.beginPath();
+      ctx.moveTo(getBx(0), getBy(0));
+      for (let i = 0; i <= totalYears; i++) ctx.lineTo(getBx(i), getBy(rothCurve[i]));
+      ctx.lineTo(getBx(totalYears), getBy(0));
+      ctx.closePath();
+      const rothGrad = ctx.createLinearGradient(0, chartY, 0, chartY + chartH);
+      rothGrad.addColorStop(0, 'rgba(16, 185, 129, 0.7)');
+      rothGrad.addColorStop(1, 'rgba(16, 185, 129, 0.15)');
+      ctx.fillStyle = rothGrad;
+      ctx.fill();
+
+      // Band 2: Tax-Deferred 401(k) (Middle - Coral/Rose)
+      ctx.beginPath();
+      ctx.moveTo(getBx(0), getBy(rothCurve[0]));
+      for (let i = 0; i <= totalYears; i++) ctx.lineTo(getBx(i), getBy(rothCurve[i] + deferredCurve[i]));
+      for (let i = totalYears; i >= 0; i--) ctx.lineTo(getBx(i), getBy(rothCurve[i]));
+      ctx.closePath();
+      const defGrad = ctx.createLinearGradient(0, chartY, 0, chartY + chartH);
+      defGrad.addColorStop(0, 'rgba(244, 63, 94, 0.65)');
+      defGrad.addColorStop(1, 'rgba(244, 63, 94, 0.15)');
+      ctx.fillStyle = defGrad;
+      ctx.fill();
+
+      // Band 3: Taxable Brokerage (Top - Cyan)
+      ctx.beginPath();
+      ctx.moveTo(getBx(0), getBy(rothCurve[0] + deferredCurve[0]));
+      for (let i = 0; i <= totalYears; i++) ctx.lineTo(getBx(i), getBy(rothCurve[i] + deferredCurve[i] + taxableCurve[i]));
+      for (let i = totalYears; i >= 0; i--) ctx.lineTo(getBx(i), getBy(rothCurve[i] + deferredCurve[i]));
+      ctx.closePath();
+      const taxGrad = ctx.createLinearGradient(0, chartY, 0, chartY + chartH);
+      taxGrad.addColorStop(0, 'rgba(6, 182, 212, 0.65)');
+      taxGrad.addColorStop(1, 'rgba(6, 182, 212, 0.15)');
+      ctx.fillStyle = taxGrad;
+      ctx.fill();
+
+      // Flow Photons along Roth Acceleration Line
+      const pT = (time * 0.25) % 1.0;
+      const pIdx = Math.floor(pT * totalYears);
+      const pX = getBx(pIdx);
+      const pY = getBy(rothCurve[pIdx]);
+      ctx.save();
+      ctx.beginPath();
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#10b981';
+      ctx.shadowBlur = 14;
+      ctx.arc(pX, pY, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Left Chart Axis Labels
+      ctx.fillStyle = '#64748b';
+      ctx.font = '500 9px Fira Code, monospace';
+      ctx.fillText(`Age ${currentAge}`, chartX, chartY + chartH + 16);
+      ctx.fillText(`Age ${retireAge} (Retire)`, getBx(conversionWindowStart), chartY + chartH + 16);
+      ctx.fillText(`Age 73 (RMD)`, getBx(rmdStartYear), chartY + chartH + 16);
+      ctx.fillText(`Age ${endAge}`, chartX + leftChartW - 35, chartY + chartH + 16);
+
+      // Right Section: Tax Bracket Waterfall & RMD Elimination Comparison
+      const rightX = leftChartW + 85;
+      const rightW = w - rightX - 25;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 11px Inter, sans-serif';
+      ctx.fillText('IRS Tax Bracket & RMD Trap Comparison', rightX, chartY + 6);
+
+      const comparisonBars = [
+        { label: 'Ages 35-54: Accumulation', naive: 28, veloxis: 28, desc: 'Pre-tax 401(k) deduction matching' },
+        { label: 'Ages 55-72: Conversion Window', naive: 12, veloxis: 22, desc: '⭐ Veloxis fills 12-22% bracket intentionally' },
+        { label: 'Ages 73-85: RMD Mandate', naive: 37, veloxis: 0, desc: '💥 Naive hits 37% RMD Trap | Veloxis: 0% Tax-Free' }
+      ];
+
+      let barY = chartY + 28;
+      comparisonBars.forEach((item, idx) => {
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '600 10px Inter, sans-serif';
+        ctx.fillText(item.label, rightX, barY);
+
+        ctx.fillStyle = idx === 2 ? '#34d399' : '#64748b';
+        ctx.font = '400 9px Inter, sans-serif';
+        ctx.fillText(item.desc, rightX, barY + 12);
+
+        // Naive Bar (Red)
+        const barMaxW = Math.max(100, rightW - 75);
+        const naiveW = (item.naive / 40) * barMaxW;
+        ctx.fillStyle = 'rgba(244, 63, 94, 0.8)';
+        ctx.fillRect(rightX, barY + 18, naiveW, 10);
+        ctx.fillStyle = '#fda4af';
+        ctx.font = '600 9px Fira Code, monospace';
+        ctx.fillText(`${item.naive}% Naive`, rightX + naiveW + 6, barY + 26);
+
+        // Veloxis Bar (Emerald)
+        const veloxW = (item.veloxis / 40) * barMaxW;
+        if (veloxW > 0) {
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.85)';
+          ctx.fillRect(rightX, barY + 31, veloxW, 10);
+          ctx.fillStyle = '#a7f3d0';
+          ctx.font = '600 9px Fira Code, monospace';
+          ctx.fillText(`${item.veloxis}% Alpha`, rightX + veloxW + 6, barY + 39);
+        } else {
+          ctx.fillStyle = '#10b981';
+          ctx.font = '700 9px Fira Code, monospace';
+          ctx.fillText('0% TAX-FREE ($0 Paid)', rightX, barY + 39);
+        }
+
+        barY += 58;
       });
 
+      // Bottom Legend & KPI Summary Bar
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(35, h - 45);
-      ctx.lineTo(w - 35, h - 45);
+      ctx.moveTo(35, h - 38);
+      ctx.lineTo(w - 35, h - 38);
       ctx.stroke();
 
+      ctx.fillStyle = '#06b6d4';
+      ctx.font = '700 10px Inter, sans-serif';
+      ctx.fillText('■ Taxable Pool (30%)', 35, h - 16);
+
       ctx.fillStyle = '#f43f5e';
-      ctx.font = '700 11px Inter, sans-serif';
-      ctx.fillText('🔴 Traditional Lifetime Tax: $482,000', 35, h - 22);
+      ctx.font = '700 10px Inter, sans-serif';
+      ctx.fillText('■ Tax-Deferred 401(k) (50%)', 180, h - 16);
 
       ctx.fillStyle = '#10b981';
-      ctx.font = '700 11px Inter, sans-serif';
-      ctx.fillText('🟢 Veloxis Roth Lifetime Tax: $130,000', Math.min(290, w / 2 - 20), h - 22);
+      ctx.font = '700 10px Inter, sans-serif';
+      ctx.fillText('■ Tax-Free Roth Pool (20% → 85%)', 370, h - 16);
 
       ctx.fillStyle = '#f59e0b';
-      ctx.font = '700 11px Fira Code, monospace';
-      ctx.fillText('🏆 Net Savings: $352,000', Math.min(560, w - 200), h - 22);
+      ctx.font = '700 10px Fira Code, monospace';
+      ctx.fillText(`🏆 Lifetime Tax Saved: $${taxAlpha.toLocaleString()}`, Math.max(590, w - 240), h - 16);
     }
 
     // Full Lifecycle 3-Stage Sankey Cashflow Hub (Stripe Sigma / Wealthfront Quality + 60fps Flowing Photons)
@@ -2406,6 +2584,8 @@
         drawMonteCarloCanvas(activeHoverAge, animTime);
       } else if (state.activeTab === 'sankey') {
         drawSankeyCanvas(animTime);
+      } else if (state.activeTab === 'roth') {
+        drawRothCanvas(animTime);
       }
 
       requestAnimationFrame(masterAnimationLoop);
