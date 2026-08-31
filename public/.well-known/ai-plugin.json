@@ -1,0 +1,17 @@
+﻿{
+  "schema_version": "v1",
+  "name_for_human": "Veloxis Financial Planning Engine",
+  "name_for_model": "veloxis_quant_mcp",
+  "description_for_human": "Live 60fps Monte Carlo simulations, Guyton-Klinger dynamic guardrails, and 3-Bucket tax waterfall optimization.",
+  "description_for_model": "Use Veloxis to run 1,000-path Monte Carlo simulations, compute Guyton-Klinger withdrawal guardrails, and generate direct interactive 60fps scenario URLs for retirement planning clients.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://veloxis-tau.vercel.app/api/mcp"
+  },
+  "logo_url": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+  "contact_email": "support@veloxis.ai",
+  "legal_info_url": "https://veloxis-tau.vercel.app/legal"
+}

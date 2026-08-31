@@ -13,6 +13,29 @@
   <meta name="apple-mobile-web-app-title" content="Veloxis">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
 
+  <!-- GEO & Generative AI Structured Knowledge (Schema.org / JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FinancialProduct",
+    "name": "Veloxis AI Financial Planning Protocol",
+    "description": "Enterprise RIA Wealth Planning Engine featuring 1,000-iteration Log-Normal Monte Carlo, Guyton-Klinger dynamic guardrails, 3-Bucket asset location tax waterfall, and 0.08s LPU conversational dispatch.",
+    "provider": {
+      "@type": "Organization",
+      "name": "Veloxis Wealth Technologies",
+      "url": "https://veloxis-tau.vercel.app"
+    },
+    "applicationCategory": "FinancialSoftware",
+    "operatingSystem": "Web, iOS, Android",
+    "offers": {
+      "@type": "Offer",
+      "price": "99.00",
+      "priceCurrency": "USD",
+      "category": "Subscription"
+    }
+  }
+  </script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -142,6 +165,12 @@
         </button>
       </div>
 
+      <!-- Share Interactive Plan Link (URL-as-a-Plan) -->
+      <button onclick="shareInteractivePlanUrl()" class="px-2.5 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-900 text-indigo-300 hover:text-indigo-200 border border-indigo-500/40 text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5 shadow-sm">
+        <i data-lucide="share-2" class="w-3.5 h-3.5 text-indigo-400"></i>
+        <span class="hidden sm:inline">Share Plan</span>
+      </button>
+
       <button onclick="exportPdfReport()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center gap-1.5">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
         <span class="hidden sm:inline">Export Audit PDF</span>
@@ -154,6 +183,19 @@
       </button>
     </div>
   </header>
+
+  <!-- ================= SHARE PLAN TOAST ================= -->
+  <div id="shareToast" class="fixed top-16 right-6 z-[120] hidden glass-panel border border-indigo-500/50 rounded-2xl p-4 shadow-2xl bg-indigo-950/95 text-white max-w-sm">
+    <div class="flex items-start gap-3">
+      <div class="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-400 flex items-center justify-center shrink-0">
+        <i data-lucide="link" class="w-4 h-4 text-indigo-400"></i>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm text-indigo-300">Interactive Plan URL Copied!</h4>
+        <p class="text-xs text-slate-300 mt-0.5">Direct 60fps scenario link copied to clipboard. Ready for ChatGPT, Claude, or client presentation.</p>
+      </div>
+    </div>
+  </div>
 
   <!-- ================= UPGRADE CELEBRATION TOAST ================= -->
   <div id="upgradeToast" class="fixed top-16 right-6 z-[120] hidden glass-panel border border-emerald-500/50 rounded-2xl p-4 shadow-2xl bg-emerald-950/90 text-white max-w-sm">
@@ -782,8 +824,70 @@
         } catch (e) {
           console.warn('Verify checkout failed:', e);
         }
-        // Clean URL parameters without reloading
+        // Clean URL parameters without reloading if upgraded
         window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+
+    // ================================================================
+    // STATEFUL URL-AS-A-PLAN (GEO & AGENTIC PROTOCOL SHARING)
+    // ================================================================
+    function shareInteractivePlanUrl() {
+      const origin = window.location.origin;
+      const params = new URLSearchParams({
+        name: state.name || 'Client',
+        assets: Math.round(Number(state.initialAssets) || 750000).toString(),
+        spend: Math.round(Number(state.annualSpend) || 80000).toString(),
+        age: (Number(state.currentAge) || 35).toString(),
+        retire: (Number(state.retireAge) || 60).toString(),
+        stress: stressMode || 'none',
+        tab: state.activeTab || 'monte'
+      });
+
+      const fullUrl = `${origin}/index.html?${params.toString()}`;
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(fullUrl).then(() => {
+          showShareToast();
+        }).catch(() => {
+          prompt('Copy interactive plan link for AI/Client sharing:', fullUrl);
+        });
+      } else {
+        prompt('Copy interactive plan link for AI/Client sharing:', fullUrl);
+      }
+    }
+
+    function showShareToast() {
+      const toast = document.getElementById('shareToast');
+      if (toast) {
+        toast.classList.remove('hidden');
+        lucide.createIcons();
+        setTimeout(() => toast.classList.add('hidden'), 4500);
+      }
+    }
+
+    function hydrateStateFromUrlParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('assets')) {
+        state.initialAssets = parseFloat(urlParams.get('assets'));
+        if (urlParams.get('spend')) state.annualSpend = parseFloat(urlParams.get('spend'));
+        if (urlParams.get('age')) state.currentAge = parseInt(urlParams.get('age'));
+        if (urlParams.get('retire')) state.retireAge = parseInt(urlParams.get('retire'));
+        if (urlParams.get('name')) state.name = decodeURIComponent(urlParams.get('name'));
+        if (urlParams.get('stress')) stressMode = urlParams.get('stress');
+        if (urlParams.get('tab')) {
+          state.activeTab = urlParams.get('tab');
+          switchVisualTab(urlParams.get('tab'));
+        }
+
+        // Update welcome message
+        const welcomeEl = document.getElementById('welcomeProtocolText');
+        if (welcomeEl) {
+          const assetStr = state.initialAssets >= 1000000 ? '$' + (state.initialAssets / 1000000).toFixed(2) + 'M' : '$' + Math.round(state.initialAssets / 1000) + 'k';
+          welcomeEl.innerHTML = `已通过 URL 链接即时载入 <strong>${state.name} (${assetStr} Portfolio)</strong> 专属量化财务模型。当前 ${state.currentAge} 岁，目标 ${state.retireAge} 岁退休。`;
+        }
+
+        recomputeAndRender();
       }
     }
 
@@ -2594,6 +2698,7 @@
     // Initialize on window load — Auth Guard first
     window.onload = async function() {
       await initAuthGuard();
+      hydrateStateFromUrlParams();
       requestAnimationFrame(masterAnimationLoop);
     };
 
