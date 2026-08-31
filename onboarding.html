@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -126,12 +126,12 @@
 
         const SUPABASE_URL = 'https://mlvyjrevobzaecganmgp.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_rtB-t4wWt2N6P8e_EbHHng_Wopex2g1';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
 
         async function checkAuth() {
-            const { data: { session }, error } = await supabase.auth.getSession();
+            const { data: { session }, error } = await sb.auth.getSession();
             if (!session) {
                 window.location.href = 'auth.html';
                 return;
@@ -181,3 +181,4 @@
     </script>
 </body>
 </html>
+
