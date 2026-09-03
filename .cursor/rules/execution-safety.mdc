@@ -1,0 +1,10 @@
+---
+description: Cost control and three-failure circuit breaker for Veloxis work
+alwaysApply: true
+---
+
+# Execution safety
+
+- Work in small, testable increments. Do not deploy, push, add paid services, or create credentials without current user approval.
+- On the first failed verification, diagnose; on the second, try one materially different correction; on the third consecutive failure for the same work item, stop and report it rather than retrying.
+- Treat financial outputs as simulations, never financial, tax, investment, or legal advice.

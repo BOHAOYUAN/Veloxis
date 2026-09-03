@@ -9,13 +9,18 @@ import { AIPlanSummary } from '@/components/AIPlanSummary';
 import { CashflowSankey } from '@/components/CashflowSankey';
 import { TaxWaterfall } from '@/components/TaxWaterfall';
 import { EstateTopology } from '@/components/EstateTopology';
+import { HouseholdWorkspace } from '@/components/HouseholdWorkspace';
+import { useHouseholdWorkspace } from '@/hooks/useHouseholdWorkspace';
+import { deriveBaselineSimulationParams, summarizeHousehold } from '@/lib/household';
 
-type ActiveTabType = 'MONTE_CARLO' | 'CASHFLOW' | 'TAX_WATERFALL' | 'ESTATE' | 'STRESS_TEST';
+type ActiveTabType = 'PROFILE' | 'MONTE_CARLO' | 'CASHFLOW' | 'TAX_WATERFALL' | 'ESTATE' | 'STRESS_TEST';
 
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState<ActiveTabType>('MONTE_CARLO');
+  const [activeTab, setActiveTab] = useState<ActiveTabType>('PROFILE');
+  const { workspace, hydrated, updateWorkspace, resetDemo } = useHouseholdWorkspace();
   const {
     params,
+    setParams,
     updateParam,
     simulationResult,
     sensitivityMatrix,
@@ -25,6 +30,15 @@ export default function HomePage() {
   } = useMonteCarlo();
 
   const m = simulationResult.metrics;
+  const householdSummary = summarizeHousehold(workspace);
+  const currency = workspace.profile.currency || 'USD';
+  const formatMoney = (amount: number) => new Intl.NumberFormat('en-US', {
+    style: 'currency', currency, maximumFractionDigits: 0,
+  }).format(amount);
+  const syncBaselinePlan = () => {
+    setParams(deriveBaselineSimulationParams(workspace));
+    setActiveTab('MONTE_CARLO');
+  };
 
   return (
     <main className="min-h-screen bg-[#070a12] text-slate-100 p-4 md:p-8">
@@ -45,7 +59,7 @@ export default function HomePage() {
                   </span>
                 </h1>
                 <p className="text-xs text-slate-400">
-                  机构级 RIA 财富规划与蒙特卡洛量化沙盘平台 (10,000 Path Native Client-Side Engine)
+                  Personal global wealth-planning simulator · local-first · {workspace.profile.jurisdiction || 'US'} / {currency}
                 </p>
               </div>
             </div>
@@ -54,12 +68,12 @@ export default function HomePage() {
           {/* KPI Mini Status Pills */}
           <div className="flex flex-wrap gap-2.5">
             <div className="bg-slate-950/80 border border-slate-800 px-3.5 py-1.5 rounded-xl text-center">
-              <span className="text-[10px] text-slate-400 block font-medium">85岁生存概率</span>
+              <span className="text-[10px] text-slate-400 block font-medium">Survival probability</span>
               <span className="text-sm font-bold font-mono text-emerald-400">{(m.survivalRate85 * 100).toFixed(1)}%</span>
             </div>
             <div className="bg-slate-950/80 border border-slate-800 px-3.5 py-1.5 rounded-xl text-center">
-              <span className="text-[10px] text-slate-400 block font-medium">退休中位资产</span>
-              <span className="text-sm font-bold font-mono text-amber-400">¥{(m.medianRetirementAsset / 10000).toFixed(1)}万</span>
+              <span className="text-[10px] text-slate-400 block font-medium">Retirement median</span>
+              <span className="text-sm font-bold font-mono text-amber-400">{formatMoney(m.medianRetirementAsset)}</span>
             </div>
             <div className="bg-slate-950/80 border border-slate-800 px-3.5 py-1.5 rounded-xl text-center">
               <span className="text-[10px] text-slate-400 block font-medium">10,000次耗时</span>
@@ -68,8 +82,20 @@ export default function HomePage() {
           </div>
         </header>
 
-        {/* 5-Tab Navigation Bar */}
+        <p className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-2 text-xs text-amber-200">Personal planning simulator only. Do not use its output as investment, tax, legal, or financial advice.</p>
+
+        {/* Navigation */}
         <div className="flex flex-wrap gap-2 border-b border-slate-800/80 pb-3">
+          <button
+            onClick={() => setActiveTab('PROFILE')}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              activeTab === 'PROFILE'
+                ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/25 font-black'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
+            }`}
+          >
+            ◉ Household workspace
+          </button>
           <button
             onClick={() => setActiveTab('MONTE_CARLO')}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
@@ -122,6 +148,16 @@ export default function HomePage() {
           </button>
         </div>
 
+        {activeTab === 'PROFILE' && (
+          <HouseholdWorkspace
+            workspace={workspace}
+            hydrated={hydrated}
+            onChange={updateWorkspace}
+            onResetDemo={resetDemo}
+            onApplyToPlan={syncBaselinePlan}
+          />
+        )}
+
         {/* Tab Content Display Area */}
         {activeTab === 'MONTE_CARLO' && (
           <div className="space-y-6">
@@ -163,8 +199,8 @@ export default function HomePage() {
 
         {/* Professional Footer */}
         <footer className="text-center text-xs text-slate-400 pt-6 pb-4 border-t border-slate-900 flex flex-col sm:flex-row justify-between items-center gap-2">
-          <span>Veloxis Wealth OS · Benchmarked for RightCapital / eMoney Architectural Standards</span>
-          <span className="font-mono text-cyan-500/80">100% Client-Side Pure TypeScript & React 19</span>
+          <span>{workspace.profile.householdName} · Net worth {formatMoney(householdSummary.netWorth)}</span>
+          <span className="font-mono text-cyan-500/80">Local-first personal planning workspace</span>
         </footer>
 
       </div>
