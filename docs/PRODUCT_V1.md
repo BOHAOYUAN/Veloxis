@@ -1,8 +1,8 @@
-# Veloxis Personal Wealth OS — interview-demo product boundary
+# Veloxis core simulator and public-pilot boundary
 
 ## Purpose
 
-Veloxis V1 is a private, local-first wealth-planning workspace for one household. It helps its owner model assets, liabilities, income, expenses, goals, and retirement scenarios. It is a simulator, not financial, investment, tax, or legal advice.
+Veloxis contains a deterministic wealth-planning simulator and a public Founding Advisor Pilot demonstration. The public site is a fictional retirement scenario evaluation for independent US advisors; it is not a client-record system. It is a simulator, not financial, investment, tax, or legal advice.
 
 ## Default planning model
 
@@ -18,14 +18,14 @@ Veloxis V1 is a private, local-first wealth-planning workspace for one household
 4. Retirement plan controls that derive opening capital, annual savings, retirement spending, goals, and an entered Social Security estimate from the inventory.
 5. A shared deterministic annual ledger plus seeded Monte Carlo, stress-test, cash-flow, account tax-allocation, and educational estate modules.
 6. Current-versus-Proposed comparison using identical simulated market paths and calculation-backed explanations.
-7. Browser-local persistence and a visible data disclaimer. No authentication or third-party data transfer.
+7. A public `/demo` route that runs a synthetic household in memory, shows a visible data disclaimer, and resets when the page reloads.
 
 ## Explicitly excluded from V1
 
-- Brokerage/bank aggregation, document upload, real tax filing, real-time market data, advisor/client collaboration, payment, or automated trade execution.
+- Brokerage/bank aggregation, document upload, real tax filing, real-time market data, advisor/client collaboration, in-app payment processing, or automated trade execution.
 - Jurisdiction-specific tax conclusions, Social Security/Medicare benefit calculations, legal estate recommendations, and generated financial advice.
-- Multi-user authorization and cloud synchronization. These require separate security and compliance design before commercialization.
+- Real client-data intake, multi-user authorization, cloud synchronization, and subscription entitlements. These require separate security and compliance design before commercialization beyond the synthetic pilot.
 
 ## Acceptance definition
 
-A user can enter a household and financial inventory, reload the browser, compare Current and Proposed plans reproducibly, and trace cash-flow values to a shared annual ledger. Invalid persisted data is rejected. Mathematical tests, type checking, production build, and desktop/mobile visual checks remain green.
+An evaluator can open the public landing page, inspect the methodology and privacy boundaries, use the synthetic demo, compare Current and Proposed plans reproducibly, and trace cash-flow values to a shared annual ledger. Mathematical tests, type checking, production build, and desktop/mobile visual checks remain green.

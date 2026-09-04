@@ -45,7 +45,7 @@ export function PlanComparison({ workspace, comparison, onChange }: PlanComparis
       <div className="rounded-2xl border border-cyan-500/20 bg-slate-900/80 p-5">
         <div className="mb-4">
           <h3 className="text-sm font-bold text-slate-100">Proposed Plan levers</h3>
-          <p className="mt-1 text-xs text-slate-500">Values persist in this browser. Monetary inputs use today&apos;s dollars.</p>
+          <p className="mt-1 text-xs text-slate-500">Values update this synthetic scenario. Monetary inputs use today&apos;s dollars.</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <Control label="Retirement age" value={workspace.proposedPlan.retirementAge} min={workspace.profile.currentAge + 1} max={workspace.profile.longevityAge - 1} step={1} onChange={value => updateProposed('retirementAge', value)} suffix="years" />

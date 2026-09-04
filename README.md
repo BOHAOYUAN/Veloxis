@@ -1,13 +1,13 @@
-# Veloxis Wealth OS
+# Veloxis
 
-Veloxis is a local-first household financial-planning simulator built as a focused wealth-tech engineering portfolio project. It demonstrates an auditable data flow from household inputs to deterministic cash-flow projections, seeded Monte Carlo simulations, and Current Plan versus Proposed Plan comparisons.
+Veloxis is a browser-based retirement scenario visualizer for independent advisors. It demonstrates an auditable data flow from a synthetic household scenario to deterministic cash-flow projections, seeded Monte Carlo simulations, and Current Plan versus Proposed Plan comparisons.
 
 > Educational planning simulator only. Outputs are not investment, tax, legal, or financial advice.
 
 ## What is implemented
 
 - Editable household assets, liabilities, income, expenses, goals, and user-provided Social Security estimate.
-- Browser-local persistence with migration from the original V1 workspace format.
+- A public synthetic demo that does not persist or accept real client data.
 - Account-sourced taxable, tax-deferred, and tax-free allocation—no fixed allocation ratios.
 - A shared year-by-year cash-flow ledger in today's dollars.
 - Seeded Monte Carlo projections with reproducible plan results.
@@ -54,6 +54,10 @@ npm run build
 
 GitHub Actions runs type checking, tests, and the production build for pushes and pull requests.
 
+## Founding Advisor Pilot
+
+The public site describes a $99, one-time, 30-day Founding Advisor Pilot. It is a synthetic-data product evaluation, not a production advisor platform. See [the outreach and fulfillment guide](docs/ADVISOR_PILOT.md).
+
 ## Deployment
 
-The repository may be deployed independently, but deployment, external services, credentials, and financial-account connections are intentionally outside this project's implementation scope.
+Set `NEXT_PUBLIC_SITE_URL` to the final HTTPS origin so canonical URLs and the sitemap are generated accurately. Set `NEXT_PUBLIC_DODO_PILOT_URL` only to a public Dodo hosted checkout link; no Dodo API integration or secret belongs in this repository. Deploy commercial traffic on Vercel Pro rather than the non-commercial Hobby tier.
