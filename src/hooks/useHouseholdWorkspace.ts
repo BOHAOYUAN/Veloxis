@@ -1,13 +1,23 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { createDemoHouseholdWorkspace, validateHouseholdWorkspace } from '@/lib/household';
+import { createDemoHouseholdWorkspace, migrateHouseholdWorkspace } from '@/lib/household';
 import { HouseholdWorkspace } from '@/types/household';
 
-const STORAGE_KEY = 'veloxis.household-workspace.v1';
+export const STORAGE_KEY = 'veloxis.household-workspace.v2';
+const LEGACY_STORAGE_KEY = 'veloxis.household-workspace.v1';
 
 function stamp(workspace: HouseholdWorkspace): HouseholdWorkspace {
   return { ...workspace, updatedAt: new Date().toISOString() };
+}
+
+export function parseStoredWorkspace(serialized: string | null): HouseholdWorkspace | null {
+  if (!serialized) return null;
+  try {
+    return migrateHouseholdWorkspace(JSON.parse(serialized));
+  } catch {
+    return null;
+  }
 }
 
 export function useHouseholdWorkspace() {
@@ -15,9 +25,13 @@ export function useHouseholdWorkspace() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    const parsed = saved ? validateHouseholdWorkspace(JSON.parse(saved)) : null;
-    if (parsed) setWorkspace(parsed);
+    const saved = window.localStorage.getItem(STORAGE_KEY)
+      ?? window.localStorage.getItem(LEGACY_STORAGE_KEY);
+    const parsed = parseStoredWorkspace(saved);
+    if (parsed) {
+      setWorkspace(parsed);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    }
     setHydrated(true);
   }, []);
 

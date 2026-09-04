@@ -1,5 +1,6 @@
 ﻿-- ==============================================================================
--- VELOXIS AI 4.0 — Enterprise Multi-Tenant RIA SaaS Database Schema
+-- INACTIVE REFERENCE ONLY — not applied or used by the local-first application.
+-- Earlier multi-tenant schema experiment retained for architecture discussion.
 -- Standard: PostgreSQL 15+ / Supabase RLS (Row-Level Security)
 -- Security: auth.uid() scoped RLS, Postgres Trigger auto-provision advisor row
 -- ==============================================================================

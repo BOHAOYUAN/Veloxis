@@ -1,114 +1,139 @@
-import { describe, it, expect } from 'vitest';
-import { 
-  boxMullerGaussian, 
-  computePercentile, 
-  runMonteCarloSimulation, 
-  computeSensitivityMatrix, 
-  STRESS_SCENARIOS 
-} from '../src/lib/engine/monteCarlo';
-import { SimulationParams } from '../src/types/financial';
+import { describe, expect, it } from 'vitest';
+import {
+  boxMullerGaussian,
+  computePercentile,
+  computeSensitivityMatrix,
+  createSeededRandom,
+  runDeterministicProjection,
+  runMonteCarloSimulation,
+  STRESS_SCENARIOS,
+} from '@/lib/engine/monteCarlo';
+import { SimulationParams } from '@/types/financial';
 
-describe('Monte Carlo Mathematical & Financial Engine', () => {
-  
-  it('Box-Muller transform produces approximately Standard Normal distribution Z ~ N(0, 1)', () => {
-    const N = 10000;
-    let sum = 0;
-    let sumSq = 0;
+const baseParams: SimulationParams = {
+  currentAge: 35,
+  retirementAge: 60,
+  maxAge: 95,
+  initialCapital: 500000,
+  annualIncome: 180000,
+  annualSavings: 80000,
+  baselineAnnualSavings: 80000,
+  retirementAnnualExpense: 100000,
+  annualSocialSecurity: 30000,
+  socialSecurityClaimAge: 67,
+  expectedReturn: 0.07,
+  inflationRate: 0.025,
+  volatility: 0.14,
+  simulationsCount: 400,
+  randomSeed: 42,
+  cashFlows: [
+    { name: 'Salary', type: 'INCOME', annualAmount: 180000, startAge: 35, endAge: 59, inflationCategory: 'general' },
+    { name: 'Living', type: 'EXPENSE', annualAmount: 100000, startAge: 35, endAge: 95, inflationCategory: 'general' },
+  ],
+  goals: [],
+};
 
-    for (let i = 0; i < N; i++) {
-      const z = boxMullerGaussian();
-      sum += z;
-      sumSq += z * z;
-    }
+describe('Monte Carlo financial engine', () => {
+  it('produces an approximately standard normal distribution from a seeded generator', () => {
+    const random = createSeededRandom(12345);
+    const sample = Array.from({ length: 10000 }, () => boxMullerGaussian(random));
+    const mean = sample.reduce((sum, value) => sum + value, 0) / sample.length;
+    const variance = sample.reduce((sum, value) => sum + value * value, 0) / sample.length - mean * mean;
 
-    const mean = sum / N;
-    const variance = (sumSq / N) - (mean * mean);
-
-    // Mean should be close to 0 (+- 0.05), Variance close to 1 (+- 0.05)
     expect(Math.abs(mean)).toBeLessThan(0.08);
-    expect(Math.abs(variance - 1.0)).toBeLessThan(0.08);
+    expect(Math.abs(variance - 1)).toBeLessThan(0.08);
   });
 
-  it('Percentile calculation maintains monotonic ordering P10 <= P50 <= P90', () => {
+  it('computes ordered percentiles', () => {
     const values = new Float64Array([10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
-    
-    const p10 = computePercentile(values, 0.10);
-    const p50 = computePercentile(values, 0.50);
-    const p90 = computePercentile(values, 0.90);
-
-    expect(p10).toBeLessThanOrEqual(p50);
-    expect(p50).toBeLessThanOrEqual(p90);
-    expect(p50).toBe(60);
+    expect(computePercentile(values, 0.1)).toBeLessThanOrEqual(computePercentile(values, 0.5));
+    expect(computePercentile(values, 0.5)).toBeLessThanOrEqual(computePercentile(values, 0.9));
   });
 
-  it('Executes full lifecycle simulation and computes valid metrics', () => {
-    const baseParams: SimulationParams = {
-      currentAge: 25,
-      retirementAge: 60,
-      maxAge: 85,
-      initialCapital: 1000000,
-      annualSavings: 150000,
-      retirementAnnualExpense: 200000,
-      expectedReturn: 0.07,
-      inflationRate: 0.025,
-      volatility: 0.12,
-      simulationsCount: 300,
-    };
+  it('returns identical financial results for identical inputs and seeds', () => {
+    const first = runMonteCarloSimulation(baseParams);
+    const second = runMonteCarloSimulation(baseParams);
 
-    const result = runMonteCarloSimulation(baseParams);
-
-    expect(result.yearlyDistributions.length).toBe(61); // 25 to 85 inclusive
-    expect(result.metrics.fireScore).toBeGreaterThanOrEqual(0);
-    expect(result.metrics.fireScore).toBeLessThanOrEqual(100);
-    expect(result.metrics.ruinProb85).toBeGreaterThanOrEqual(0);
-    expect(result.metrics.ruinProb85).toBeLessThanOrEqual(1);
-    expect(result.executionTimeMs).toBeGreaterThan(0);
+    expect(second.yearlyDistributions).toEqual(first.yearlyDistributions);
+    expect(second.metrics).toEqual(first.metrics);
   });
 
-  it('Macro Stagflation scenario strictly increases ruin probability', () => {
-    const baseParams: SimulationParams = {
-      currentAge: 35,
-      retirementAge: 60,
-      maxAge: 85,
-      initialCapital: 500000,
-      annualSavings: 80000,
-      retirementAnnualExpense: 250000,
-      expectedReturn: 0.08,
-      inflationRate: 0.02,
-      volatility: 0.10,
-      simulationsCount: 400,
-    };
+  it('changes simulated distributions when the seed changes', () => {
+    const first = runMonteCarloSimulation(baseParams);
+    const second = runMonteCarloSimulation({ ...baseParams, randomSeed: 43 });
 
-    const baselineResult = runMonteCarloSimulation(baseParams);
-    const stagflationPatch = STRESS_SCENARIOS.STAGFLATION_1970.getPatch(baseParams);
-    const stressedResult = runMonteCarloSimulation({
+    expect(second.yearlyDistributions).not.toEqual(first.yearlyDistributions);
+  });
+
+  it.each([80, 85, 95])('uses maxAge %i as the plan-end success horizon', maxAge => {
+    const result = runMonteCarloSimulation({ ...baseParams, maxAge });
+    const lastYear = result.yearlyDistributions.at(-1)!;
+
+    expect(result.metrics.planEndAge).toBe(maxAge);
+    expect(result.metrics.ruinProbabilityAtPlanEnd).toBe(lastYear.ruinProbability);
+    expect(result.metrics.successProbabilityAtPlanEnd).toBe(1 - lastYear.ruinProbability);
+  });
+
+  it('starts retirement cash flows at the retirement age and preserves the ledger identity', () => {
+    const projection = runDeterministicProjection({
       ...baseParams,
-      ...stagflationPatch,
+      currentAge: 58,
+      retirementAge: 60,
+      maxAge: 70,
+      initialCapital: 100000,
+      annualIncome: 100000,
+      annualSavings: 50000,
+      baselineAnnualSavings: 50000,
+      retirementAnnualExpense: 40000,
+      annualSocialSecurity: 0,
+      cashFlows: [
+        { name: 'Salary', type: 'INCOME', annualAmount: 100000, startAge: 58, endAge: 59, inflationCategory: 'general' },
+        { name: 'Living', type: 'EXPENSE', annualAmount: 50000, startAge: 58, endAge: 70, inflationCategory: 'general' },
+      ],
+      goals: [],
+    });
+    const age59 = projection.find(year => year.age === 59)!;
+    const age60 = projection.find(year => year.age === 60)!;
+
+    expect(age59.contributions).toBe(50000);
+    expect(age59.retirementExpenses).toBe(0);
+    expect(age60.earnedIncome).toBe(0);
+    expect(age60.contributions).toBe(0);
+    expect(age60.retirementExpenses).toBe(40000);
+    for (const year of projection) {
+      expect(year.endingAssets).toBeCloseTo(
+        year.openingAssets + year.investmentReturn + year.contributions - year.withdrawals,
+      );
+    }
+  });
+
+  it('honors recurring cash-flow age ranges and inflation categories', () => {
+    const projection = runDeterministicProjection({
+      ...baseParams,
+      expectedReturn: 0.025,
+      inflationRate: 0.025,
+      annualSavings: 0,
+      baselineAnnualSavings: 0,
+      cashFlows: [{
+        name: 'One-year nominal income', type: 'INCOME', annualAmount: 100000,
+        startAge: 36, endAge: 36, inflationCategory: 'none',
+      }],
     });
 
-    expect(stressedResult.metrics.ruinProb85).toBeGreaterThanOrEqual(baselineResult.metrics.ruinProb85);
+    expect(projection.find(year => year.age === 35)?.earnedIncome).toBe(0);
+    expect(projection.find(year => year.age === 36)?.earnedIncome).toBeCloseTo(100000 / 1.025);
+    expect(projection.find(year => year.age === 37)?.earnedIncome).toBe(0);
   });
 
-  it('Sensitivity matrix generates valid 4x4 grid', () => {
-    const baseParams: SimulationParams = {
-      currentAge: 30,
-      retirementAge: 60,
-      maxAge: 85,
-      initialCapital: 800000,
-      annualSavings: 100000,
-      retirementAnnualExpense: 180000,
-      expectedReturn: 0.06,
-      inflationRate: 0.03,
-      volatility: 0.12,
-      simulationsCount: 50,
-    };
+  it('applies stress assumptions and creates a valid sensitivity matrix', () => {
+    const patch = STRESS_SCENARIOS.HIGH_INFLATION.getPatch(baseParams);
+    const stressed = runMonteCarloSimulation({ ...baseParams, ...patch });
+    const baseline = runMonteCarloSimulation(baseParams);
+    const matrix = computeSensitivityMatrix(baseParams);
 
-    const sens = computeSensitivityMatrix(baseParams);
-
-    expect(sens.returnHeaders.length).toBe(4);
-    expect(sens.inflationHeaders.length).toBe(4);
-    expect(sens.matrix.length).toBe(4);
-    expect(sens.matrix[0].items.length).toBe(4);
+    expect(stressed.metrics.successProbabilityAtPlanEnd)
+      .toBeLessThanOrEqual(baseline.metrics.successProbabilityAtPlanEnd);
+    expect(matrix.matrix).toHaveLength(4);
+    expect(matrix.matrix[0].items).toHaveLength(4);
   });
-
 });

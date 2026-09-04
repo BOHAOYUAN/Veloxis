@@ -1,23 +1,2 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
-Allow: /api/mcp
-Allow: /index.html
-Allow: /auth.html
-
-# AI Crawlers & LLM Indexing for GEO (Generative Engine Optimization)
-User-agent: GPTBot
-Allow: /
-User-agent: ChatGPT-User
-Allow: /
-User-agent: Claude-Web
-Allow: /
-User-agent: PerplexityBot
-Allow: /
-User-agent: Google-Extended
-Allow: /
-User-agent: Amazonbot
-Allow: /
-User-agent: Bytespider
-Allow: /
-
-Sitemap: https://veloxis-tau.vercel.app/sitemap.xml

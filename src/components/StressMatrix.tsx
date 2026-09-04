@@ -18,18 +18,17 @@ export const StressMatrix: React.FC<StressMatrixProps> = ({
 }) => {
   return (
     <div className="space-y-6">
-      {/* 4 大宏观压力情景快捷施加 */}
       <div className="bg-slate-900/80 rounded-2xl p-5 border border-slate-800 backdrop-blur-md shadow-xl">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-            <span>⚡</span> 宏观黑天鹅极端压力测试情景
+            <span>⚡</span> Assumption stress scenarios
           </h3>
           {activeScenarioId && (
             <button
               onClick={() => onApplyScenario(null)}
               className="text-xs text-rose-400 hover:text-rose-300 bg-rose-950/40 px-2.5 py-1 rounded-lg border border-rose-900/60"
             >
-              清除压力情景 (恢复基准)
+              Clear stress scenario
             </button>
           )}
         </div>
@@ -52,7 +51,7 @@ export const StressMatrix: React.FC<StressMatrixProps> = ({
                     <span className="text-lg">{sc.icon}</span>
                     <span className="font-semibold text-xs text-slate-200">{sc.name}</span>
                   </div>
-                  {isActive && <span className="text-[10px] bg-cyan-500/20 text-cyan-400 font-bold px-2 py-0.5 rounded">生效中</span>}
+                  {isActive && <span className="text-[10px] bg-cyan-500/20 text-cyan-400 font-bold px-2 py-0.5 rounded">ACTIVE</span>}
                 </div>
                 <p className="text-[11px] text-slate-400 leading-relaxed">{sc.desc}</p>
               </div>
@@ -61,20 +60,19 @@ export const StressMatrix: React.FC<StressMatrixProps> = ({
         </div>
       </div>
 
-      {/* 4x4 收益率 vs 通胀率 敏感性矩阵 */}
       <div className="bg-slate-900/80 rounded-2xl p-5 border border-slate-800 backdrop-blur-md shadow-xl">
         <div className="mb-4">
           <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-            <span>🎯</span> 收益率 × 通胀率 破产风险敏感性热力矩阵
+            <span>🎯</span> Return × inflation sensitivity matrix
           </h3>
-          <p className="text-xs text-slate-400 mt-0.5">测试不同宏观经济周期下 85 岁破产概率的分布敏感度</p>
+          <p className="text-xs text-slate-400 mt-0.5">Probability of asset exhaustion at the selected plan&apos;s end age.</p>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-center border-collapse text-xs">
             <thead>
               <tr className="border-b border-slate-800 text-slate-400 font-medium">
-                <th className="py-2.5 px-3 text-left">名义收益 \ 通胀</th>
+                <th className="py-2.5 px-3 text-left">Nominal return \ inflation</th>
                 {matrix.inflationHeaderLabels.map(label => (
                   <th key={label} className="py-2.5 px-3">{label}</th>
                 ))}
@@ -113,9 +111,9 @@ export const StressMatrix: React.FC<StressMatrixProps> = ({
         </div>
 
         <div className="flex justify-end gap-5 mt-4 text-[11px] text-slate-400">
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded bg-emerald-400"></span>安全 (&lt;15%)</span>
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded bg-amber-400"></span>预警 (15%-40%)</span>
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded bg-rose-400"></span>高危 (&ge;40%)</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded bg-emerald-400"></span>Low (&lt;15%)</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded bg-amber-400"></span>Moderate (15%-40%)</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded bg-rose-400"></span>High (&ge;40%)</span>
         </div>
       </div>
     </div>

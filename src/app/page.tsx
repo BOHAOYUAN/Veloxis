@@ -1,152 +1,95 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useMonteCarlo } from '@/hooks/useMonteCarlo';
-import { MonteCarloChart } from '@/components/MonteCarloChart';
-import { FinancialSliders } from '@/components/FinancialSliders';
-import { StressMatrix } from '@/components/StressMatrix';
-import { AIPlanSummary } from '@/components/AIPlanSummary';
+import React, { useMemo, useState } from 'react';
 import { CashflowSankey } from '@/components/CashflowSankey';
-import { TaxWaterfall } from '@/components/TaxWaterfall';
 import { EstateTopology } from '@/components/EstateTopology';
 import { HouseholdWorkspace } from '@/components/HouseholdWorkspace';
+import { MonteCarloChart } from '@/components/MonteCarloChart';
+import { PlanComparison } from '@/components/PlanComparison';
+import { StressMatrix } from '@/components/StressMatrix';
+import { TaxWaterfall } from '@/components/TaxWaterfall';
 import { useHouseholdWorkspace } from '@/hooks/useHouseholdWorkspace';
-import { deriveBaselineSimulationParams, summarizeHousehold } from '@/lib/household';
+import {
+  computeSensitivityMatrix,
+  runDeterministicProjection,
+  STRESS_SCENARIOS,
+} from '@/lib/engine/monteCarlo';
+import { derivePlanScenarios, summarizeHousehold } from '@/lib/household';
+import { comparePlanScenarios } from '@/lib/scenarios';
+import { StressScenario } from '@/types/financial';
 
-type ActiveTabType = 'PROFILE' | 'MONTE_CARLO' | 'CASHFLOW' | 'TAX_WATERFALL' | 'ESTATE' | 'STRESS_TEST';
+type ActiveTab = 'PROFILE' | 'COMPARE' | 'MONTE_CARLO' | 'CASHFLOW' | 'TAX' | 'ESTATE' | 'STRESS';
+type PlanId = 'current' | 'proposed';
+
+const tabs: Array<{ id: ActiveTab; label: string }> = [
+  { id: 'PROFILE', label: 'Household' },
+  { id: 'COMPARE', label: 'Current vs Proposed' },
+  { id: 'MONTE_CARLO', label: 'Monte Carlo' },
+  { id: 'CASHFLOW', label: 'Cash-flow map' },
+  { id: 'TAX', label: 'Tax allocation' },
+  { id: 'ESTATE', label: 'Estate map' },
+  { id: 'STRESS', label: 'Stress test' },
+];
 
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState<ActiveTabType>('PROFILE');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('COMPARE');
+  const [selectedPlanId, setSelectedPlanId] = useState<PlanId>('proposed');
+  const [activeStressScenario, setActiveStressScenario] = useState<StressScenario | null>(null);
   const { workspace, hydrated, updateWorkspace, resetDemo } = useHouseholdWorkspace();
-  const {
-    params,
-    setParams,
-    updateParam,
-    simulationResult,
-    sensitivityMatrix,
-    activeScenarioId,
-    applyStressScenario,
-    stressScenarios,
-  } = useMonteCarlo();
-
-  const m = simulationResult.metrics;
+  const scenarios = useMemo(() => derivePlanScenarios(workspace), [workspace]);
+  const comparison = useMemo(
+    () => comparePlanScenarios(scenarios.current, scenarios.proposed),
+    [scenarios],
+  );
+  const selectedResult = comparison[selectedPlanId];
+  const selectedParams = selectedResult.params;
+  const selectedProjection = useMemo(
+    () => runDeterministicProjection(selectedParams),
+    [selectedParams],
+  );
+  const stressParams = useMemo(() => activeStressScenario
+    ? { ...selectedParams, ...activeStressScenario.getPatch(selectedParams) }
+    : selectedParams,
+  [activeStressScenario, selectedParams]);
+  const sensitivityMatrix = useMemo(
+    () => computeSensitivityMatrix(stressParams),
+    [stressParams],
+  );
   const householdSummary = summarizeHousehold(workspace);
-  const currency = workspace.profile.currency || 'USD';
   const formatMoney = (amount: number) => new Intl.NumberFormat('en-US', {
-    style: 'currency', currency, maximumFractionDigits: 0,
+    style: 'currency', currency: workspace.profile.currency, maximumFractionDigits: 0,
   }).format(amount);
-  const syncBaselinePlan = () => {
-    setParams(deriveBaselineSimulationParams(workspace));
-    setActiveTab('MONTE_CARLO');
-  };
 
   return (
-    <main className="min-h-screen bg-[#070a12] text-slate-100 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {/* Top Header Bar */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/90 border border-slate-800 p-5 rounded-2xl backdrop-blur-xl shadow-2xl">
-          <div>
+    <main className="min-h-screen bg-[#070a12] p-4 text-slate-100 md:p-8">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <header className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-2xl backdrop-blur-xl">
+          <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-cyan-500/30">
-                V
-              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-lg font-black shadow-lg shadow-cyan-500/20">V</div>
               <div>
-                <h1 className="text-lg font-black tracking-wider text-slate-100 flex items-center gap-2">
-                  VELOXIS WEALTH OS
-                  <span className="text-[10px] bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 px-2 py-0.5 rounded-full font-mono">
-                    v2.0 Next.js 15 + React 19 + TypeScript
-                  </span>
-                </h1>
-                <p className="text-xs text-slate-400">
-                  Personal global wealth-planning simulator · local-first · {workspace.profile.jurisdiction || 'US'} / {currency}
-                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-lg font-black tracking-wider">VELOXIS WEALTH OS</h1>
+                  <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 font-mono text-[10px] text-cyan-300">DETERMINISTIC PLANNING LAB</span>
+                </div>
+                <p className="mt-1 text-xs text-slate-400">Local-first household planning simulator · {workspace.profile.jurisdiction} / {workspace.profile.currency}</p>
               </div>
             </div>
-          </div>
-
-          {/* KPI Mini Status Pills */}
-          <div className="flex flex-wrap gap-2.5">
-            <div className="bg-slate-950/80 border border-slate-800 px-3.5 py-1.5 rounded-xl text-center">
-              <span className="text-[10px] text-slate-400 block font-medium">Survival probability</span>
-              <span className="text-sm font-bold font-mono text-emerald-400">{(m.survivalRate85 * 100).toFixed(1)}%</span>
-            </div>
-            <div className="bg-slate-950/80 border border-slate-800 px-3.5 py-1.5 rounded-xl text-center">
-              <span className="text-[10px] text-slate-400 block font-medium">Retirement median</span>
-              <span className="text-sm font-bold font-mono text-amber-400">{formatMoney(m.medianRetirementAsset)}</span>
-            </div>
-            <div className="bg-slate-950/80 border border-slate-800 px-3.5 py-1.5 rounded-xl text-center">
-              <span className="text-[10px] text-slate-400 block font-medium">10,000次耗时</span>
-              <span className="text-sm font-bold font-mono text-cyan-400">{simulationResult.executionTimeMs.toFixed(1)}ms</span>
+            <div className="grid grid-cols-3 gap-2">
+              <HeaderMetric label="Current success" value={`${(comparison.current.metrics.successProbabilityAtPlanEnd * 100).toFixed(1)}%`} tone="text-slate-100" />
+              <HeaderMetric label="Proposed success" value={`${(comparison.proposed.metrics.successProbabilityAtPlanEnd * 100).toFixed(1)}%`} tone="text-emerald-300" />
+              <HeaderMetric label="Shared seed" value={`${workspace.assumptions.randomSeed}`} tone="text-cyan-300" />
             </div>
           </div>
         </header>
 
-        <p className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-2 text-xs text-amber-200">Personal planning simulator only. Do not use its output as investment, tax, legal, or financial advice.</p>
+        <p className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-2 text-xs text-amber-100">Planning simulator only. Do not use its output as investment, tax, legal, or financial advice.</p>
 
-        {/* Navigation */}
-        <div className="flex flex-wrap gap-2 border-b border-slate-800/80 pb-3">
-          <button
-            onClick={() => setActiveTab('PROFILE')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'PROFILE'
-                ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/25 font-black'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
-            }`}
-          >
-            ◉ Household workspace
-          </button>
-          <button
-            onClick={() => setActiveTab('MONTE_CARLO')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'MONTE_CARLO'
-                ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/25 font-black'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
-            }`}
-          >
-            📈 蒙特卡洛扇形推演 (Monte Carlo Fan)
-          </button>
-          <button
-            onClick={() => setActiveTab('CASHFLOW')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'CASHFLOW'
-                ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/25 font-black'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
-            }`}
-          >
-            🌊 终身现金流桑基图 (Cashflow Sankey)
-          </button>
-          <button
-            onClick={() => setActiveTab('TAX_WATERFALL')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'TAX_WATERFALL'
-                ? 'bg-amber-400 text-slate-950 shadow-lg shadow-amber-400/25 font-black'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
-            }`}
-          >
-            💧 资产三桶税收瀑布流 (% 3-Bucket Tax Waterfall)
-          </button>
-          <button
-            onClick={() => setActiveTab('ESTATE')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'ESTATE'
-                ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/25 font-black'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
-            }`}
-          >
-            🏛️ 财富传承与信托拓扑 (Estate Topology)
-          </button>
-          <button
-            onClick={() => setActiveTab('STRESS_TEST')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'STRESS_TEST'
-                ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25 font-black'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
-            }`}
-          >
-            🔥 宏观压力测试矩阵 (Stress Matrix)
-          </button>
-        </div>
+        <nav className="module-nav flex gap-2 overflow-x-auto border-b border-slate-800 pb-3" aria-label="Planning modules">
+          {tabs.map(tab => (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-bold transition ${activeTab === tab.id ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/20' : 'border border-slate-800 text-slate-400 hover:bg-slate-900 hover:text-slate-200'}`}>{tab.label}</button>
+          ))}
+        </nav>
 
         {activeTab === 'PROFILE' && (
           <HouseholdWorkspace
@@ -154,56 +97,57 @@ export default function HomePage() {
             hydrated={hydrated}
             onChange={updateWorkspace}
             onResetDemo={resetDemo}
-            onApplyToPlan={syncBaselinePlan}
+            onApplyToPlan={() => setActiveTab('COMPARE')}
           />
         )}
 
-        {/* Tab Content Display Area */}
+        {activeTab === 'COMPARE' && <PlanComparison workspace={workspace} comparison={comparison} onChange={updateWorkspace} />}
+
+        {['MONTE_CARLO', 'CASHFLOW', 'STRESS'].includes(activeTab) && (
+          <PlanToggle selected={selectedPlanId} onChange={planId => { setSelectedPlanId(planId); setActiveStressScenario(null); }} />
+        )}
+
         {activeTab === 'MONTE_CARLO' && (
-          <div className="space-y-6">
-            <MonteCarloChart data={simulationResult} />
-            <FinancialSliders params={params} updateParam={updateParam} />
-            <AIPlanSummary data={simulationResult} />
+          <div className="space-y-4">
+            <MonteCarloChart data={selectedResult} currency={workspace.profile.currency} />
+            <p className="rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-3 text-xs text-slate-400">This fan chart uses {selectedResult.params.simulationsCount.toLocaleString()} seeded paths. Reopening the plan with the same inputs and seed produces the same financial distributions.</p>
           </div>
         )}
 
-        {activeTab === 'CASHFLOW' && (
-          <div className="space-y-6">
-            <CashflowSankey params={params} />
-            <FinancialSliders params={params} updateParam={updateParam} />
-          </div>
-        )}
-
-        {activeTab === 'TAX_WATERFALL' && (
-          <div className="space-y-6">
-            <TaxWaterfall params={params} />
-            <FinancialSliders params={params} updateParam={updateParam} />
-          </div>
-        )}
-
-        {activeTab === 'ESTATE' && (
-          <div className="space-y-6">
-            <EstateTopology params={params} />
-            <FinancialSliders params={params} updateParam={updateParam} />
-          </div>
-        )}
-
-        {activeTab === 'STRESS_TEST' && (
+        {activeTab === 'CASHFLOW' && <CashflowSankey projection={selectedProjection} currency={workspace.profile.currency} planName={selectedPlanId === 'current' ? 'Current Plan' : 'Proposed Plan'} />}
+        {activeTab === 'TAX' && <TaxWaterfall workspace={workspace} />}
+        {activeTab === 'ESTATE' && <EstateTopology workspace={workspace} />}
+        {activeTab === 'STRESS' && (
           <StressMatrix
             matrix={sensitivityMatrix}
-            stressScenarios={stressScenarios}
-            activeScenarioId={activeScenarioId}
-            onApplyScenario={applyStressScenario}
+            stressScenarios={STRESS_SCENARIOS}
+            activeScenarioId={activeStressScenario?.id ?? null}
+            onApplyScenario={setActiveStressScenario}
           />
         )}
 
-        {/* Professional Footer */}
-        <footer className="text-center text-xs text-slate-400 pt-6 pb-4 border-t border-slate-900 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <footer className="flex flex-col items-center justify-between gap-2 border-t border-slate-900 pb-4 pt-6 text-center text-xs text-slate-500 sm:flex-row">
           <span>{workspace.profile.householdName} · Net worth {formatMoney(householdSummary.netWorth)}</span>
-          <span className="font-mono text-cyan-500/80">Local-first personal planning workspace</span>
+          <span className="font-mono text-cyan-500/80">Local-first · calculation-backed · no external data transfer</span>
         </footer>
-
       </div>
     </main>
+  );
+}
+
+function HeaderMetric({ label, value, tone }: { label: string; value: string; tone: string }) {
+  return <div className="min-w-28 rounded-xl border border-slate-800 bg-slate-950/80 px-3 py-2 text-center"><span className="block text-[10px] text-slate-500">{label}</span><span className={`font-mono text-sm font-bold ${tone}`}>{value}</span></div>;
+}
+
+function PlanToggle({ selected, onChange }: { selected: PlanId; onChange: (plan: PlanId) => void }) {
+  return (
+    <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 p-2">
+      <p className="pl-2 text-xs text-slate-500">Viewing plan</p>
+      <div className="flex gap-1">
+        {(['current', 'proposed'] as const).map(plan => (
+          <button key={plan} onClick={() => onChange(plan)} className={`rounded-lg px-3 py-1.5 text-xs font-bold ${selected === plan ? 'bg-cyan-400 text-slate-950' : 'text-slate-400 hover:bg-slate-800'}`}>{plan === 'current' ? 'Current Plan' : 'Proposed Plan'}</button>
+        ))}
+      </div>
+    </div>
   );
 }

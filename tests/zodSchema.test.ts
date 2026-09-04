@@ -9,12 +9,19 @@ describe('Zod Schema Validation', () => {
       retirementAge: 60,
       maxAge: 95,
       initialCapital: 500000,
+      annualIncome: 200000,
       annualSavings: 100000,
+      baselineAnnualSavings: 100000,
       retirementAnnualExpense: 150000,
+      annualSocialSecurity: 30000,
+      socialSecurityClaimAge: 67,
       expectedReturn: 0.08,
       inflationRate: 0.03,
       volatility: 0.15,
       simulationsCount: 500,
+      randomSeed: 42,
+      cashFlows: [],
+      goals: [],
     };
 
     const parsed = simulationParamsSchema.parse(valid);
@@ -28,11 +35,19 @@ describe('Zod Schema Validation', () => {
       retirementAge: 40,
       maxAge: 95,
       initialCapital: 500000,
+      annualIncome: 200000,
       annualSavings: 100000,
+      baselineAnnualSavings: 100000,
       retirementAnnualExpense: 150000,
+      annualSocialSecurity: 30000,
+      socialSecurityClaimAge: 67,
       expectedReturn: 0.08,
       inflationRate: 0.03,
       volatility: 0.15,
+      simulationsCount: 500,
+      randomSeed: 42,
+      cashFlows: [],
+      goals: [],
     };
 
     expect(() => simulationParamsSchema.parse(invalid)).toThrow();

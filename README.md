@@ -1,90 +1,59 @@
-# Veloxis Wealth OS — Conversational RIA Financial Planning Engine
+# Veloxis Wealth OS
 
-<p align="center">
-  <a href="https://veloxis.lumiere-private.com/"><img src="https://img.shields.io/badge/Live_Demo-veloxis.lumiere--private.com-00DC82?style=for-the-badge&logo=vercel" alt="Live Demo" /></a>
-  <img src="https://img.shields.io/badge/Next.js_15-App_Router-black?style=for-the-badge&logo=next.js" alt="Next.js 15" />
-  <img src="https://img.shields.io/badge/React_19-00D8FF?style=for-the-badge&logo=react" alt="React 19" />
-  <img src="https://img.shields.io/badge/TypeScript_5.7-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Vitest-10_Passed-729B1B?style=for-the-badge&logo=vitest&logoColor=white" alt="Vitest Tests" />
-</p>
+Veloxis is a local-first household financial-planning simulator built as a focused wealth-tech engineering portfolio project. It demonstrates an auditable data flow from household inputs to deterministic cash-flow projections, seeded Monte Carlo simulations, and Current Plan versus Proposed Plan comparisons.
 
-> **Veloxis Wealth OS** is a production-grade, open-source conversational wealth planning platform designed as an architectural benchmark for next-generation RIA (Registered Investment Advisor) ecosystems (e.g., RightCapital, eMoney).
-> 
-> Built on **Next.js 15 (App Router), React 19, TypeScript 5.7, and Tailwind CSS 4**, it replaces traditional 40+ manual form fields with sub-second natural language entity extraction and executes 10,000-path stochastic Monte Carlo simulations directly on the client side at 60fps.
+> Educational planning simulator only. Outputs are not investment, tax, legal, or financial advice.
 
----
+## What is implemented
 
-## ⚡ 5 Real-Time Interactive Quantitative Modules
+- Editable household assets, liabilities, income, expenses, goals, and user-provided Social Security estimate.
+- Browser-local persistence with migration from the original V1 workspace format.
+- Account-sourced taxable, tax-deferred, and tax-free allocation—no fixed allocation ratios.
+- A shared year-by-year cash-flow ledger in today's dollars.
+- Seeded Monte Carlo projections with reproducible plan results.
+- Current and Proposed plans evaluated with the same seed and compared using calculated deltas.
+- Assumption stress tests and a return-versus-inflation sensitivity matrix.
+- Educational estate ownership map based on entered balances without inferred legal or tax outcomes.
 
-1. **📈 蒙特卡洛扇形推演 (Monte Carlo Fan)**: 10,000-path stochastic life-cycle simulation using Box-Muller Gaussian transforms and `Float64Array` typed array memory optimizations, rendered on HTML5 2D Canvas at 60fps.
-2. **🌊 终身现金流桑基图 (Cashflow Sankey)**: Dynamic multi-source inflow (Salary, Social Security, Drawdown) to outflow (Living, Taxes, Discretionary, Reinvestment) vector graph with age slider controls.
-3. **💧 资产三桶税收瀑布流 (% 3-Bucket Tax Waterfall)**: Taxable, Tax-Deferred (401k/IRA), and Tax-Free (Roth) allocation engine with an interactive **Roth Conversion Tax Bracket Arbitrage Sandbox**.
-4. **🏛️ 财富传承与信托拓扑 (Estate Planning & Trust Topology)**: Living Trust vs Probate Court process topology, calculating 5% legal loss avoidance and stepped-up basis tax benefits.
-5. **🔥 宏观压力测试矩阵 (Stress Matrix)**: Scenario patches (e.g., 1970s Stagflation, Tech Crash 2000, 2008 GFC) with real-time sensitivity ruin probability heatmaps.
+## Deliberate product boundary
 
----
+Veloxis does not implement authentication, multi-tenant advisor workflows, bank aggregation, real tax calculations, Social Security optimization, trading, or personalized recommendations. It does not call an external language model or send household data to a third party.
 
-## 🏛️ System Architecture
+## Calculation model
 
-```
-[ User Conversational Financial Prompt ]
-                   │
-                   ▼
-[ Vercel Edge Serverless Gateway (/api/generate/route.ts) ]
-                   │
-         ┌─────────┴────────────────────────┐
-         ▼                                  ▼
-[ Groq LPU Engine (85ms) ]        [ Gemini Structured Mode ]
-(Llama-3.3 JSON Extraction)       (Failover & Strict Schema)
-         │                                  │
-         └─────────┬────────────────────────┘
-                   ▼
-[ TypeScript Zod Defensive Harness Layer (financialSchema.ts) ]
-                   │
-                   ▼
-[ Client-Side Pure TypeScript Quantitative & Visual Engine ]
-         ├── 10,000x Monte Carlo (GBM) Simulation (monteCarlo.ts)
-         ├── Typed Array (Float64Array) Percentile Compute
-         ├── Reactive State Hook (useMonteCarlo.ts)
-         └── SVG / Canvas 2D Vector Visualizations (60fps)
-```
+- Monetary inputs and projections use today's dollars.
+- Expected return is entered as a nominal rate; the deterministic projection and stochastic drift derive a real return using the inflation assumption.
+- Retirement begins at the entered retirement age: employment savings stop and retirement spending begins in that year.
+- Success probability is measured at the household's selected plan end age, never at a hard-coded age.
+- Current and Proposed plans use identical simulated market paths, so displayed differences come from plan inputs rather than random sampling noise.
 
----
+## Technology
 
-## 🧪 Automated Testing & CI Quality Gate
+- Next.js 15 and React 19
+- TypeScript and Zod
+- Tailwind CSS 4
+- Vitest
+- Canvas-based confidence-range chart
 
-The project includes **10 automated Vitest unit tests** verifying mathematical distributions, boundary monotonicity, 3-Bucket tax allocations, and estate trust algorithms:
+## Local development
 
 ```bash
-# Run TypeScript static type checking
-npm run type-check
-
-# Run Vitest test suite
-npm test
-```
-
-Continuous integration is enforced via **GitHub Actions** (`.github/workflows/ci.yml`) on every push and pull request.
-
----
-
-## 🚀 Quick Start & Local Development
-
-```bash
-# Clone the repository
-git clone https://github.com/BOHAOYUAN/Veloxis.git
-cd Veloxis
-
-# Install dependencies
 npm install
-
-# Run local development server
 npm run dev
 ```
 
-Open [https://veloxis.lumiere-private.com/](https://veloxis.lumiere-private.com/) for instant live interactive exploration.
+Then open `http://localhost:3000`.
 
----
+## Verification
 
-## 📄 License
+```bash
+npm run type-check
+npm test
+npm run build
+```
 
-MIT License. Designed for benchmarking modern WealthTech software architectures.
+GitHub Actions runs type checking, tests, and the production build for pushes and pull requests.
+
+## Deployment
+
+The repository may be deployed independently, but deployment, external services, credentials, and financial-account connections are intentionally outside this project's implementation scope.

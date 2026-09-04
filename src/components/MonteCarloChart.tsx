@@ -5,18 +5,17 @@ import { SimulationResult, SimulationYearPoint } from '@/types/financial';
 
 interface MonteCarloChartProps {
   data: SimulationResult;
+  currency: string;
 }
 
-export const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data }) => {
+export const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data, currency }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [hoverPoint, setHoverPoint] = useState<SimulationYearPoint | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
 
-  const formatWan = (val: number): string => {
-    if (val >= 100000000) return `${(val / 100000000).toFixed(2)}亿`;
-    if (val >= 10000) return `${(val / 10000).toFixed(1)}万`;
-    return `$${Math.round(val)}`;
-  };
+  const formatMoney = (value: number): string => new Intl.NumberFormat('en-US', {
+    style: 'currency', currency, notation: 'compact', maximumFractionDigits: 1,
+  }).format(value);
 
   const renderChart = useCallback(() => {
     const canvas = canvasRef.current;
@@ -75,7 +74,7 @@ export const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data }) => {
       ctx.lineTo(padLeft + chartW, yPos);
       ctx.stroke();
 
-      ctx.fillText(formatWan(yVal), padLeft - 8, yPos + 4);
+      ctx.fillText(formatMoney(yVal), padLeft - 8, yPos + 4);
     }
 
     // X Axis Labels
@@ -83,7 +82,7 @@ export const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data }) => {
     for (let i = 0; i < points.length; i += 10) {
       const pt = points[i];
       const xPos = getX(pt.age);
-      ctx.fillText(`${pt.age}岁`, xPos, height - 15);
+      ctx.fillText(`${pt.age}`, xPos, height - 15);
     }
 
     // Shaded Confidence Band (P10 - P90)
@@ -154,7 +153,7 @@ export const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data }) => {
       ctx.fillStyle = '#e2e8f0';
       ctx.font = '11px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`退休 (${retAge}岁)`, retX, padTop - 8);
+      ctx.fillText(`Retire (${retAge})`, retX, padTop - 8);
     }
 
     // Hover Indicator
@@ -177,7 +176,7 @@ export const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data }) => {
       ctx.lineWidth = 2;
       ctx.stroke();
     }
-  }, [data, hoverPoint]);
+  }, [currency, data, hoverPoint]);
 
   useEffect(() => {
     renderChart();
@@ -220,13 +219,13 @@ export const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data }) => {
     <div className="relative w-full h-[400px] bg-slate-900/80 rounded-2xl p-4 border border-slate-800 backdrop-blur-md shadow-xl">
       <div className="flex justify-between items-center mb-2 px-2">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200">全生命周期净资产推演概率走廊</h3>
-          <p className="text-xs text-slate-400">基于 Ito 微积分与几何布朗运动 (GBM) 10,000 次蒙特卡洛随机漫步</p>
+          <h3 className="text-sm font-semibold text-slate-200">Lifetime invested-assets confidence range</h3>
+          <p className="text-xs text-slate-400">Seeded log-normal simulation · {data.params.simulationsCount.toLocaleString()} paths · seed {data.params.randomSeed}</p>
         </div>
         <div className="flex items-center gap-4 text-xs">
-          <span className="flex items-center gap-1.5 text-cyan-400 font-medium"><span className="w-2.5 h-0.5 bg-cyan-400 rounded"></span>P90 乐观</span>
-          <span className="flex items-center gap-1.5 text-amber-400 font-medium"><span className="w-2.5 h-0.5 bg-amber-400 rounded"></span>P50 中位</span>
-          <span className="flex items-center gap-1.5 text-rose-400 font-medium"><span className="w-2.5 h-0.5 bg-rose-400 rounded"></span>P10 悲观</span>
+          <span className="flex items-center gap-1.5 text-cyan-400 font-medium"><span className="w-2.5 h-0.5 bg-cyan-400 rounded"></span>P90</span>
+          <span className="flex items-center gap-1.5 text-amber-400 font-medium"><span className="w-2.5 h-0.5 bg-amber-400 rounded"></span>P50</span>
+          <span className="flex items-center gap-1.5 text-rose-400 font-medium"><span className="w-2.5 h-0.5 bg-rose-400 rounded"></span>P10</span>
         </div>
       </div>
 
@@ -244,15 +243,15 @@ export const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data }) => {
           className="absolute pointer-events-none bg-slate-950/95 border border-slate-700 text-slate-100 rounded-xl p-3 shadow-2xl text-xs z-30 min-w-[170px] backdrop-blur-md"
         >
           <div className="font-bold text-slate-200 border-b border-slate-800 pb-1 mb-1.5 flex justify-between">
-            <span>{hoverPoint.age} 岁节点数据</span>
-            <span className="text-cyan-400 font-mono">{hoverPoint.age >= data.params.retirementAge ? '退休期' : '积累期'}</span>
+            <span>Age {hoverPoint.age}</span>
+            <span className="text-cyan-400 font-mono">{hoverPoint.age >= data.params.retirementAge ? 'Retirement' : 'Accumulation'}</span>
           </div>
           <div className="space-y-1">
-            <div className="flex justify-between text-cyan-400"><span>P90 (乐观):</span><span className="font-mono font-bold">{formatWan(hoverPoint.p90)}</span></div>
-            <div className="flex justify-between text-amber-400"><span>P50 (中位):</span><span className="font-mono font-bold">{formatWan(hoverPoint.p50)}</span></div>
-            <div className="flex justify-between text-rose-400"><span>P10 (悲观):</span><span className="font-mono font-bold">{formatWan(hoverPoint.p10)}</span></div>
+            <div className="flex justify-between text-cyan-400"><span>P90:</span><span className="font-mono font-bold">{formatMoney(hoverPoint.p90)}</span></div>
+            <div className="flex justify-between text-amber-400"><span>P50:</span><span className="font-mono font-bold">{formatMoney(hoverPoint.p50)}</span></div>
+            <div className="flex justify-between text-rose-400"><span>P10:</span><span className="font-mono font-bold">{formatMoney(hoverPoint.p10)}</span></div>
             <div className="flex justify-between text-slate-400 pt-1 border-t border-slate-800/80">
-              <span>破产风险:</span>
+              <span>Asset exhaustion:</span>
               <span className="font-mono font-bold text-rose-300">{(hoverPoint.ruinProbability * 100).toFixed(1)}%</span>
             </div>
           </div>

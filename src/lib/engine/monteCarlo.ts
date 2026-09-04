@@ -1,28 +1,33 @@
-import { 
-  SimulationParams, 
-  SimulationResult, 
-  SimulationYearPoint, 
-  SimulationMetrics, 
-  StressScenario,
+import {
+  ProjectionYear,
+  SensitivityCell,
   SensitivityMatrix,
-  SensitivityCell
+  SimulationMetrics,
+  SimulationParams,
+  SimulationResult,
+  SimulationYearPoint,
+  StressScenario,
 } from '@/types/financial';
 
-/**
- * Box-Muller Transform: Converts 2 independent uniform random variables U1, U2 ~ U(0, 1)
- * into a standard normal Gaussian random variable Z ~ N(0, 1)
- */
-export function boxMullerGaussian(): number {
-  let u = 0;
-  let v = 0;
-  while (u === 0) u = Math.random();
-  while (v === 0) v = Math.random();
-  return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+export function createSeededRandom(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6d2b79f5;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
-/**
- * Helper to compute precise percentile from a sorted float array
- */
+export function boxMullerGaussian(random: () => number): number {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = random();
+  while (v === 0) v = random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
 export function computePercentile(sortedValues: Float64Array, p: number): number {
   const n = sortedValues.length;
   if (n === 0) return 0;
@@ -30,109 +35,174 @@ export function computePercentile(sortedValues: Float64Array, p: number): number
   return sortedValues[index];
 }
 
-/**
- * High-Performance Client-Side Monte Carlo Simulation Engine
- * Executes N Geometric Brownian Motion lifetime asset accumulation and decumulation paths
- */
-export function runMonteCarloSimulation(params: SimulationParams): SimulationResult {
-  const startTime = performance.now();
-  const {
-    currentAge,
-    retirementAge,
-    maxAge,
-    initialCapital,
-    annualSavings,
-    retirementAnnualExpense,
-    expectedReturn,
-    inflationRate,
-    volatility,
-    simulationsCount,
-    shockAge,
-    shockExpense = 0,
-  } = params;
+function goalsAtAge(params: SimulationParams, age: number): number {
+  return params.goals
+    .filter(goal => goal.age === age)
+    .reduce((sum, goal) => sum + goal.amount, 0);
+}
 
-  const totalYears = maxAge - currentAge + 1;
-  const numSims = simulationsCount || 1000;
+function realReturn(params: SimulationParams): number {
+  return (1 + params.expectedReturn) / (1 + params.inflationRate) - 1;
+}
 
-  // 2D Array: assetsMatrix[simIndex][yearIndex]
-  const assetPaths = new Float64Array(numSims * totalYears);
+function recurringCashAtAge(params: SimulationParams, age: number): {
+  income: number;
+  expenses: number;
+} {
+  const yearsFromStart = age - params.currentAge;
+  return params.cashFlows.reduce((totals, flow) => {
+    if (age < flow.startAge || age > flow.endAge) return totals;
+    const realValueFactor = flow.inflationCategory === 'general'
+      ? 1
+      : 1 / Math.pow(1 + params.inflationRate, yearsFromStart);
+    const realAmount = flow.annualAmount * realValueFactor;
+    if (flow.type === 'INCOME') totals.income += realAmount;
+    else totals.expenses += realAmount;
+    return totals;
+  }, { income: 0, expenses: 0 });
+}
 
-  // Initialize age 0
-  for (let s = 0; s < numSims; s++) {
-    assetPaths[s * totalYears + 0] = initialCapital;
+function planCashAtAge(params: SimulationParams, age: number) {
+  const retired = age >= params.retirementAge;
+  const recurring = recurringCashAtAge(params, age);
+  const savingsAdjustment = params.annualSavings - params.baselineAnnualSavings;
+  const livingExpenses = retired ? 0 : Math.max(0, recurring.expenses - savingsAdjustment);
+  const retirementExpenses = retired ? params.retirementAnnualExpense : 0;
+  const socialSecurityIncome = age >= params.socialSecurityClaimAge
+    ? params.annualSocialSecurity
+    : 0;
+  const goalExpenses = goalsAtAge(params, age)
+    + (params.shockAge === age ? params.shockExpense ?? 0 : 0);
+  const netCashFlow = recurring.income
+    + socialSecurityIncome
+    - livingExpenses
+    - retirementExpenses
+    - goalExpenses;
+  return {
+    earnedIncome: recurring.income,
+    socialSecurityIncome,
+    livingExpenses,
+    retirementExpenses,
+    goalExpenses,
+    contribution: Math.max(0, netCashFlow),
+    requestedWithdrawal: Math.max(0, -netCashFlow),
+  };
+}
+
+/** Expected-return projection used by every deterministic cash-flow view. */
+export function runDeterministicProjection(params: SimulationParams): ProjectionYear[] {
+  const projection: ProjectionYear[] = [];
+  let assets = params.initialCapital;
+
+  for (let age = params.currentAge; age <= params.maxAge; age++) {
+    const openingAssets = assets;
+    if (age === params.currentAge) {
+      projection.push({
+        age,
+        openingAssets,
+        investmentReturn: 0,
+        earnedIncome: 0,
+        socialSecurityIncome: 0,
+        contributions: 0,
+        livingExpenses: 0,
+        retirementExpenses: 0,
+        goalExpenses: 0,
+        withdrawals: 0,
+        unfundedExpenses: 0,
+        endingAssets: openingAssets,
+      });
+      continue;
+    }
+    const investmentReturn = openingAssets * realReturn(params);
+    const cash = planCashAtAge(params, age);
+    const availableAssets = Math.max(0, openingAssets + investmentReturn + cash.contribution);
+    const withdrawals = Math.min(availableAssets, cash.requestedWithdrawal);
+    const unfundedExpenses = Math.max(0, cash.requestedWithdrawal - withdrawals);
+    const contributions = cash.contribution;
+    const endingAssets = Math.max(0, availableAssets - withdrawals);
+
+    projection.push({
+      age,
+      openingAssets,
+      investmentReturn,
+      earnedIncome: cash.earnedIncome,
+      socialSecurityIncome: cash.socialSecurityIncome,
+      contributions,
+      livingExpenses: cash.livingExpenses,
+      retirementExpenses: cash.retirementExpenses,
+      goalExpenses: cash.goalExpenses,
+      withdrawals,
+      unfundedExpenses,
+      endingAssets,
+    });
+    assets = endingAssets;
   }
 
-  // Pre-calculate drift under Ito's lemma
-  const dt = 1.0;
-  const drift = (expectedReturn - inflationRate) - 0.5 * volatility * volatility;
-  const volSqrtDt = volatility * Math.sqrt(dt);
+  return projection;
+}
 
-  // Time-stepping forward simulation
-  for (let y = 1; y < totalYears; y++) {
-    const age = currentAge + y;
-    const isAccumulation = age <= retirementAge;
+/** Seeded lifetime accumulation and decumulation simulation. */
+export function runMonteCarloSimulation(params: SimulationParams): SimulationResult {
+  const startTime = performance.now();
+  const random = createSeededRandom(params.randomSeed);
+  const totalYears = params.maxAge - params.currentAge + 1;
+  const numSims = params.simulationsCount || 1000;
+  const assetPaths = new Float64Array(numSims * totalYears);
 
-    for (let s = 0; s < numSims; s++) {
-      const prevAsset = assetPaths[s * totalYears + (y - 1)];
+  for (let simulation = 0; simulation < numSims; simulation++) {
+    assetPaths[simulation * totalYears] = params.initialCapital;
+  }
 
-      if (prevAsset <= 0) {
-        assetPaths[s * totalYears + y] = 0;
+  const drift = realReturn(params) - 0.5 * params.volatility * params.volatility;
+
+  for (let yearIndex = 1; yearIndex < totalYears; yearIndex++) {
+    const age = params.currentAge + yearIndex;
+    const cash = planCashAtAge(params, age);
+
+    for (let simulation = 0; simulation < numSims; simulation++) {
+      const offset = simulation * totalYears;
+      const previousAssets = assetPaths[offset + yearIndex - 1];
+      const gaussian = boxMullerGaussian(random);
+      if (previousAssets <= 0) {
+        assetPaths[offset + yearIndex] = 0;
         continue;
       }
 
-      const z = boxMullerGaussian();
-      const annualReturnFactor = Math.exp(drift * dt + volSqrtDt * z);
-
-      let currentAsset = prevAsset * annualReturnFactor;
-
-      if (isAccumulation) {
-        currentAsset += annualSavings;
-      } else {
-        currentAsset -= retirementAnnualExpense;
-      }
-
-      if (shockAge && age === shockAge) {
-        currentAsset -= shockExpense;
-      }
-
-      assetPaths[s * totalYears + y] = Math.max(0, currentAsset);
+      const annualReturnFactor = Math.exp(drift + params.volatility * gaussian);
+      const endingAssets = previousAssets * annualReturnFactor
+        + cash.contribution
+        - cash.requestedWithdrawal;
+      assetPaths[offset + yearIndex] = Math.max(0, endingAssets);
     }
   }
 
-  // Quantile Extraction & Distribution Analytics
   const yearlyDistributions: SimulationYearPoint[] = [];
   const tempSorted = new Float64Array(numSims);
-
-  let ruinAt85Count = 0;
-  let ruinAtMaxCount = 0;
   let medianRetirementAsset = 0;
   let medianEndingAsset = 0;
   let maxMedianAsset = 0;
-  let peakAge = currentAge;
+  let peakAge = params.currentAge;
+  let ruinAtPlanEndCount = 0;
 
-  for (let y = 0; y < totalYears; y++) {
-    const age = currentAge + y;
-
-    for (let s = 0; s < numSims; s++) {
-      tempSorted[s] = assetPaths[s * totalYears + y];
+  for (let yearIndex = 0; yearIndex < totalYears; yearIndex++) {
+    const age = params.currentAge + yearIndex;
+    for (let simulation = 0; simulation < numSims; simulation++) {
+      tempSorted[simulation] = assetPaths[simulation * totalYears + yearIndex];
     }
     tempSorted.sort();
 
     let sum = 0;
     let ruinCount = 0;
-    for (let s = 0; s < numSims; s++) {
-      sum += tempSorted[s];
-      if (tempSorted[s] <= 0) ruinCount++;
+    for (const value of tempSorted) {
+      sum += value;
+      if (value <= 0) ruinCount++;
     }
 
-    const p10 = computePercentile(tempSorted, 0.10);
+    const p10 = computePercentile(tempSorted, 0.1);
     const p25 = computePercentile(tempSorted, 0.25);
-    const p50 = computePercentile(tempSorted, 0.50);
+    const p50 = computePercentile(tempSorted, 0.5);
     const p75 = computePercentile(tempSorted, 0.75);
-    const p90 = computePercentile(tempSorted, 0.90);
-    const mean = sum / numSims;
-    const ruinProbability = ruinCount / numSims;
-
+    const p90 = computePercentile(tempSorted, 0.9);
     yearlyDistributions.push({
       age,
       p10,
@@ -141,18 +211,15 @@ export function runMonteCarloSimulation(params: SimulationParams): SimulationRes
       p75,
       p90,
       median: p50,
-      mean,
+      mean: sum / numSims,
       ruinCount,
-      ruinProbability,
+      ruinProbability: ruinCount / numSims,
     });
 
-    if (age === 85) ruinAt85Count = ruinCount;
-    if (age === maxAge) {
-      ruinAtMaxCount = ruinCount;
+    if (age === params.retirementAge) medianRetirementAsset = p50;
+    if (age === params.maxAge) {
+      ruinAtPlanEndCount = ruinCount;
       medianEndingAsset = p50;
-    }
-    if (age === retirementAge) {
-      medianRetirementAsset = p50;
     }
     if (p50 > maxMedianAsset) {
       maxMedianAsset = p50;
@@ -160,125 +227,100 @@ export function runMonteCarloSimulation(params: SimulationParams): SimulationRes
     }
   }
 
-  const ruinProb85 = ruinAt85Count / numSims;
-  const ruinProbMax = ruinAtMaxCount / numSims;
-  const survivalRate85 = 1.0 - ruinProb85;
-
-  // FIRE Health Index (0-100 Score)
-  let fireScore = Math.round((1 - ruinProb85) * 70 + Math.min(30, (medianRetirementAsset / (retirementAnnualExpense * 25)) * 30));
-  fireScore = Math.max(0, Math.min(100, isNaN(fireScore) ? 0 : fireScore));
-
-  let ruinAgeP10: number | null = null;
-  for (const pt of yearlyDistributions) {
-    if (pt.p10 <= 0 && pt.age >= retirementAge) {
-      ruinAgeP10 = pt.age;
-      break;
-    }
-  }
+  const ruinProbabilityAtPlanEnd = ruinAtPlanEndCount / numSims;
+  const successProbabilityAtPlanEnd = 1 - ruinProbabilityAtPlanEnd;
+  const fundingRatio = medianRetirementAsset / Math.max(1, params.retirementAnnualExpense * 25);
+  const planHealthScore = Math.max(0, Math.min(100, Math.round(
+    successProbabilityAtPlanEnd * 70 + Math.min(30, fundingRatio * 30),
+  )));
+  const ruinAgeP10 = yearlyDistributions.find(point => (
+    point.age >= params.retirementAge && point.p10 <= 0
+  ))?.age ?? null;
 
   const metrics: SimulationMetrics = {
-    ruinProb85,
-    ruinProbMax,
+    planEndAge: params.maxAge,
+    ruinProbabilityAtPlanEnd,
+    successProbabilityAtPlanEnd,
     medianRetirementAsset,
     medianPeakAsset: maxMedianAsset,
     peakAge,
     medianEndingAsset,
-    fireScore,
+    planHealthScore,
     ruinAgeP10,
-    safeAnnualSpendP50: medianRetirementAsset * 0.04,
-    survivalRate85,
   };
-
-  const executionTimeMs = performance.now() - startTime;
 
   return {
     params,
     yearlyDistributions,
     metrics,
     calculatedAt: new Date().toISOString(),
-    executionTimeMs,
+    executionTimeMs: performance.now() - startTime,
   };
 }
 
-/**
- * Macro Stress Scenarios Preset Suite
- */
 export const STRESS_SCENARIOS: Record<string, StressScenario> = {
-  SUBPRIME_2008: {
-    id: 'SUBPRIME_2008',
-    name: '2008 Subprime Liquidity Crisis',
-    desc: 'Simulates severe equity market contraction (-20% return in first 2 retirement years, +50% volatility)',
+  LOWER_RETURN: {
+    id: 'LOWER_RETURN',
+    name: 'Lower-return environment',
+    desc: 'Reduces the expected annual return by 3.5 percentage points and raises volatility by 50%.',
     color: '#ef4444',
     icon: '📉',
-    getPatch: (base: SimulationParams) => ({
+    getPatch: base => ({
       expectedReturn: Math.max(0.01, base.expectedReturn - 0.035),
       volatility: Math.min(0.35, base.volatility * 1.5),
     }),
   },
-  STAGFLATION_1970: {
-    id: 'STAGFLATION_1970',
-    name: '1970s Severe Stagflation Shock',
-    desc: 'Persistent high inflation (7.5%) coupled with compressed real asset returns',
+  HIGH_INFLATION: {
+    id: 'HIGH_INFLATION',
+    name: 'High-inflation environment',
+    desc: 'Uses 7.5% inflation, a 4.5% expected return, and 18% annual volatility for the full plan.',
     color: '#f59e0b',
     icon: '🔥',
-    getPatch: () => ({
-      inflationRate: 0.075,
-      expectedReturn: 0.045,
-      volatility: 0.18,
-    }),
+    getPatch: () => ({ inflationRate: 0.075, expectedReturn: 0.045, volatility: 0.18 }),
   },
   MEDICAL_SHOCK: {
     id: 'MEDICAL_SHOCK',
-    name: 'Age 55 Major Healthcare Outlay',
-    desc: 'Injects a sudden ,000 uninsured medical emergency at age 55 right before retirement',
+    name: 'One-time healthcare outlay',
+    desc: 'Adds a $500,000 one-time portfolio withdrawal at age 55.',
     color: '#06b6d4',
     icon: '🏥',
-    getPatch: () => ({
-      shockAge: 55,
-      shockExpense: 500000,
-    }),
+    getPatch: () => ({ shockAge: 55, shockExpense: 500000 }),
   },
   LONGEVITY_105: {
     id: 'LONGEVITY_105',
-    name: 'Centenarian Longevity Horizon',
-    desc: 'Extends life trajectory to age 105 to test 45-year continuous decumulation endurance',
+    name: 'Age-105 planning horizon',
+    desc: 'Extends the plan end age to 105 while preserving the other baseline assumptions.',
     color: '#8b5cf6',
     icon: '⏳',
-    getPatch: () => ({
-      maxAge: 105,
-    }),
+    getPatch: () => ({ maxAge: 105 }),
   },
 };
 
-/**
- * 4x4 Return vs Inflation Sensitivity Matrix Generator
- */
 export function computeSensitivityMatrix(baseParams: SimulationParams): SensitivityMatrix {
-  const returnRates = [0.04, 0.06, 0.08, 0.10];
+  const returnRates = [0.04, 0.06, 0.08, 0.1];
   const inflationRates = [0.02, 0.03, 0.04, 0.05];
   const matrix: SensitivityMatrix['matrix'] = [];
 
-  for (const r of returnRates) {
+  for (const returnRate of returnRates) {
     const row: SensitivityCell[] = [];
-    for (const inf of inflationRates) {
-      const p: SimulationParams = {
+    for (const inflationRate of inflationRates) {
+      const result = runMonteCarloSimulation({
         ...baseParams,
-        expectedReturn: r,
-        inflationRate: inf,
-        simulationsCount: 150,
-      };
-      const res = runMonteCarloSimulation(p);
+        expectedReturn: returnRate,
+        inflationRate,
+        simulationsCount: 300,
+      });
       row.push({
-        returnRate: r,
-        inflationRate: inf,
-        ruinProb: res.metrics.ruinProb85,
-        fireScore: res.metrics.fireScore,
-        ruinPercentText: `${(res.metrics.ruinProb85 * 100).toFixed(0)}%`,
+        returnRate,
+        inflationRate,
+        ruinProb: result.metrics.ruinProbabilityAtPlanEnd,
+        planHealthScore: result.metrics.planHealthScore,
+        ruinPercentText: `${(result.metrics.ruinProbabilityAtPlanEnd * 100).toFixed(0)}%`,
       });
     }
     matrix.push({
-      returnRate: r,
-      returnPercentText: `${(r * 100).toFixed(0)}%`,
+      returnRate,
+      returnPercentText: `${(returnRate * 100).toFixed(0)}%`,
       items: row,
     });
   }
@@ -286,7 +328,7 @@ export function computeSensitivityMatrix(baseParams: SimulationParams): Sensitiv
   return {
     returnHeaders: returnRates,
     inflationHeaders: inflationRates,
-    inflationHeaderLabels: inflationRates.map(inf => `${(inf * 100).toFixed(0)}%`),
+    inflationHeaderLabels: inflationRates.map(rate => `${(rate * 100).toFixed(0)}%`),
     matrix,
   };
 }

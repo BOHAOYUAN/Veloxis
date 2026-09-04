@@ -1,17 +1,9 @@
 {
-  "name": "Veloxis AI — Financial Planning Engine",
+  "name": "Veloxis Wealth OS — Deterministic Planning Lab",
   "short_name": "Veloxis",
-  "description": "Conversational Financial Planning & Real-time Monte Carlo Guardrail Engine",
+  "description": "Local-first household planning simulator with reproducible plan comparisons",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#070a12",
-  "theme_color": "#070a12",
-  "icons": [
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+  "theme_color": "#070a12"
 }

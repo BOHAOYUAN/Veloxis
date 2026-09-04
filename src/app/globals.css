@@ -26,3 +26,11 @@ input:focus, select:focus {
   outline: 2px solid rgb(34 211 238 / 0.65);
   outline-offset: 1px;
 }
+
+.module-nav {
+  scrollbar-width: none;
+}
+
+.module-nav::-webkit-scrollbar {
+  display: none;
+}

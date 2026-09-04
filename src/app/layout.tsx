@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Veloxis Wealth OS — Conversational RIA Financial Planning Engine',
-  description: 'Next-Generation Client-Side Monte Carlo Simulation & AI Intent Routing for RIA Ecosystems',
+  title: 'Veloxis Wealth OS — Deterministic Planning Lab',
+  description: 'Local-first household planning simulator with reproducible Current and Proposed plan comparisons',
 };
 
 export default function RootLayout({

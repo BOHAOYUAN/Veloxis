@@ -2,7 +2,7 @@
   "name": "veloxis-wealth-os",
   "version": "2.0.0",
   "private": true,
-  "description": "Conversational RIA Financial Planning Engine with Client-Side Monte Carlo & AI Intent Routing",
+  "description": "Local-first household planning simulator with seeded Monte Carlo plan comparison",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
