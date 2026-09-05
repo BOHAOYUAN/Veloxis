@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import { ArrowRight, BarChart3, CheckCircle2, LockKeyhole, Sparkles } from 'lucide-react';
 import { ReactNode } from 'react';
+import { siteConfig } from '@/lib/site';
 
 const navigation = [
   { href: '/for-independent-advisors', label: 'For advisors' },
   { href: '/methodology', label: 'Methodology' },
   { href: '/privacy', label: 'Privacy' },
   { href: '/pilot', label: 'Founding pilot' },
+  { href: '/terms', label: 'Pilot terms' },
 ];
 
 export function MarketingShell({ children }: { children: ReactNode }) {
@@ -31,7 +33,7 @@ export function MarketingShell({ children }: { children: ReactNode }) {
       <footer className="border-t border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-8 text-sm text-slate-600 md:flex-row md:items-center md:justify-between md:px-8">
           <p>Veloxis is an educational planning simulator. It is not investment, tax, legal, or financial advice.</p>
-          <div className="flex gap-4"><Link href="/privacy" className="hover:text-slate-950">Privacy</Link><Link href="/methodology" className="hover:text-slate-950">Methodology</Link></div>
+          <div className="flex flex-wrap gap-4"><Link href="/privacy" className="hover:text-slate-950">Privacy</Link><Link href="/methodology" className="hover:text-slate-950">Methodology</Link><Link href="/terms" className="hover:text-slate-950">Pilot terms</Link>{siteConfig.contactEmail && <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-slate-950">Contact</a>}</div>
         </div>
       </footer>
     </main>
@@ -60,5 +62,5 @@ export function ProofPoint({ icon, title, children }: { icon: 'paths' | 'ledger'
 }
 
 export function PilotCallout() {
-  return <aside className="rounded-2xl bg-[#111c3d] p-7 text-white shadow-xl shadow-blue-950/15 md:p-9"><div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between"><div><p className="flex items-center gap-2 text-sm font-bold text-cyan-300"><Sparkles className="h-4 w-4" />FOUNDING ADVISOR PILOT</p><h2 className="mt-2 text-2xl font-black">A focused 30-day evaluation for $99.</h2><p className="mt-2 max-w-2xl leading-7 text-slate-300">Two synthetic retirement scenarios, written onboarding, and direct feedback with the builder. No client data intake. No subscription commitment.</p></div><Link href="/pilot" className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-3.5 text-sm font-bold text-[#111c3d] transition hover:bg-cyan-50">See pilot details<ArrowRight className="h-4 w-4" /></Link></div></aside>;
+  return <aside className="rounded-2xl bg-[#111c3d] p-7 text-white shadow-xl shadow-blue-950/15 md:p-9"><div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between"><div><p className="flex items-center gap-2 text-sm font-bold text-cyan-300"><Sparkles className="h-4 w-4" />FOUNDING ADVISOR PILOT</p><h2 className="mt-2 text-2xl font-black">A guided 30-day evaluation for $99.</h2><p className="mt-2 max-w-2xl leading-7 text-slate-300">Two guided synthetic meeting cases, facilitation notes, written onboarding, and up to three support exchanges with the builder.</p></div><Link href="/pilot" className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-3.5 text-sm font-bold text-[#111c3d] transition hover:bg-cyan-50">See pilot details<ArrowRight className="h-4 w-4" /></Link></div></aside>;
 }

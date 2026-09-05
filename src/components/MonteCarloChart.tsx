@@ -13,9 +13,9 @@ export const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data, currency
   const [hoverPoint, setHoverPoint] = useState<SimulationYearPoint | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
 
-  const formatMoney = (value: number): string => new Intl.NumberFormat('en-US', {
+  const formatMoney = useCallback((value: number): string => new Intl.NumberFormat('en-US', {
     style: 'currency', currency, notation: 'compact', maximumFractionDigits: 1,
-  }).format(value);
+  }).format(value), [currency]);
 
   const renderChart = useCallback(() => {
     const canvas = canvasRef.current;
@@ -176,7 +176,7 @@ export const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data, currency
       ctx.lineWidth = 2;
       ctx.stroke();
     }
-  }, [currency, data, hoverPoint]);
+  }, [data, formatMoney, hoverPoint]);
 
   useEffect(() => {
     renderChart();

@@ -25,6 +25,17 @@ describe('household workspace', () => {
     expect(params.goals).toEqual([{ name: 'Family education support', age: 50, amount: 120000 }]);
   });
 
+  it('provides two valid and distinct guided synthetic demo cases', () => {
+    const first = createDemoHouseholdWorkspace('accumulator');
+    const second = createDemoHouseholdWorkspace('retirement-window');
+
+    expect(migrateHouseholdWorkspace(first)).toEqual(first);
+    expect(migrateHouseholdWorkspace(second)).toEqual(second);
+    expect(second.profile.currentAge).toBe(57);
+    expect(second.assumptions.randomSeed).not.toBe(first.assumptions.randomSeed);
+    expect(second.profile.householdName).not.toBe(first.profile.householdName);
+  });
+
   it('rejects invalid planning timelines', () => {
     const workspace = createDemoHouseholdWorkspace();
     workspace.profile.retirementAge = workspace.profile.currentAge;

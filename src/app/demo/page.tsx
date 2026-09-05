@@ -8,7 +8,7 @@ import { PlanComparison } from '@/components/PlanComparison';
 import { StressMatrix } from '@/components/StressMatrix';
 import { TaxWaterfall } from '@/components/TaxWaterfall';
 import { computeSensitivityMatrix, runDeterministicProjection, STRESS_SCENARIOS } from '@/lib/engine/monteCarlo';
-import { createDemoHouseholdWorkspace, derivePlanScenarios, summarizeHousehold } from '@/lib/household';
+import { createDemoHouseholdWorkspace, DEMO_CASES, DemoCaseId, derivePlanScenarios, summarizeHousehold } from '@/lib/household';
 import { comparePlanScenarios } from '@/lib/scenarios';
 import { StressScenario } from '@/types/financial';
 import { HouseholdWorkspace } from '@/types/household';
@@ -26,6 +26,7 @@ const tabs: Array<{ id: ActiveTab; label: string }> = [
 ];
 
 export default function DemoPage() {
+  const [activeCaseId, setActiveCaseId] = useState<DemoCaseId>('accumulator');
   const [activeTab, setActiveTab] = useState<ActiveTab>('COMPARE');
   const [selectedPlanId, setSelectedPlanId] = useState<PlanId>('proposed');
   const [activeStressScenario, setActiveStressScenario] = useState<StressScenario | null>(null);
@@ -33,14 +34,18 @@ export default function DemoPage() {
   const updateWorkspace = (updater: (current: HouseholdWorkspace) => HouseholdWorkspace) => {
     setWorkspace(current => ({ ...updater(current), updatedAt: new Date().toISOString() }));
   };
-  const resetDemo = () => {
-    setWorkspace(createDemoHouseholdWorkspace());
+  const loadCase = (caseId: DemoCaseId) => {
+    setActiveCaseId(caseId);
+    setWorkspace(createDemoHouseholdWorkspace(caseId));
     setActiveStressScenario(null);
     setSelectedPlanId('proposed');
     setActiveTab('COMPARE');
   };
-  const scenarios = useMemo(() => derivePlanScenarios(workspace), [workspace]);
-  const comparison = useMemo(() => comparePlanScenarios(scenarios.current, scenarios.proposed), [scenarios]);
+  const resetDemo = () => loadCase(activeCaseId);
+  const comparison = useMemo(() => {
+    const scenarios = derivePlanScenarios(workspace);
+    return comparePlanScenarios(scenarios.current, scenarios.proposed);
+  }, [workspace]);
   const selectedResult = comparison[selectedPlanId];
   const selectedParams = selectedResult.params;
   const selectedProjection = useMemo(() => runDeterministicProjection(selectedParams), [selectedParams]);
@@ -49,6 +54,7 @@ export default function DemoPage() {
     : selectedParams, [activeStressScenario, selectedParams]);
   const sensitivityMatrix = useMemo(() => computeSensitivityMatrix(stressParams), [stressParams]);
   const householdSummary = summarizeHousehold(workspace);
+  const activeCase = DEMO_CASES.find(item => item.id === activeCaseId) ?? DEMO_CASES[0];
   const formatMoney = (amount: number) => new Intl.NumberFormat('en-US', {
     style: 'currency', currency: workspace.profile.currency, maximumFractionDigits: 0,
   }).format(amount);
@@ -69,6 +75,12 @@ export default function DemoPage() {
           </div>
         </header>
         <p className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm leading-6 text-amber-100"><strong>Public evaluation boundary:</strong> this is a fictional household. Do not enter client names, account information, documents, or any personal financial data. Outputs are educational planning simulations, not investment, tax, legal, or financial advice.</p>
+        <section className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4" aria-labelledby="demo-case-heading">
+          <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+            <div className="max-w-3xl"><p id="demo-case-heading" className="text-xs font-bold uppercase tracking-widest text-cyan-400">Choose a guided synthetic case</p><p className="mt-2 text-sm leading-6 text-slate-300">{activeCase.description}</p><p className="mt-1 text-xs leading-5 text-slate-500">Meeting question: {activeCase.meetingQuestion}</p></div>
+            <div className="flex flex-col gap-2 sm:flex-row">{DEMO_CASES.map(item => <button key={item.id} onClick={() => loadCase(item.id)} className={`rounded-xl px-4 py-2.5 text-left text-xs font-bold transition ${activeCaseId === item.id ? 'bg-cyan-400 text-slate-950' : 'border border-slate-700 text-slate-300 hover:bg-slate-800'}`}>{item.label}</button>)}</div>
+          </div>
+        </section>
         <div className="flex flex-col justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/60 p-3 sm:flex-row sm:items-center"><p className="text-xs leading-5 text-slate-400">Explore the proposal levers, then reset to return to the original synthetic case.</p><button onClick={resetDemo} className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-200 transition hover:bg-slate-800">Reset synthetic case</button></div>
         <nav className="module-nav flex gap-2 overflow-x-auto border-b border-slate-800 pb-3" aria-label="Synthetic demo modules">{tabs.map(tab => <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-bold transition ${activeTab === tab.id ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/20' : 'border border-slate-800 text-slate-400 hover:bg-slate-900 hover:text-slate-200'}`}>{tab.label}</button>)}</nav>
         {activeTab === 'COMPARE' && <PlanComparison workspace={workspace} comparison={comparison} onChange={updateWorkspace} />}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ProjectionYear } from '@/types/financial';
 
 interface CashflowSankeyProps {
@@ -14,13 +14,11 @@ export function CashflowSankey({ projection, currency, planName }: CashflowSanke
   const minAge = projection[0]?.age ?? 0;
   const maxAge = projection.at(-1)?.age ?? minAge;
 
-  useEffect(() => {
-    setSelectedAge(age => Math.max(minAge, Math.min(maxAge, age)));
-  }, [minAge, maxAge]);
+  const visibleAge = Math.max(minAge, Math.min(maxAge, selectedAge));
 
   const year = useMemo(
-    () => projection.find(item => item.age === selectedAge) ?? projection[0],
-    [projection, selectedAge],
+    () => projection.find(item => item.age === visibleAge) ?? projection[0],
+    [projection, visibleAge],
   );
   if (!year) return null;
 
@@ -48,8 +46,8 @@ export function CashflowSankey({ projection, currency, planName }: CashflowSanke
           <p className="mt-1 text-xs text-slate-400">Every value below comes from the same projection ledger used by the plan.</p>
         </div>
         <label className="rounded-xl border border-slate-800 bg-slate-950/80 px-4 py-2 text-xs text-slate-400">
-          Age <span className="ml-2 font-mono font-bold text-cyan-300">{selectedAge}</span>
-          <input className="mt-2 block w-48 accent-cyan-400" type="range" min={minAge} max={maxAge} value={selectedAge} onChange={event => setSelectedAge(Number(event.target.value))} />
+          Age <span className="ml-2 font-mono font-bold text-cyan-300">{visibleAge}</span>
+          <input className="mt-2 block w-48 accent-cyan-400" type="range" min={minAge} max={maxAge} value={visibleAge} onChange={event => setSelectedAge(Number(event.target.value))} />
         </label>
       </div>
 

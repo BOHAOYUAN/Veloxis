@@ -7,7 +7,7 @@ Veloxis is a browser-based retirement scenario visualizer for independent adviso
 ## What is implemented
 
 - Editable household assets, liabilities, income, expenses, goals, and user-provided Social Security estimate.
-- A public synthetic demo that does not persist or accept real client data.
+- A public synthetic demo with two guided fictional cases that does not persist or accept real client data.
 - Account-sourced taxable, tax-deferred, and tax-free allocation—no fixed allocation ratios.
 - A shared year-by-year cash-flow ledger in today's dollars.
 - Seeded Monte Carlo projections with reproducible plan results.
@@ -56,8 +56,8 @@ GitHub Actions runs type checking, tests, and the production build for pushes an
 
 ## Founding Advisor Pilot
 
-The public site describes a $99, one-time, 30-day Founding Advisor Pilot. It is a synthetic-data product evaluation, not a production advisor platform. See [the outreach and fulfillment guide](docs/ADVISOR_PILOT.md).
+The public site describes a $99, one-time, 30-day Founding Advisor Pilot. The paid deliverable is a guided evaluation service: two synthetic meeting cases, facilitation notes, written onboarding, and limited email support. The public demo remains free. See [the outreach and fulfillment guide](docs/ADVISOR_PILOT.md).
 
 ## Deployment
 
-Set `NEXT_PUBLIC_SITE_URL` to the final HTTPS origin so canonical URLs and the sitemap are generated accurately. Set `NEXT_PUBLIC_DODO_PILOT_URL` only to a public Dodo hosted checkout link; no Dodo API integration or secret belongs in this repository. Deploy commercial traffic on Vercel Pro rather than the non-commercial Hobby tier.
+Set `NEXT_PUBLIC_SITE_URL` to the final HTTPS origin so canonical URLs and the sitemap are generated accurately. Set `NEXT_PUBLIC_CONTACT_EMAIL` to the public support address and `NEXT_PUBLIC_DODO_PILOT_URL` only to a public Dodo hosted checkout link. The site keeps enrollment closed unless both contact and checkout values exist. No Dodo API integration or secret belongs in this repository. Deploy commercial traffic on Vercel Pro rather than the non-commercial Hobby tier.

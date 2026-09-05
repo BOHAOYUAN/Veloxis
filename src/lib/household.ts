@@ -231,6 +231,12 @@ export function derivePlanScenarios(workspace: HouseholdWorkspace): {
   proposed: PlanScenario;
 } {
   const currentParams = deriveBaselineSimulationParams(workspace);
+  const proposedRetirementAge = workspace.proposedPlan.retirementAge;
+  const proposedCashFlows = currentParams.cashFlows.map(flow => (
+    flow.type === 'INCOME' && flow.endAge === currentParams.retirementAge - 1
+      ? { ...flow, endAge: proposedRetirementAge - 1 }
+      : flow
+  ));
   return {
     current: {
       id: 'current', name: 'Current Plan', params: currentParams,
@@ -240,10 +246,11 @@ export function derivePlanScenarios(workspace: HouseholdWorkspace): {
       id: 'proposed', name: 'Proposed Plan',
       params: {
         ...currentParams,
-        retirementAge: workspace.proposedPlan.retirementAge,
+        retirementAge: proposedRetirementAge,
         annualSavings: workspace.proposedPlan.annualSavings,
         retirementAnnualExpense: workspace.proposedPlan.retirementAnnualExpense,
         socialSecurityClaimAge: workspace.proposedPlan.socialSecurityClaimAge,
+        cashFlows: proposedCashFlows,
       },
       updatedAt: workspace.updatedAt,
     },
@@ -312,11 +319,71 @@ export function migrateHouseholdWorkspace(value: unknown): HouseholdWorkspace | 
 
 export const validateHouseholdWorkspace = migrateHouseholdWorkspace;
 
-export function createDemoHouseholdWorkspace(): HouseholdWorkspace {
+export type DemoCaseId = 'accumulator' | 'retirement-window';
+
+export const DEMO_CASES: Array<{
+  id: DemoCaseId;
+  label: string;
+  description: string;
+  meetingQuestion: string;
+}> = [
+  {
+    id: 'accumulator',
+    label: 'Mid-career household',
+    description: 'A high-earning household balancing retirement savings, housing costs, and an education goal.',
+    meetingQuestion: 'How much do three additional working years and a lower retirement budget change the plan?',
+  },
+  {
+    id: 'retirement-window',
+    label: 'Near-retirement household',
+    description: 'A household five years from retirement deciding whether to delay retirement and Social Security.',
+    meetingQuestion: 'Does delaying retirement and reducing spending create a more resilient plan near the retirement boundary?',
+  },
+];
+
+export function createDemoHouseholdWorkspace(caseId: DemoCaseId = 'accumulator'): HouseholdWorkspace {
+  if (caseId === 'retirement-window') {
+    return {
+      version: 2,
+      profile: {
+        householdName: 'Near-retirement household', jurisdiction: 'US', currency: 'USD',
+        currentAge: 57, retirementAge: 62, longevityAge: 94,
+      },
+      accounts: [
+        { id: 'cash', name: 'Cash reserve', type: 'CASH', taxCategory: 'taxable', balance: 85000, includeInRetirementPlan: true },
+        { id: 'brokerage', name: 'Joint brokerage', type: 'BROKERAGE', taxCategory: 'taxable', balance: 310000, includeInRetirementPlan: true },
+        { id: 'retirement', name: 'Traditional retirement', type: 'RETIREMENT', taxCategory: 'taxDeferred', balance: 620000, includeInRetirementPlan: true },
+        { id: 'roth', name: 'Roth retirement', type: 'RETIREMENT', taxCategory: 'taxFree', balance: 140000, includeInRetirementPlan: true },
+        { id: 'home', name: 'Primary residence', type: 'REAL_ESTATE', taxCategory: 'nonInvestment', balance: 640000, includeInRetirementPlan: false },
+        { id: 'mortgage', name: 'Remaining mortgage', type: 'MORTGAGE', taxCategory: 'nonInvestment', balance: 180000, includeInRetirementPlan: false },
+      ],
+      cashFlows: [
+        { id: 'income', name: 'Employment income', type: 'INCOME', annualAmount: 190000, startAge: 57, endAge: 61, inflationCategory: 'general' },
+        { id: 'living', name: 'Living expenses', type: 'EXPENSE', annualAmount: 94000, startAge: 57, endAge: 94, inflationCategory: 'general' },
+        { id: 'housing', name: 'Mortgage and housing', type: 'EXPENSE', annualAmount: 31000, startAge: 57, endAge: 64, inflationCategory: 'none' },
+      ],
+      goals: [
+        { id: 'family-support', name: 'One-time family support', targetAmount: 70000, targetAge: 60 },
+      ],
+      socialSecurity: { annualBenefit: 42000, claimAge: 67 },
+      assumptions: {
+        expectedReturn: 0.06, inflationRate: 0.025, volatility: 0.12,
+        retirementSpendingRatio: 0.8, simulationsCount: 10000, randomSeed: 20260905,
+      },
+      proposedPlan: {
+        retirementAge: 65,
+        annualSavings: 65000,
+        retirementAnnualExpense: 90000,
+        socialSecurityClaimAge: 70,
+      },
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
   return {
     version: 2,
     profile: {
-      householdName: 'My household', jurisdiction: 'US', currency: 'USD',
+      householdName: 'Mid-career household', jurisdiction: 'US', currency: 'USD',
       currentAge: 32, retirementAge: 60, longevityAge: 95,
     },
     accounts: [

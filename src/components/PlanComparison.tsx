@@ -31,7 +31,7 @@ export function PlanComparison({ workspace, comparison, onChange }: PlanComparis
           <div>
             <p className="text-xs font-mono text-cyan-400">SAME HOUSEHOLD · SAME RANDOM SEED</p>
             <h2 className="mt-1 text-xl font-black text-slate-100">Current Plan vs Proposed Plan</h2>
-            <p className="mt-2 max-w-3xl text-sm text-slate-400">Current Plan is derived from the household workspace. Proposed Plan can change four explicit levers and reruns the same simulated market paths.</p>
+            <p className="mt-2 max-w-3xl text-sm text-slate-400">Current Plan is derived from the household workspace. Proposed Plan can change four explicit levers and reruns the same simulated market paths. Employment income scheduled to end immediately before the Current retirement age moves with a delayed retirement age.</p>
           </div>
           <button onClick={() => onChange(current => ({ ...current, proposedPlan: createProposedPlanFromCurrent(current) }))} className="rounded-xl border border-slate-700 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800">Reset Proposed to Current</button>
         </div>
@@ -51,7 +51,7 @@ export function PlanComparison({ workspace, comparison, onChange }: PlanComparis
           <Control label="Retirement age" value={workspace.proposedPlan.retirementAge} min={workspace.profile.currentAge + 1} max={workspace.profile.longevityAge - 1} step={1} onChange={value => updateProposed('retirementAge', value)} suffix="years" />
           <Control label="Annual savings" value={workspace.proposedPlan.annualSavings} min={0} max={Math.max(300000, comparison.current.params.annualIncome)} step={1000} onChange={value => updateProposed('annualSavings', value)} format={formatMoney} />
           <Control label="Retirement spending" value={workspace.proposedPlan.retirementAnnualExpense} min={10000} max={Math.max(300000, comparison.current.params.retirementAnnualExpense * 2)} step={1000} onChange={value => updateProposed('retirementAnnualExpense', value)} format={formatMoney} />
-          <Control label="Social Security claim age" value={workspace.proposedPlan.socialSecurityClaimAge} min={62} max={70} step={1} onChange={value => updateProposed('socialSecurityClaimAge', value)} suffix="years" />
+          <Control label="Social Security claim age" value={workspace.proposedPlan.socialSecurityClaimAge} min={62} max={70} step={1} onChange={value => updateProposed('socialSecurityClaimAge', value)} suffix="years" help="The user-provided annual estimate stays unchanged; Veloxis does not calculate claiming adjustments." />
         </div>
       </div>
 
@@ -104,6 +104,7 @@ function Control({
   onChange,
   format,
   suffix,
+  help,
 }: {
   label: string;
   value: number;
@@ -113,11 +114,13 @@ function Control({
   onChange: (value: number) => void;
   format?: (value: number) => string;
   suffix?: string;
+  help?: string;
 }) {
   return (
     <label className="rounded-xl border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-400">
       <span className="flex justify-between gap-2"><span>{label}</span><strong className="font-mono text-cyan-300">{format ? format(value) : value} {suffix}</strong></span>
       <input className="mt-3 w-full accent-cyan-400" type="range" min={min} max={max} step={step} value={value} onChange={event => onChange(Number(event.target.value))} />
+      {help && <span className="mt-2 block text-[10px] leading-4 text-slate-500">{help}</span>}
     </label>
   );
 }

@@ -45,4 +45,14 @@ describe('Current and Proposed plan comparison', () => {
     expect(comparison.proposed.metrics.successProbabilityAtPlanEnd)
       .toBeGreaterThanOrEqual(comparison.current.metrics.successProbabilityAtPlanEnd);
   });
+
+  it('extends baseline employment income when the proposed retirement age is delayed', () => {
+    const workspace = createDemoHouseholdWorkspace('retirement-window');
+    const scenarios = derivePlanScenarios(workspace);
+    const currentEmployment = scenarios.current.params.cashFlows.find(flow => flow.name === 'Employment income');
+    const proposedEmployment = scenarios.proposed.params.cashFlows.find(flow => flow.name === 'Employment income');
+
+    expect(currentEmployment?.endAge).toBe(61);
+    expect(proposedEmployment?.endAge).toBe(64);
+  });
 });

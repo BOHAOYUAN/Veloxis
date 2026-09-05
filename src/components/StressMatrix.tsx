@@ -86,8 +86,6 @@ export const StressMatrix: React.FC<StressMatrixProps> = ({
                     const ruin = cell.ruinProb;
                     const isSafe = ruin <= 0.15;
                     const isWarn = ruin > 0.15 && ruin < 0.40;
-                    const isDanger = ruin >= 0.40;
-
                     return (
                       <td key={cell.inflationRate} className="py-2.5 px-3">
                         <div

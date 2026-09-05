@@ -15,7 +15,7 @@ export const softwareApplicationSchema = {
     '@type': 'Offer',
     price: '99',
     priceCurrency: 'USD',
-    description: 'Founding Advisor Pilot: 30 days of access to a synthetic retirement scenario demo and written onboarding.',
+    description: 'Founding Advisor Pilot: two guided synthetic meeting cases, facilitation notes, written onboarding, and 30 days of limited email support.',
   },
 };
 
@@ -49,4 +49,3 @@ export const faqSchema = {
     },
   ],
 };
-

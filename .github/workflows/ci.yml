@@ -27,6 +27,9 @@ jobs:
       - name: Static TypeScript Type Checking
         run: npm run type-check
 
+      - name: Lint Application Code
+        run: npm run lint
+
       - name: Run Vitest Unit Tests
         run: npm test
 

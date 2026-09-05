@@ -29,6 +29,8 @@ export function useHouseholdWorkspace() {
       ?? window.localStorage.getItem(LEGACY_STORAGE_KEY);
     const parsed = parseStoredWorkspace(saved);
     if (parsed) {
+      // This client-only hydration step intentionally restores the saved workspace after mount.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setWorkspace(parsed);
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
     }
