@@ -34,6 +34,37 @@ const baseParams: SimulationParams = {
 };
 
 describe('Monte Carlo financial engine', () => {
+  it('matches a hand-calculated zero-return retirement ledger and simulated path', () => {
+    const params = { ...baseParams, currentAge: 58, retirementAge: 60, maxAge: 61,
+      initialCapital: 100, expectedReturn: 0, inflationRate: 0, volatility: 0,
+      annualSavings: 20, baselineAnnualSavings: 20, retirementAnnualExpense: 30,
+      annualSocialSecurity: 0, cashFlows: [
+        { name: 'Salary', type: 'INCOME' as const, annualAmount: 50, startAge: 58, endAge: 59, inflationCategory: 'general' as const },
+        { name: 'Living', type: 'EXPENSE' as const, annualAmount: 30, startAge: 58, endAge: 61, inflationCategory: 'general' as const },
+      ], goals: [{ name: 'One-time goal', age: 60, amount: 10 }],
+    };
+    // Snapshot 100; working year +20; retirement -30 -10; next year -30.
+    expect(runDeterministicProjection(params).map(year => year.endingAssets)).toEqual([100, 120, 80, 50]);
+    expect(runMonteCarloSimulation(params).yearlyDistributions.map(year => year.p50)).toEqual([100, 120, 80, 50]);
+  });
+
+  it('reports unfunded spending without negative ledger assets after exhaustion', () => {
+    const params = { ...baseParams, currentAge: 59, retirementAge: 60, maxAge: 62,
+      initialCapital: 10, expectedReturn: 0, inflationRate: 0, volatility: 0,
+      retirementAnnualExpense: 30, annualSocialSecurity: 0, cashFlows: [], goals: [],
+    };
+    const ledger = runDeterministicProjection(params);
+    expect(ledger[1]).toMatchObject({ withdrawals: 10, unfundedExpenses: 20, endingAssets: 0 });
+    expect(ledger[2]).toMatchObject({ withdrawals: 0, unfundedExpenses: 30, endingAssets: 0 });
+    expect(runMonteCarloSimulation(params).metrics.successProbabilityAtPlanEnd).toBe(0);
+  });
+
+  it('starts the supplied Social Security amount at its claim age without benefit optimization', () => {
+    const ledger = runDeterministicProjection({ ...baseParams, currentAge: 65, maxAge: 68 });
+    expect(ledger.find(year => year.age === 66)?.socialSecurityIncome).toBe(0);
+    expect(ledger.find(year => year.age === 67)?.socialSecurityIncome).toBe(30000);
+    expect(ledger.find(year => year.age === 68)?.socialSecurityIncome).toBe(30000);
+  });
   it('produces an approximately standard normal distribution from a seeded generator', () => {
     const random = createSeededRandom(12345);
     const sample = Array.from({ length: 10000 }, () => boxMullerGaussian(random));

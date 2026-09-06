@@ -23,7 +23,7 @@ export function MarketingShell({ children }: { children: ReactNode }) {
           <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex" aria-label="Main navigation">
             {navigation.map(item => <Link key={item.href} href={item.href} className="transition hover:text-slate-950">{item.label}</Link>)}
           </nav>
-          <Link href="/demo" className="rounded-lg bg-[#111c3d] px-3.5 py-2 text-sm font-bold text-white transition hover:bg-[#1d2d5d]">Open demo</Link>
+          <Link href="/workspace" className="rounded-lg bg-[#111c3d] px-3.5 py-2 text-sm font-bold text-white transition hover:bg-[#1d2d5d]">Open workspace</Link>
         </div>
         <nav className="module-nav mx-auto flex max-w-6xl gap-5 overflow-x-auto border-t border-slate-200 px-5 py-3 text-sm font-medium text-slate-600 md:hidden" aria-label="Main navigation">
           {navigation.map(item => <Link key={item.href} href={item.href} className="shrink-0 transition hover:text-slate-950">{item.label}</Link>)}

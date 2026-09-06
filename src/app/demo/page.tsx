@@ -1,6 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { CaseOverview } from '@/components/CaseOverview';
 import { CashflowSankey } from '@/components/CashflowSankey';
 import { EstateTopology } from '@/components/EstateTopology';
 import { MonteCarloChart } from '@/components/MonteCarloChart';
@@ -42,17 +44,19 @@ export default function DemoPage() {
     setActiveTab('COMPARE');
   };
   const resetDemo = () => loadCase(activeCaseId);
+  const calculatedWorkspace = useDeferredValue(workspace);
+  const isCalculating = calculatedWorkspace !== workspace;
   const comparison = useMemo(() => {
-    const scenarios = derivePlanScenarios(workspace);
+    const scenarios = derivePlanScenarios(calculatedWorkspace);
     return comparePlanScenarios(scenarios.current, scenarios.proposed);
-  }, [workspace]);
+  }, [calculatedWorkspace]);
   const selectedResult = comparison[selectedPlanId];
   const selectedParams = selectedResult.params;
   const selectedProjection = useMemo(() => runDeterministicProjection(selectedParams), [selectedParams]);
   const stressParams = useMemo(() => activeStressScenario
     ? { ...selectedParams, ...activeStressScenario.getPatch(selectedParams) }
     : selectedParams, [activeStressScenario, selectedParams]);
-  const sensitivityMatrix = useMemo(() => computeSensitivityMatrix(stressParams), [stressParams]);
+  const sensitivityMatrix = useMemo(() => activeTab === 'STRESS' ? computeSensitivityMatrix(stressParams) : null, [activeTab, stressParams]);
   const householdSummary = summarizeHousehold(workspace);
   const activeCase = DEMO_CASES.find(item => item.id === activeCaseId) ?? DEMO_CASES[0];
   const formatMoney = (amount: number) => new Intl.NumberFormat('en-US', {
@@ -82,22 +86,34 @@ export default function DemoPage() {
           </div>
         </section>
         <div className="flex flex-col justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/60 p-3 sm:flex-row sm:items-center"><p className="text-xs leading-5 text-slate-400">Explore the proposal levers, then reset to return to the original synthetic case.</p><button onClick={resetDemo} className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-200 transition hover:bg-slate-800">Reset synthetic case</button></div>
-        <nav className="module-nav flex gap-2 overflow-x-auto border-b border-slate-800 pb-3" aria-label="Synthetic demo modules">{tabs.map(tab => <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-bold transition ${activeTab === tab.id ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/20' : 'border border-slate-800 text-slate-400 hover:bg-slate-900 hover:text-slate-200'}`}>{tab.label}</button>)}</nav>
+        <CaseOverview params={comparison.current.params} />
+        <nav className="flex flex-wrap gap-3" aria-label="Meeting steps">
+          <button aria-pressed={activeTab === 'COMPARE'} onClick={() => setActiveTab('COMPARE')} className="rounded-lg border border-cyan-700 px-4 py-2 text-sm text-cyan-200">2. Compare and explain</button>
+          <details className="rounded-lg border border-slate-700 p-2 text-sm"><summary className="cursor-pointer px-2">Supporting views{activeTab !== 'COMPARE' ? ` · ${tabs.find(tab => tab.id === activeTab)?.label}` : ''}</summary>
+            <div className="mt-3 flex flex-wrap gap-2">{tabs.filter(tab => tab.id !== 'COMPARE').map(tab => <button aria-pressed={activeTab === tab.id} key={tab.id} onClick={() => setActiveTab(tab.id)} className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-200">{tab.label}</button>)}</div>
+          </details>
+          <Link href="/pilot" className="px-3 py-2 text-sm text-cyan-300">About the guided pilot</Link>
+          <Link href="/" className="px-3 py-2 text-sm text-slate-400">Home</Link>
+        </nav>
+        <p role="status" className="text-xs text-slate-400">{isCalculating ? 'Recalculating… displayed results reflect the previous inputs.' : 'Results updated. Changes stay in this tab only; refreshing resets the case.'}</p>
+        <div aria-busy={isCalculating} className="space-y-6">
         {activeTab === 'COMPARE' && <PlanComparison workspace={workspace} comparison={comparison} onChange={updateWorkspace} />}
+        {activeTab === 'COMPARE' && <section className="space-y-4"><h2 className="font-bold">3. Trace the annual cash flow</h2><PlanToggle selected={selectedPlanId} onChange={setSelectedPlanId} /><CashflowSankey key={activeCaseId} projection={selectedProjection} currency={workspace.profile.currency} planName={selectedPlanId === 'current' ? 'Current Plan' : 'Proposed Plan'} /></section>}
         {['MONTE_CARLO', 'CASHFLOW', 'STRESS'].includes(activeTab) && <PlanToggle selected={selectedPlanId} onChange={planId => { setSelectedPlanId(planId); setActiveStressScenario(null); }} />}
         {activeTab === 'MONTE_CARLO' && <div className="space-y-4"><MonteCarloChart data={selectedResult} currency={workspace.profile.currency} /><p className="rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-3 text-sm leading-6 text-slate-400">This fan chart uses {selectedResult.params.simulationsCount.toLocaleString()} seeded paths. Reopening the demo with the same synthetic inputs and seed produces the same financial distributions.</p></div>}
         {activeTab === 'CASHFLOW' && <CashflowSankey projection={selectedProjection} currency={workspace.profile.currency} planName={selectedPlanId === 'current' ? 'Current Plan' : 'Proposed Plan'} />}
         {activeTab === 'TAX' && <TaxWaterfall workspace={workspace} />}
         {activeTab === 'ESTATE' && <EstateTopology workspace={workspace} />}
-        {activeTab === 'STRESS' && <StressMatrix matrix={sensitivityMatrix} stressScenarios={STRESS_SCENARIOS} activeScenarioId={activeStressScenario?.id ?? null} onApplyScenario={setActiveStressScenario} />}
-        <footer className="flex flex-col items-center justify-between gap-2 border-t border-slate-900 pb-4 pt-6 text-center text-xs text-slate-500 sm:flex-row"><span>Synthetic household · Modeled net worth {formatMoney(householdSummary.netWorth)}</span><span className="font-mono text-cyan-500/80">calculation-backed · no data persistence</span></footer>
+        {activeTab === 'STRESS' && sensitivityMatrix && <StressMatrix matrix={sensitivityMatrix} stressScenarios={STRESS_SCENARIOS} activeScenarioId={activeStressScenario?.id ?? null} onApplyScenario={setActiveStressScenario} />}
+        </div>
+        <footer className="flex flex-col items-center justify-between gap-3 border-t border-slate-900 pb-4 pt-6 text-center text-xs text-slate-500 sm:flex-row"><span>Synthetic household · Modeled net worth {formatMoney(householdSummary.netWorth)}</span><div className="flex flex-wrap justify-center gap-4"><Link href="/workspace" className="text-cyan-400 hover:text-cyan-300">Open full workspace preview</Link><span className="font-mono text-cyan-500/80">calculation-backed · no data persistence</span></div></footer>
       </div>
     </main>
   );
 }
 
 function HeaderMetric({ label, value, tone }: { label: string; value: string; tone: string }) {
-  return <div className="min-w-28 rounded-xl border border-slate-800 bg-slate-950/80 px-3 py-2 text-center"><span className="block text-[10px] text-slate-500">{label}</span><span className={`font-mono text-sm font-bold ${tone}`}>{value}</span></div>;
+  return <div className="min-w-0 rounded-xl border border-slate-800 bg-slate-950/80 px-2 py-2 text-center"><span className="block text-[10px] text-slate-500">{label}</span><span className={`break-all font-mono text-sm font-bold ${tone}`}>{value}</span></div>;
 }
 
 function PlanToggle({ selected, onChange }: { selected: PlanId; onChange: (plan: PlanId) => void }) {

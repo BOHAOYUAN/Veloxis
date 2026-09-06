@@ -77,15 +77,15 @@ export function HouseholdWorkspace({
       <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-xl">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-xs font-mono text-cyan-400">PERSONAL · LOCAL-FIRST · V2</p>
-            <h2 className="mt-1 text-xl font-black text-slate-100">Household planning workspace</h2>
+            <p className="text-xs font-mono text-cyan-400">SYNTHETIC CASE · BROWSER-LOCAL · V2</p>
+            <h2 className="mt-1 text-xl font-black text-slate-100">Fictional household workspace</h2>
             <p className="mt-2 max-w-3xl text-sm text-slate-400">
-              Inputs stay in this browser. Values are planning inputs and simulated outputs, not investment, tax, legal, or financial advice.
+              Changes stay in this browser until you restore the sample or clear site data. Do not enter a client name, account number, address, document, or other personal financial information. Outputs are not investment, tax, legal, or financial advice.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={apply} className="rounded-xl bg-cyan-400 px-4 py-2 text-xs font-black text-slate-950 hover:bg-cyan-300">Open Current Plan</button>
-            <button onClick={onResetDemo} className="rounded-xl border border-slate-700 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800">Restore sample data</button>
+            <button onClick={onResetDemo} className="rounded-xl border border-slate-700 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800">Restore synthetic sample</button>
           </div>
         </div>
         {notice && <p className="mt-3 text-xs text-emerald-400">{notice}</p>}
@@ -107,9 +107,9 @@ export function HouseholdWorkspace({
         ))}
       </div>
 
-      <Panel title="Household profile" subtitle="US and USD are defaults; Social Security is a user-provided estimate.">
+      <Panel title="Fictional household profile" subtitle="US and USD are defaults; Social Security is a manually supplied fictional estimate.">
         <div className="grid gap-3 md:grid-cols-3">
-          <Field label="Household name"><input value={workspace.profile.householdName} onChange={event => updateProfile('householdName', event.target.value)} /></Field>
+          <Field label="Fictional case label"><input value={workspace.profile.householdName} onChange={event => updateProfile('householdName', event.target.value)} /></Field>
           <Field label="Planning jurisdiction"><input value={workspace.profile.jurisdiction} onChange={event => updateProfile('jurisdiction', event.target.value.toUpperCase())} /></Field>
           <Field label="Currency"><input value={workspace.profile.currency} maxLength={3} onChange={event => updateProfile('currency', event.target.value.toUpperCase())} /></Field>
           <Field label="Current age"><input type="number" min="18" max="80" value={workspace.profile.currentAge} onChange={event => updateProfile('currentAge', Number(event.target.value))} /></Field>

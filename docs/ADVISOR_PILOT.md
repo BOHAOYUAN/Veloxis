@@ -2,6 +2,10 @@
 
 ## Scope
 
+Execution checklist, evidence gates and SaaS backlog: [PILOT_EXECUTION.md](PILOT_EXECUTION.md).
+Approved outreach and onboarding drafts: [PILOT_EMAILS.md](PILOT_EMAILS.md).
+Recording script: [DEMO_RECORDING.md](DEMO_RECORDING.md).
+
 Veloxis is offering a $99, one-time, 30-day guided evaluation for independent US advisors who want to test a clearer Current Plan versus Proposed Plan retirement conversation. The public demonstration uses fictional household data only. It does not accept real client data or provide investment, tax, legal, or financial advice.
 
 The paid deliverable is a service package, not restricted access to the public demo. It includes the two guided synthetic meeting cases in [the case guide](PILOT_CASE_GUIDES.md), facilitation notes, written onboarding, and up to three email support exchanges during the 30-day period.
@@ -24,11 +28,14 @@ Hi {Name},
 
 I’m building Veloxis, a browser-based retirement scenario visualizer for independent advisors. It compares a current plan with a proposed plan using identical simulated market paths, so clients can see what changed and why.
 
-I’m looking for blunt feedback, not a sale. Would you be open to reviewing a short synthetic demo and answering a few questions by email?
+I’m exploring whether this could become a paid product. Would you be open to reviewing a short synthetic demo and answering a few questions by email?
 
 Thank you,
 
 {Your name}
+
+{Business name, public contact email and valid postal address}
+Product research and pilot outreach. Reply “no thanks” to stop further contact.
 
 ## Questions to ask
 

@@ -11,12 +11,6 @@ export const softwareApplicationSchema = {
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   description: siteConfig.description,
-  offers: {
-    '@type': 'Offer',
-    price: '99',
-    priceCurrency: 'USD',
-    description: 'Founding Advisor Pilot: two guided synthetic meeting cases, facilitation notes, written onboarding, and 30 days of limited email support.',
-  },
 };
 
 export const faqSchema = {
