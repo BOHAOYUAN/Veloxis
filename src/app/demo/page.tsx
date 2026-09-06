@@ -92,7 +92,7 @@ export default function DemoPage() {
           <details className="rounded-lg border border-slate-700 p-2 text-sm"><summary className="cursor-pointer px-2">Supporting views{activeTab !== 'COMPARE' ? ` · ${tabs.find(tab => tab.id === activeTab)?.label}` : ''}</summary>
             <div className="mt-3 flex flex-wrap gap-2">{tabs.filter(tab => tab.id !== 'COMPARE').map(tab => <button aria-pressed={activeTab === tab.id} key={tab.id} onClick={() => setActiveTab(tab.id)} className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-200">{tab.label}</button>)}</div>
           </details>
-          <Link href="/pilot" className="px-3 py-2 text-sm text-cyan-300">About the guided pilot</Link>
+          <Link href="/pilot" className="px-3 py-2 text-sm text-cyan-300">Advisor evaluation</Link>
           <Link href="/" className="px-3 py-2 text-sm text-slate-400">Home</Link>
         </nav>
         <p role="status" className="text-xs text-slate-400">{isCalculating ? 'Recalculating… displayed results reflect the previous inputs.' : 'Results updated. Changes stay in this tab only; refreshing resets the case.'}</p>

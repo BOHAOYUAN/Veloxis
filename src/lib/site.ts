@@ -9,7 +9,9 @@ export const siteConfig = {
   siteUrl: configuredSiteUrl,
   pilotCheckoutUrl: process.env.NEXT_PUBLIC_DODO_PILOT_URL,
   contactEmail: validContactEmail(process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? publicSiteDefaults.contactEmail),
-  // Enable only after the payment and fulfillment rehearsal is verified.
+  // Publish the commercial offer only after moving production to a commercial hosting plan.
+  pilotOfferPublished: process.env.PILOT_OFFER_PUBLISHED === 'true',
+  // Open checkout only after the payment and fulfillment rehearsal is verified.
   pilotEnrollmentOpen: process.env.PILOT_ENROLLMENT_OPEN === 'true',
 };
 

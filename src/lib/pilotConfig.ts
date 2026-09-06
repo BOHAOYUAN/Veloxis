@@ -31,12 +31,13 @@ export function liveCheckoutUrl(value?: string): string | undefined {
 }
 
 export function resolvePilotEnrollment(config: {
+  pilotOfferPublished: boolean;
   pilotEnrollmentOpen: boolean;
   pilotCheckoutUrl?: string;
   siteUrl?: string;
   contactEmail?: string;
 }): { open: false } | { open: true; checkoutUrl: string } {
   const checkoutUrl = liveCheckoutUrl(config.pilotCheckoutUrl);
-  if (!config.pilotEnrollmentOpen || !checkoutUrl || !config.siteUrl || !validSiteOrigin(config.siteUrl) || !config.contactEmail || !validContactEmail(config.contactEmail)) return { open: false };
+  if (!config.pilotOfferPublished || !config.pilotEnrollmentOpen || !checkoutUrl || !config.siteUrl || !validSiteOrigin(config.siteUrl) || !config.contactEmail || !validContactEmail(config.contactEmail)) return { open: false };
   return { open: true, checkoutUrl };
 }

@@ -38,7 +38,7 @@ export const faqSchema = {
       name: 'Can I enter client data in the public demo?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'No. The public pilot demo is limited to a synthetic household scenario. Do not enter personal, account, or identifying client information.',
+        text: 'No. The public evaluation is limited to synthetic household scenarios. Do not enter personal, account, or identifying client information.',
       },
     },
   ],

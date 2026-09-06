@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { siteConfig } from '@/lib/site';
 
-const paths = ['', '/demo', '/for-independent-advisors', '/methodology', '/privacy', '/pilot', '/terms'];
+const paths = ['', '/demo', '/for-independent-advisors', '/methodology', '/case-study', '/privacy', '/pilot', '/terms'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   if (!siteConfig.siteUrl) return [];

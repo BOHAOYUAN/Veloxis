@@ -4,6 +4,28 @@ import { siteConfig } from '@/lib/site';
 
 export function PilotEnrollment() {
   const enrollment = resolvePilotEnrollment(siteConfig);
+
+  if (!siteConfig.pilotOfferPublished) {
+    return (
+      <aside id="enrollment" className="rounded-2xl bg-[#111c3d] p-7 text-white shadow-xl shadow-blue-950/15">
+        <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-300">Feedback cohort</p>
+        <p className="mt-3 text-3xl font-black">Evaluation before monetization</p>
+        <p className="mt-3 leading-7 text-slate-300">This portfolio build is collecting candid workflow feedback from independent advisors. It does not offer paid access or accept orders.</p>
+        <div className="mt-7 grid gap-2 text-center text-sm font-bold">
+          <Link href="/demo" className="rounded-lg bg-white px-4 py-3 text-[#111c3d] hover:bg-cyan-50">Start the guided synthetic demo</Link>
+          <Link href="/workspace" className="rounded-lg border border-cyan-300/30 px-4 py-3 text-cyan-100 hover:bg-cyan-300/10">Open the browser-local workspace</Link>
+        </div>
+        {siteConfig.contactEmail && (
+          <div className="mt-6 border-t border-white/15 pt-5 text-sm leading-6">
+            <h2 className="font-bold">Share blunt feedback</h2>
+            <a href={`mailto:${siteConfig.contactEmail}?subject=Veloxis%20advisor%20workflow%20feedback`} className="mt-2 block break-all text-cyan-300 underline hover:text-white">{siteConfig.contactEmail}</a>
+            <p className="mt-3 text-slate-300">Please use fictional cases only. Do not email client documents or personal financial information.</p>
+          </div>
+        )}
+      </aside>
+    );
+  }
+
   return (
     <aside id="enrollment" className="rounded-2xl bg-[#111c3d] p-7 text-white shadow-xl shadow-blue-950/15">
       <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-300">Founding price</p>

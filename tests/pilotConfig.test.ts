@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { liveCheckoutUrl, publicSiteDefaults, resolvePilotEnrollment, validContactEmail, validSiteOrigin } from '@/lib/pilotConfig';
 
 const live = 'https://checkout.dodopayments.com/buy/pdt_example?quantity=1';
-const config = { ...publicSiteDefaults, pilotEnrollmentOpen: true, pilotCheckoutUrl: live };
+const config = { ...publicSiteDefaults, pilotOfferPublished: true, pilotEnrollmentOpen: true, pilotCheckoutUrl: live };
 
 describe('public pilot enrollment gate', () => {
-  it('requires an explicit launch flag', () => {
+  it('requires explicit publication and enrollment flags', () => {
+    expect(resolvePilotEnrollment({ ...config, pilotOfferPublished: false })).toEqual({ open: false });
     expect(resolvePilotEnrollment({ ...config, pilotEnrollmentOpen: false })).toEqual({ open: false });
     expect(resolvePilotEnrollment(config)).toEqual({ open: true, checkoutUrl: live });
   });

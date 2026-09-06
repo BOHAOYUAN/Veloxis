@@ -102,7 +102,7 @@ export default function WorkspacePage() {
 
         <footer className="flex flex-col items-center justify-between gap-3 border-t border-slate-900 pb-4 pt-6 text-center text-xs text-slate-500 sm:flex-row">
           <span>{workspace.profile.householdName} · Modeled net worth {formatMoney(householdSummary.netWorth)}</span>
-          <div className="flex flex-wrap justify-center gap-4"><Link href="/demo" className="text-cyan-400 hover:text-cyan-300">Guided demo</Link><Link href="/pilot" className="text-cyan-400 hover:text-cyan-300">Founding pilot</Link><Link href="/" className="text-cyan-400 hover:text-cyan-300">Product site</Link></div>
+          <div className="flex flex-wrap justify-center gap-4"><Link href="/demo" className="text-cyan-400 hover:text-cyan-300">Guided demo</Link><Link href="/pilot" className="text-cyan-400 hover:text-cyan-300">Advisor evaluation</Link><Link href="/case-study" className="text-cyan-400 hover:text-cyan-300">Engineering case study</Link><Link href="/" className="text-cyan-400 hover:text-cyan-300">Product site</Link></div>
         </footer>
       </div>
     </main>
